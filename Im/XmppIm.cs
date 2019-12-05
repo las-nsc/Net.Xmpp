@@ -1187,6 +1187,57 @@ namespace Sharp.Xmpp.Im
         }
 
         /// <summary>
+        /// Processes an IQ stanza containing a searchuser request.
+        /// </summary>
+        /// <param name="searchParam">O usuario procurado.</param>
+        /// <param name="searchServer">O usuario procurado.</param>
+        /// <param name="searchField">O usuario procurado.</param>
+        public List<UserSearchResult> SearchUsers(string searchServer, string searchField, string searchParam)
+        {
+            AssertValid();
+
+            XmlElement child = Xml.Element(searchField);
+            child.InnerText = searchParam;
+
+            Iq iq = IqRequest(IqType.Set, new Jid(searchServer), Jid, Xml.Element("query", "jabber:iq:search").Child(child));
+
+            //Iq iq = IqRequest(IqType.Get, new Jid(searchServer), Jid, Xml.Element("query", "jabber:iq:search")); // trazer campos
+
+            if (iq.Type == IqType.Error)
+                throw Util.ExceptionFromError(iq, "The search could not be retrieved.");
+
+            var query = iq.Data["query"];
+
+            if (query == null || query.NamespaceURI != "jabber:iq:search")
+                throw new XmppException("Erroneous server response.");
+
+            List<UserSearchResult> result = new List<UserSearchResult>();
+
+            foreach (XmlElement item in query)
+            {
+                if (item.HasAttribute("jid"))
+                {
+                    UserSearchResult user = new UserSearchResult();
+                    user.Jid = new Jid(item.GetAttribute("jid"));
+                    foreach (XmlElement itemChild in item.ChildNodes)
+                    {
+                        if (itemChild.Name == "email")
+                        {
+                            user.Email = itemChild.InnerText;
+                        }
+                        if (itemChild.Name == "nick")
+                        {
+                            user.Name = itemChild.InnerText;
+                        }
+                    }
+                    result.Add(user);
+                }
+            }
+
+            return result;
+        }
+        
+        /// <summary>
         /// Closes the connection with the XMPP server. This automatically disposes
         /// of the object.
         /// </summary>

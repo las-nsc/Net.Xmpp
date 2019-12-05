@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Net.Security;
+using System.Xml;
 
 namespace Sharp.Xmpp.Client
 {
@@ -1932,6 +1933,60 @@ namespace Sharp.Xmpp.Client
         public void RequestVoice(Jid chatRoom)
         {
             groupChat.RequestPrivilige(chatRoom, Role.Participant);
+        }
+
+        /// <summary>
+        /// Retorna data from users.
+        /// </summary>
+        /// <returns>Retorna loucuras.</returns>
+        /// <exception cref="NotSupportedException">The server does not support the
+        /// 'SearchUsers' extension and does not support privacy-list management.
+        /// </exception>
+        /// <exception cref="XmppErrorException">The server returned an XMPP error code.
+        /// Use the Error property of the XmppErrorException to obtain the specific
+        /// error condition.</exception>
+        /// <exception cref="XmppException">The server returned invalid data or another
+        /// unspecified XMPP error occurred.</exception>
+        /// <exception cref="InvalidOperationException">The XmppClient instance is
+        /// not connected to a remote host.</exception>
+        /// <exception cref="ObjectDisposedException">The XmppClient object
+        /// has been disposed.</exception>
+        public List<UserSearchResult> SearchUsers(string searchServer, string searchField, string searchParam)
+        {
+            AssertValid();
+            return im.SearchUsers(searchServer, searchField, searchParam);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="itemId"></param>
+        /// <param name="data"></param>
+        public void Publish(string node, string itemId = null, params XmlElement[] data)
+        {
+            this.pep.Publish(node, null, data);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="jid"></param>
+        /// <param name="node"></param>
+        public IEnumerable<XmlElement> RetrieveItems(Jid jid, string node)
+        {
+            return this.pep.RetrieveItems(jid, node);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="cb"></param>
+        public void Subscribe(string node, Action<Jid, XmlElement> cb)
+        {
+            Console.WriteLine("Subscribe");
+            this.pep.Subscribe(node, cb);
         }
 
         /// <summary>
