@@ -1,4 +1,6 @@
-﻿namespace Sharp.Xmpp.Extensions
+﻿using System;
+
+namespace Sharp.Xmpp.Extensions
 {
     /// <summary>
     /// Represents a request for a file-transfer.
@@ -7,5 +9,5 @@
     /// the file that is being offered.</param>
     /// <returns>The path where the file will be saved to or null to reject
     /// the file request.</returns>
-    public delegate string FileTransferRequest(FileTransfer transfer);
+    public delegate void FileTransferRequest(FileTransfer transfer, Action<string> resultado);
 }
