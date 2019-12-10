@@ -1,6 +1,12 @@
 ﻿#if WINDOWSPLATFORM
+using Sharp.Xmpp.Im;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
+using System.Security.Cryptography;
+using System.Xml;
 #endif
 
 namespace Sharp.Xmpp.Extensions

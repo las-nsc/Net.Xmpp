@@ -1,4 +1,6 @@
 ﻿#if WINDOWSPLATFORM
+using System.Collections.Generic;
+using System.Threading;
 using UPNPLib;
 #endif
 

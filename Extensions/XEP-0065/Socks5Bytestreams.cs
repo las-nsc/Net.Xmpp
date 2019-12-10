@@ -1,6 +1,7 @@
 ﻿using Sharp.Xmpp.Core;
 using Sharp.Xmpp.Extensions.Socks5;
 using Sharp.Xmpp.Extensions.Stun;
+using Sharp.Xmpp.Extensions.Upnp;
 using Sharp.Xmpp.Im;
 using System;
 using System.Collections.Generic;
