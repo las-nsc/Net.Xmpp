@@ -1965,7 +1965,7 @@ namespace Sharp.Xmpp.Client
         /// <param name="data"></param>
         public void Publish(string node, string itemId = null, params XmlElement[] data)
         {
-            this.pep.Publish(node, null, data);
+            this.pep.Publish(node, itemId, data);
         }
 
         /// <summary>
@@ -1978,15 +1978,26 @@ namespace Sharp.Xmpp.Client
             return this.pep.RetrieveItems(jid, node);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="node"></param>
-        /// <param name="cb"></param>
-        public void Subscribe(string node, Action<Jid, XmlElement> cb)
+        public XmlElement RetrieveItem(Jid jid, string node, string itemId)
+        {
+            return this.pep.RetrieveItem(jid, node, itemId);
+        }
+
+        public void Subscribe(Jid jid, string node)
         {
             Console.WriteLine("Subscribe");
+            this.pep.SubscribeForReal(jid, node);
+        }
+
+        public void ListenSubscribeNode(string node, Action<Jid, XmlElement> cb)
+        {
             this.pep.Subscribe(node, cb);
+        }
+
+        public void Unsubscribe(Jid jid, string node)
+        {
+            Console.WriteLine("Unsubscribe2");
+            this.pep.UnsubscribeForReal(jid, node);
         }
 
         /// <summary>

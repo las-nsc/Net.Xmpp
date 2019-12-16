@@ -167,6 +167,49 @@ namespace Sharp.Xmpp.Extensions
             callbacks.Add(node, cb);
         }
 
+        public void SubscribeForReal(Jid jid, string node)
+        {
+            node.ThrowIfNull("node");
+            if (!Supported)
+            {
+                throw new NotSupportedException("The server does not support publishing " +
+                    "of information.");
+            }
+            var xml = Xml.Element("pubsub", "http://jabber.org/protocol/pubsub")
+                .Child(Xml.Element("subscribe").Attr("node", node).Attr("jid", im.Jid.ToString()));
+             /*   .Child(Xml.Element("options")
+                        .Child(Xml.Element("x").Attr("xmlns", "jabber:x:data").Attr("type", "submit")
+                            .Child(Xml.Element("field").Attr("var", "FORM_TYPE").Attr("type", "hidden")
+                                .Child(Xml.Element("value").Text("http://jabber.org/protocol/pubsub#subscribe_options"))
+                            )
+                            .Child(Xml.Element("field").Attr("var", "pubsub#include_body")
+                                .Child(Xml.Element("value").Text("false"))
+                            )
+
+                            ));*/
+
+            Iq iq = im.IqRequest(IqType.Set, jid.GetBareJid(), im.Jid, xml);
+            if (iq.Type == IqType.Error)
+                throw Util.ExceptionFromError(iq, "The subscription fail.");
+        }
+
+        public void UnsubscribeForReal(Jid jid, string node)
+        {
+            node.ThrowIfNull("node");
+            if (!Supported)
+            {
+                throw new NotSupportedException("The server does not support publishing " +
+                    "of information.");
+            }
+            var xml = Xml.Element("pubsub", "http://jabber.org/protocol/pubsub")
+                .Child(Xml.Element("unsubscribe").Attr("node", node).Attr("jid", jid.GetBareJid().ToString()));
+
+
+            Iq iq = im.IqRequest(IqType.Set, null, im.Jid, xml);
+            if (iq.Type == IqType.Error)
+                throw Util.ExceptionFromError(iq, "The subscription fail.");
+        }
+
         /// <summary>
         /// Unsubscribes from the specified node.
         /// </summary>
