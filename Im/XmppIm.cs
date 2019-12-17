@@ -1,5 +1,6 @@
 ﻿using Sharp.Xmpp.Core;
 using Sharp.Xmpp.Extensions;
+using Sharp.Xmpp.Extensions.XEP_0384;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -1400,6 +1401,12 @@ namespace Sharp.Xmpp.Im
             core.SendPresence(presence);
         }
 
+        internal void SendEncryptedMessage(EncryptedMessage msg)
+        {
+            msg.ThrowIfNull("msg");
+            core.SendMessage(msg);
+        }
+
         /// <summary>
         /// Performs an IQ set/get request and blocks until the response IQ comes in.
         /// </summary>
@@ -1592,7 +1599,7 @@ namespace Sharp.Xmpp.Im
             };
             core.Message += (sender, e) =>
             {
-                OnMessage(new Message(e.Stanza));
+                OnMessage(e.Stanza);
             };
             core.Error += (sender, e) =>
             {
@@ -1695,16 +1702,25 @@ namespace Sharp.Xmpp.Im
         /// Callback invoked when a message stanza has been received.
         /// </summary>
         /// <param name="message">The received message stanza.</param>
-        private void OnMessage(Message message)
+        private void OnMessage(Core.Message message)
         {
+            Message msgIM = new Message(message);
             // Invoke IInput<Message> Plugins.
             foreach (var ext in extensions)
             {
+                var filterCore = ext as IInputFilter<Core.Message>;
+                if (filterCore != null)
+                {
+                    // Swallow message?
+                    if (filterCore.Input(message))
+                        return;
+                }
+
                 var filter = ext as IInputFilter<Message>;
                 if (filter != null)
                 {
                     // Swallow message?
-                    if (filter.Input(message))
+                    if (filter.Input(msgIM))
                         return;
                 }
             }
@@ -1712,7 +1728,7 @@ namespace Sharp.Xmpp.Im
             // Only raise the Message event, if the message stanza actually contains
             // a body.
             if (message.Data["body"] != null)
-                Message.Raise(this, new MessageEventArgs(message.From, message));
+                Message.Raise(this, new MessageEventArgs(message.From, msgIM));
         }
 
         /// <summary>

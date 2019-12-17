@@ -100,7 +100,7 @@ namespace Sharp.Xmpp.Core
         /// <summary>
         /// The default value for debugging stanzas is false
         /// </summary>
-        private bool debugStanzas = false;
+        private bool debugStanzas = true;
 
         /// <summary>
         /// A thread-safe dictionary of wait handles for pending IQ requests.
@@ -1236,7 +1236,7 @@ namespace Sharp.Xmpp.Core
                             break;
 
                         case "message":
-                            stanzaQueue.Add(new Message(elem));
+                            stanzaQueue.Add(new Core.Message(elem));
                             break;
 
                         case "presence":
@@ -1282,7 +1282,7 @@ namespace Sharp.Xmpp.Core
                     if (debugStanzas) System.Diagnostics.Debug.WriteLine(stanza.ToString());
                     if (stanza is Iq)
                         Iq.Raise(this, new IqEventArgs(stanza as Iq));
-                    else if (stanza is Message)
+                    else if (stanza is Core.Message)
                         Message.Raise(this, new MessageEventArgs(stanza as Message));
                     else if (stanza is Presence)
                         Presence.Raise(this, new PresenceEventArgs(stanza as Presence));

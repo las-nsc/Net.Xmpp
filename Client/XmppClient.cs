@@ -1,4 +1,5 @@
 ﻿using Sharp.Xmpp.Extensions;
+using Sharp.Xmpp.Extensions.XEP_0384;
 using Sharp.Xmpp.Im;
 using System;
 using System.Collections.Generic;
@@ -86,6 +87,10 @@ namespace Sharp.Xmpp.Client
         /// </summary>
         private MultiUserChat groupChat;
 
+        /// <summary>
+        /// Provides access to the "OMEMO" XMPP extension functionality.
+        /// </summary>
+        private OMEMOEncryption omemo;
 #if WINDOWSPLATFORM
 		/// <summary>
 		/// Provides access to the 'User Avatar' XMPP extension functionality.
@@ -472,6 +477,19 @@ namespace Sharp.Xmpp.Client
             {
                 im.Message -= value;
             }
+        }
+
+        public event EventHandler<EncryptedMessageEventArgs> EncryptedMessage
+        {
+            add
+            {
+                omemo.OnMessage += value;
+            }
+            remove
+            {
+                omemo.OnMessage -= value;
+            }
+
         }
 
         /// <summary>
@@ -868,6 +886,13 @@ namespace Sharp.Xmpp.Client
             AssertValid();
             message.ThrowIfNull("message");
             im.SendMessage(message);
+        }
+
+        public void SendEncryptedMessage(EncryptedMessage msg)
+        {
+            AssertValid();
+            msg.ThrowIfNull("msg");
+            im.SendEncryptedMessage(msg);
         }
 
         /// <summary>
@@ -2098,6 +2123,7 @@ namespace Sharp.Xmpp.Client
             vcardAvatars = im.LoadExtension<VCardAvatars>();
             cusiqextension = im.LoadExtension<CustomIqExtension>();
             groupChat = im.LoadExtension<MultiUserChat>();
+            omemo = im.LoadExtension<OMEMOEncryption>();
         }
     }
 }
