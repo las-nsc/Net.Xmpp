@@ -1,5 +1,5 @@
 ﻿using Sharp.Xmpp.Extensions;
-using Sharp.Xmpp.Extensions.XEP_0384;
+using Sharp.Xmpp.Extensions.Dataforms;
 using Sharp.Xmpp.Im;
 using System;
 using System.Collections.Generic;
@@ -91,11 +91,17 @@ namespace Sharp.Xmpp.Client
         /// Provides access to the "OMEMO" XMPP extension functionality.
         /// </summary>
         private OMEMOEncryption omemo;
+
+        /// <summary>
+        /// Provides Jabber search functionally.
+        /// </summary>
+        private JabberSearch search;
+
 #if WINDOWSPLATFORM
-		/// <summary>
-		/// Provides access to the 'User Avatar' XMPP extension functionality.
-		/// </summary>
-		UserAvatar userAvatar;
+        /// <summary>
+        /// Provides access to the 'User Avatar' XMPP extension functionality.
+        /// </summary>
+        UserAvatar userAvatar;
 #endif
 
         /// <summary>
@@ -507,6 +513,12 @@ namespace Sharp.Xmpp.Client
             }
         }
 
+        public void EditRoomSubject(Jid room, string subject)
+        {
+            AssertValid();
+            groupChat.EditRoomSubject(room, subject);
+        }
+
         /// <summary>
         /// The event that is raised when a participant's presence is changed in a group chat.
         /// </summary>
@@ -707,6 +719,7 @@ namespace Sharp.Xmpp.Client
         /// <param name="validate">A delegate used for verifying the remote Secure Sockets
         /// Layer (SSL) certificate which is used for authentication. Can be null if not
         /// needed.</param>
+        /// <param name="serveradress">Adress if hostname is diferrent from resolution name</param>
         /// <exception cref="ArgumentNullException">The hostname parameter or the
         /// username parameter or the password parameter is null.</exception>
         /// <exception cref="ArgumentException">The hostname parameter or the username
@@ -716,9 +729,9 @@ namespace Sharp.Xmpp.Client
         /// <remarks>Use this constructor if you wish to connect to an XMPP server using
         /// an existing set of user credentials.</remarks>
         public XmppClient(string hostname, string username, string password,
-            int port = 5222, bool tls = true, RemoteCertificateValidationCallback validate = null)
+            int port = 5222, bool tls = true, RemoteCertificateValidationCallback validate = null, string serveradress = "")
         {
-            im = new XmppIm(hostname, username, password, port, tls, validate);
+            im = new XmppIm(hostname, username, password, port, tls, validate, serveradress);
             // Initialize the various extension modules.
             LoadExtensions();
         }
@@ -733,6 +746,7 @@ namespace Sharp.Xmpp.Client
         /// <param name="validate">A delegate used for verifying the remote Secure Sockets
         /// Layer (SSL) certificate which is used for authentication. Can be null if not
         /// needed.</param>
+        /// <param name="serveradress">Adress if hostname is diferrent from resolution name</param>
         /// <exception cref="ArgumentNullException">The hostname parameter is
         /// null.</exception>
         /// <exception cref="ArgumentException">The hostname parameter is the empty
@@ -742,9 +756,9 @@ namespace Sharp.Xmpp.Client
         /// <remarks>Use this constructor if you wish to register an XMPP account using
         /// the in-band account registration process supported by some servers.</remarks>
         public XmppClient(string hostname, int port = 5222, bool tls = true,
-            RemoteCertificateValidationCallback validate = null)
+            RemoteCertificateValidationCallback validate = null, string serverAdress = "")
         {
-            im = new XmppIm(hostname, port, tls, validate);
+            im = new XmppIm(hostname, port, tls, validate, serverAdress);
             LoadExtensions();
         }
 
@@ -1817,6 +1831,24 @@ namespace Sharp.Xmpp.Client
             groupChat.JoinRoom(chatRoom, nickname, password);
         }
 
+        public DataForm RequestRegistration(Jid room)
+        {
+            AssertValid();
+            return groupChat.RequestRegistration(room);
+        }
+
+        public bool SendRegistration(Jid room, DataForm form)
+        {
+            AssertValid();
+            return groupChat.SendRegistration(room, form);
+        }
+
+        public void RequestInstantRoom(Jid room)
+        {
+            AssertValid();
+            groupChat.RequestInstantRoom(room);
+        }
+
         /// <summary>
         /// Leaves the specified room.
         /// </summary>
@@ -1961,25 +1993,23 @@ namespace Sharp.Xmpp.Client
         }
 
         /// <summary>
-        /// Retorna data from users.
+        /// Submit a serach forms
         /// </summary>
         /// <returns>Retorna loucuras.</returns>
-        /// <exception cref="NotSupportedException">The server does not support the
-        /// 'SearchUsers' extension and does not support privacy-list management.
-        /// </exception>
-        /// <exception cref="XmppErrorException">The server returned an XMPP error code.
-        /// Use the Error property of the XmppErrorException to obtain the specific
-        /// error condition.</exception>
-        /// <exception cref="XmppException">The server returned invalid data or another
-        /// unspecified XMPP error occurred.</exception>
-        /// <exception cref="InvalidOperationException">The XmppClient instance is
-        /// not connected to a remote host.</exception>
-        /// <exception cref="ObjectDisposedException">The XmppClient object
-        /// has been disposed.</exception>
-        public List<UserSearchResult> SearchUsers(string searchServer, string searchField, string searchParam)
+        public DataForm Search(string searchServer, DataForm form)
         {
             AssertValid();
-            return im.SearchUsers(searchServer, searchField, searchParam);
+            return this.search.Search(searchServer, form);
+        }
+
+        /// <summary>
+        /// Submit a serach forms
+        /// </summary>
+        /// <returns>Retorna loucuras.</returns>
+        public DataForm SearchForm(string searchServer)
+        {
+            AssertValid();
+            return this.search.GetSearchForm(searchServer);
         }
 
         /// <summary>
@@ -2124,6 +2154,7 @@ namespace Sharp.Xmpp.Client
             cusiqextension = im.LoadExtension<CustomIqExtension>();
             groupChat = im.LoadExtension<MultiUserChat>();
             omemo = im.LoadExtension<OMEMOEncryption>();
+            search = im.LoadExtension<JabberSearch>();
         }
     }
 }

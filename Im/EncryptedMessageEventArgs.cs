@@ -1,4 +1,4 @@
-﻿using Sharp.Xmpp.Extensions.XEP_0384;
+﻿using Sharp.Xmpp.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

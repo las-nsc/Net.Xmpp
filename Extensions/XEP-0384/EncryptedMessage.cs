@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Xml;
 
-namespace Sharp.Xmpp.Extensions.XEP_0384
+namespace Sharp.Xmpp.Extensions
 {
     /// <summary>
     /// Represents a Message stanza as defined in xep-0384.

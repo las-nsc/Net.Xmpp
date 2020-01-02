@@ -1,6 +1,5 @@
 ﻿using Sharp.Xmpp.Core;
 using Sharp.Xmpp.Extensions;
-using Sharp.Xmpp.Extensions.XEP_0384;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -293,6 +292,7 @@ namespace Sharp.Xmpp.Im
         /// <param name="validate">A delegate used for verifying the remote Secure Sockets
         /// Layer (SSL) certificate which is used for authentication. Can be null if not
         /// needed.</param>
+        /// <param name="serveradress">Adress if hostname is diferrent from resolution name</param>
         /// <exception cref="ArgumentNullException">The hostname parameter or the
         /// username parameter or the password parameter is null.</exception>
         /// <exception cref="ArgumentException">The hostname parameter or the username
@@ -300,9 +300,10 @@ namespace Sharp.Xmpp.Im
         /// <exception cref="ArgumentOutOfRangeException">The value of the port parameter
         /// is not a valid port number.</exception>
         public XmppIm(string hostname, string username, string password,
-            int port = 5222, bool tls = true, RemoteCertificateValidationCallback validate = null)
+            int port = 5222, bool tls = true, RemoteCertificateValidationCallback validate = null,
+            string serverAdress = "")
         {
-            core = new XmppCore(hostname, username, password, port, tls, validate);
+            core = new XmppCore(hostname, username, password, port, tls, validate, serverAdress);
             SetupEventHandlers();
         }
 
@@ -316,6 +317,7 @@ namespace Sharp.Xmpp.Im
         /// <param name="validate">A delegate used for verifying the remote Secure Sockets
         /// Layer (SSL) certificate which is used for authentication. Can be null if not
         /// needed.</param>
+        /// <param name="serveradress">Adress if hostname is diferrent from resolution name</param>
         /// <exception cref="ArgumentNullException">The hostname parameter is
         /// null.</exception>
         /// <exception cref="ArgumentException">The hostname parameter is the empty
@@ -323,9 +325,10 @@ namespace Sharp.Xmpp.Im
         /// <exception cref="ArgumentOutOfRangeException">The value of the port parameter
         /// is not a valid port number.</exception>
         public XmppIm(string hostname, int port = 5222, bool tls = true,
-            RemoteCertificateValidationCallback validate = null)
+            RemoteCertificateValidationCallback validate = null,
+            string serverAdress = "")
         {
-            core = new XmppCore(hostname, port, tls, validate);
+            core = new XmppCore(hostname, port, tls, validate, serverAdress);
             SetupEventHandlers();
         }
 
@@ -1185,57 +1188,6 @@ namespace Sharp.Xmpp.Im
                 throw Util.ExceptionFromError(iq, "The privacy list could not be made " +
                     "the default.");
             }
-        }
-
-        /// <summary>
-        /// Processes an IQ stanza containing a searchuser request.
-        /// </summary>
-        /// <param name="searchParam">O usuario procurado.</param>
-        /// <param name="searchServer">O usuario procurado.</param>
-        /// <param name="searchField">O usuario procurado.</param>
-        public List<UserSearchResult> SearchUsers(string searchServer, string searchField, string searchParam)
-        {
-            AssertValid();
-
-            XmlElement child = Xml.Element(searchField);
-            child.InnerText = searchParam;
-
-            Iq iq = IqRequest(IqType.Set, new Jid(searchServer), Jid, Xml.Element("query", "jabber:iq:search").Child(child));
-
-            //Iq iq = IqRequest(IqType.Get, new Jid(searchServer), Jid, Xml.Element("query", "jabber:iq:search")); // trazer campos
-
-            if (iq.Type == IqType.Error)
-                throw Util.ExceptionFromError(iq, "The search could not be retrieved.");
-
-            var query = iq.Data["query"];
-
-            if (query == null || query.NamespaceURI != "jabber:iq:search")
-                throw new XmppException("Erroneous server response.");
-
-            List<UserSearchResult> result = new List<UserSearchResult>();
-
-            foreach (XmlElement item in query)
-            {
-                if (item.HasAttribute("jid"))
-                {
-                    UserSearchResult user = new UserSearchResult();
-                    user.Jid = new Jid(item.GetAttribute("jid"));
-                    foreach (XmlElement itemChild in item.ChildNodes)
-                    {
-                        if (itemChild.Name == "email")
-                        {
-                            user.Email = itemChild.InnerText;
-                        }
-                        if (itemChild.Name == "nick")
-                        {
-                            user.Name = itemChild.InnerText;
-                        }
-                    }
-                    result.Add(user);
-                }
-            }
-
-            return result;
         }
         
         /// <summary>

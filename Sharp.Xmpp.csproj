@@ -16,17 +16,17 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\Repositorio3\bin\</OutputPath>
+    <OutputPath>..\Chat\bin\</OutputPath>
     <DefineConstants>TRACE;DEBUG;WINDOWSPLATFORM</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>0</WarningLevel>
-    <DocumentationFile>C:\Desenvolvimento\Repositorio3\bin\Sharp.Xmpp.xml</DocumentationFile>
+    <DocumentationFile>C:\Desenvolvimento\Chat\bin.xml</DocumentationFile>
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\Repositorio3\src\mitra\lib\Sharp.Xmpp\</OutputPath>
+    <OutputPath>..\Chat\lib\Sharp.Xmpp\</OutputPath>
     <DefineConstants>TRACE;WINDOWSPLATFORM</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -98,6 +98,7 @@
     <Compile Include="Extensions\XEP-0004\Dataforms\XmlCollection.cs" />
     <Compile Include="Extensions\XEP-0020\FeatureNegotiation.cs" />
     <Compile Include="Extensions\XEP-0030\Item.cs" />
+    <Compile Include="Extensions\XEP-0045\DirectInvite.cs" />
     <Compile Include="Extensions\XEP-0045\GroupErrorEventArgs.cs" />
     <Compile Include="Extensions\XEP-0045\GroupInviteDeclinedEventArgs.cs" />
     <Compile Include="Extensions\XEP-0045\GroupInviteEventArgs.cs" />
@@ -120,6 +121,7 @@
     <Compile Include="Extensions\XEP-0045\RoomProtection.cs" />
     <Compile Include="Extensions\XEP-0045\RoomVisibility.cs" />
     <Compile Include="Extensions\XEP-0045\MucStatusType.cs" />
+    <Compile Include="Extensions\XEP-0055\JabberSearch.cs" />
     <Compile Include="Extensions\XEP-0065\IPAddressExtensions.cs" />
     <Compile Include="Extensions\XEP-0065\Socks5Bytestreams.cs" />
     <Compile Include="Extensions\XEP-0065\Socks5\ATyp.cs" />
@@ -185,7 +187,6 @@
     <Compile Include="Im\EncryptedMessageEventArgs.cs" />
     <Compile Include="Im\MessageHint.cs" />
     <Compile Include="Im\SubscriptionRequest.cs" />
-    <Compile Include="Im\UserSearchResult.cs" />
     <Compile Include="XmppDisconnectionException.cs" />
     <Compile Include="XmppExceptions.cs" />
     <Compile Include="ErrorCondition.cs" />

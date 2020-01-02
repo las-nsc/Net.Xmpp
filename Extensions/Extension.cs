@@ -162,8 +162,12 @@
 
         /// <summary>
         /// An extension for accept OMEMO Encryption
-        /// (many-to-many chat)
         /// </summary>
-        OMEMOEncryption
+        OMEMOEncryption,
+
+        /// <summary>
+        /// An extension for JabberSearch
+        /// </summary>
+        JabberSearch
     }
 }

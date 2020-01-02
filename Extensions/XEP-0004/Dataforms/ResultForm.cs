@@ -7,7 +7,7 @@ namespace Sharp.Xmpp.Extensions.Dataforms
     /// <summary>
     /// Represents a result form containing returned data or a generic data set.
     /// </summary>
-    internal class ResultForm : DataForm
+    public class ResultForm : DataForm
     {
         /// <summary>
         /// Gets an enumerable collection of fields contained in the table header of

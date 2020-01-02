@@ -62,13 +62,14 @@ namespace Sharp.Xmpp.Extensions
 
         public bool Input(Im.Message stanza)
         {
+            /*
             if (MucError.IsError(stanza))
             {
                 // Unable to send a message... many reasons
                 var error = new MucError(stanza);
                 MucErrorResponse?.Raise(this, new GroupErrorEventArgs(error));
                 return true;
-            }
+            }*/
 
             if (Invite.IsElement(stanza))
             {
@@ -77,6 +78,15 @@ namespace Sharp.Xmpp.Extensions
                 InviteReceived.Raise(this, new GroupInviteEventArgs(invite));
                 return true;
             }
+
+            if (DirectInvite.IsElement(stanza))
+            {
+                // Incoming chat room invite
+                var invite = new DirectInvite(stanza);
+                InviteReceived.Raise(this, new GroupInviteEventArgs(invite));
+                return true;
+            }
+
 
             if (InviteDeclined.IsElement(stanza))
             {
@@ -160,7 +170,7 @@ namespace Sharp.Xmpp.Extensions
 				}
 
 
-				IList<MucStatusType> statusCodeList = new List<MucStatusType> ();
+                IList<MucStatusType> statusCodeList = new List<MucStatusType> ();
 				foreach (XmlElement item in xElement.GetElementsByTagName ("status")) {
 					string codeAttribute = item.GetAttribute ("code");
 					if (!string.IsNullOrWhiteSpace (codeAttribute)) {
@@ -171,7 +181,7 @@ namespace Sharp.Xmpp.Extensions
 
 
 				if (person != null) {
-					PrescenceChanged.Raise (this, new GroupPresenceEventArgs (person, statusCodeList));
+					PrescenceChanged.Raise (this, new GroupPresenceEventArgs (new Jid(stanza.From.Domain, stanza.From.Node), person, statusCodeList));
 					return true;
 				}
 			}
@@ -311,16 +321,34 @@ namespace Sharp.Xmpp.Extensions
             SendMessage(message);
         }
 
-        public void RequestRegistration(Jid room)
+        public DataForm RequestRegistration(Jid room)
         {
-            Iq iq = im.IqRequest(IqType.Get, room, im.Jid, Xml.Element("query", MucNs.NsOwner));
+            Iq iq = im.IqRequest(IqType.Get, room, im.Jid, Xml.Element("query", "jabber:iq:register"));
             if (iq.Type != IqType.Result)
                 throw new NotSupportedException("Could not query features: " + iq);
 
             // Parse the result.
             var query = iq.Data["query"];
-            if (query == null || query.NamespaceURI != MucNs.NsOwner)
+            if (query == null || query.NamespaceURI != "jabber:iq:register")
                 throw new NotSupportedException("Erroneous response: " + iq);
+
+            return DataFormFactory.Create(query["x"]);
+        }
+
+        public bool SendRegistration(Jid room, DataForm form)
+        {
+            Iq iq = im.IqRequest(IqType.Set, room, im.Jid, Xml.Element("query", "jabber:iq:register").Child(form.ToXmlElement()));
+            if (iq.Type != IqType.Result)
+                throw new NotSupportedException("Could not query features: " + iq);
+
+            return true;
+        }
+
+        public void RequestInstantRoom(Jid room)
+        {
+            Iq iq = im.IqRequest(IqType.Set, room, im.Jid, Xml.Element("query", MucNs.NsOwner).Child(Xml.Element("x", "jabber:x:data").Attr("type", "submit")));
+            if (iq.Type != IqType.Result)
+                throw new NotSupportedException("Could not query features: " + iq);
         }
 
         /// <summary>
@@ -378,7 +406,7 @@ namespace Sharp.Xmpp.Extensions
         /// <param name="password">Password if any.</param>
         public void SendInvite(Jid to, Jid room, string message, string password = null)
         {
-            SendMessage(new Invite(to, im.Jid, room, message, password));
+            SendMessage(new DirectInvite(new Jid(to.Domain, to.Node), im.Jid, room, message, password));
         }
 
         /// <summary>
@@ -584,7 +612,7 @@ namespace Sharp.Xmpp.Extensions
                 throw new NotSupportedException("Could not query items: " + iq);
             // Parse the result.
             var response = iq.Data["query"];
-            if (response == null || response.NamespaceURI != MucNs.NsRequestItems)
+            if (response == null)
                 throw new NotSupportedException("Erroneous response: " + iq);
             ISet<Item> items = new HashSet<Item>();
             foreach (XmlElement e in response.GetElementsByTagName("item"))

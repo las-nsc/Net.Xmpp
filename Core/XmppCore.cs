@@ -157,6 +157,13 @@ namespace Sharp.Xmpp.Core
             }
         }
 
+        public string ServerAdress
+        {
+            get;
+
+            set;
+        }
+
         /// <summary>
         /// The port number of the XMPP service of the server.
         /// </summary>
@@ -332,6 +339,7 @@ namespace Sharp.Xmpp.Core
         /// <param name="validate">A delegate used for verifying the remote Secure Sockets
         /// Layer (SSL) certificate which is used for authentication. Can be null if not
         /// needed.</param>
+        /// <param name="serveradress">Adress if hostname is diferrent from resolution name</param>
         /// <exception cref="ArgumentNullException">The hostname parameter or the
         /// username parameter or the password parameter is null.</exception>
         /// <exception cref="ArgumentException">The hostname parameter or the username
@@ -339,16 +347,24 @@ namespace Sharp.Xmpp.Core
         /// <exception cref="ArgumentOutOfRangeException">The value of the port parameter
         /// is not a valid port number.</exception>
         public XmppCore(string hostname, string username, string password,
-            int port = 5222, bool tls = true, RemoteCertificateValidationCallback validate = null)
+            int port = 5222, bool tls = true, RemoteCertificateValidationCallback validate = null,
+            string serverAdress = "")
         {
-            moveNextSrvDNS(hostname);
+            if (serverAdress == "")
+            {
+                serverAdress = hostname;
+            }
+            moveNextSrvDNS(serverAdress);
+
             if (dnsCurrent != null)
             {
-                Hostname = dnsCurrent.Target.ToString();
+                ServerAdress = dnsCurrent.Target.ToString();
+                Hostname = hostname;
                 Port = dnsCurrent.Port;
             }
             else
             {
+                ServerAdress = serverAdress;
                 Hostname = hostname;
                 Port = port;
             }
@@ -368,6 +384,7 @@ namespace Sharp.Xmpp.Core
         /// <param name="validate">A delegate used for verifying the remote Secure Sockets
         /// Layer (SSL) certificate which is used for authentication. Can be null if not
         /// needed.</param>
+        /// <param name="serveradress">Adress if hostname is diferrent from resolution name</param>
         /// <exception cref="ArgumentNullException">The hostname parameter is
         /// null.</exception>
         /// <exception cref="ArgumentException">The hostname parameter is the empty
@@ -375,16 +392,25 @@ namespace Sharp.Xmpp.Core
         /// <exception cref="ArgumentOutOfRangeException">The value of the port parameter
         /// is not a valid port number.</exception>
         public XmppCore(string hostname, int port = 5222, bool tls = true,
-            RemoteCertificateValidationCallback validate = null)
+            RemoteCertificateValidationCallback validate = null,
+            string serverAdress = "")
         {
-            moveNextSrvDNS(hostname);
+            if (serverAdress == "")
+            {
+                serverAdress = hostname;
+            }
+
+            moveNextSrvDNS(serverAdress);
+
             if (dnsCurrent != null)
             {
-                Hostname = dnsCurrent.Target.ToString();
+                ServerAdress = dnsCurrent.Target.ToString();
+                Hostname = hostname;
                 Port = dnsCurrent.Port;
             }
             else
             {
+                ServerAdress = serverAdress;
                 Hostname = hostname;
                 Port = port;
             }
@@ -472,7 +498,7 @@ namespace Sharp.Xmpp.Core
             this.resource = resource;
             try
             {
-                client = new TcpClient(Hostname, Port);
+                client = new TcpClient(ServerAdress, Port);
                 stream = client.GetStream();
                 // Sets up the connection which includes TLS and possibly SASL negotiation.
                 SetupConnection(this.resource);

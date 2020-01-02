@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sharp.Xmpp.Extensions.XEP_0384
+namespace Sharp.Xmpp.Extensions
 {
     internal class OMEMOEncryption : XmppExtension, IInputFilter<Core.Message>
     {
