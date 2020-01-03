@@ -1858,6 +1858,18 @@ namespace Sharp.Xmpp.Client
             groupChat.LeaveRoom(chatRoom, nickname);
         }
 
+        public bool DestroyRoom(Jid room, string reason = null)
+        {
+            AssertValid();
+            return groupChat.DestroyRoom(room, reason);
+        }
+
+        public bool BanUser(Jid room, Jid user, string reason = null)
+        {
+            AssertValid();
+            return groupChat.SetPrivilege(room, user, Affiliation.Outcast, reason);
+        }
+
         /// <summary>
         /// Sends a request to get X previous messages.
         /// </summary>

@@ -64,8 +64,17 @@ namespace Sharp.Xmpp.Extensions
         public Occupant(Jid groupJid, string affiliation, string role)
         {
             GroupJid = groupJid;
-            Affiliation = (Affiliation) Enum.Parse(typeof(Affiliation), affiliation, true);
-            Role = (Role)Enum.Parse(typeof(Role), role, true);
+            //Affiliation = (Affiliation) Enum.Parse(typeof(Affiliation), affiliation, true);
+            //Role = (Role)Enum.Parse(typeof(Role), role, true);
+
+            if (Enum.TryParse(affiliation, true, out Affiliation aff))
+            {
+                Affiliation = aff;
+            }
+            if (Enum.TryParse(role, true, out Role r))
+            {
+                Role = r;
+            }
         }
 
         /// <summary>

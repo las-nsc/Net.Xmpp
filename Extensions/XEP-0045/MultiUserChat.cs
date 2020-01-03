@@ -362,9 +362,9 @@ namespace Sharp.Xmpp.Extensions
         /// <summary>
         /// Allows owners and admins to grant privileges to an occupant.
         /// </summary>
-        public bool SetPrivilege(Jid room, string nickname, Affiliation privilege, string reason = null)
+        public bool SetPrivilege(Jid room, Jid user, Affiliation privilege, string reason = null)
         {
-            return PostPrivilegeChange(room, nickname, privilege, reason);
+            return PostPrivilegeChange(room, user, privilege, reason);
         }
 
         public void ModifyRoomConfig(Jid room, RegistrationCallback callback)
