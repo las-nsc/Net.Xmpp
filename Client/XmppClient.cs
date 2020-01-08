@@ -313,6 +313,21 @@ namespace Sharp.Xmpp.Client
         }
 
         /// <summary>
+        /// The event that is raised when a connection state changed.
+        /// </summary>
+        public event EventHandler<ConnectEventArgs> OnConnect
+        {
+            add
+            {
+                im.OnConnect += value;
+            }
+            remove
+            {
+                im.OnConnect -= value;
+            }
+        }
+
+        /// <summary>
         /// Determines whether the instance has been authenticated.
         /// </summary>
         public bool Authenticated
@@ -808,6 +823,11 @@ namespace Sharp.Xmpp.Client
         public void Authenticate(string username, string password)
         {
             im.Autenticate(username, password);
+        }
+
+        public void Reconnect()
+        {
+            im.Reconnect();
         }
 
         /// <summary>

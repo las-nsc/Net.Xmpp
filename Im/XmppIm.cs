@@ -251,6 +251,11 @@ namespace Sharp.Xmpp.Im
         public event EventHandler<MessageEventArgs> Message;
 
         /// <summary>
+        /// The event that is raised when a connection state changed.
+        /// </summary>
+        public event EventHandler<ConnectEventArgs> OnConnect;
+
+        /// <summary>
         /// The event that is raised when a subscription request made by the JID
         /// associated with this instance has been approved.
         /// </summary>
@@ -411,6 +416,17 @@ namespace Sharp.Xmpp.Im
             username.ThrowIfNull("username");
             password.ThrowIfNull("password");
             core.Authenticate(username, password);
+            // Establish a session (Refer to RFC 3921, Section 3. Session Establishment).
+            EstablishSession();
+            // Retrieve user's roster as recommended (Refer to RFC 3921, Section 7.3).
+            Roster roster = GetRoster();
+            // Send initial presence.
+            SendPresence(new Presence());
+        }
+
+        public void Reconnect()
+        {
+            core.Reconnect();
             // Establish a session (Refer to RFC 3921, Section 3. Session Establishment).
             EstablishSession();
             // Retrieve user's roster as recommended (Refer to RFC 3921, Section 7.3).
@@ -1556,6 +1572,20 @@ namespace Sharp.Xmpp.Im
             core.Error += (sender, e) =>
             {
                 Error.Raise(sender, new ErrorEventArgs(e.Exception));
+            };
+            core.OnConnect += (sender, e) =>
+            {
+                Im.ConnectionState state = ConnectionState.Disconnected;
+                if (e.State == Core.ConnectionState.Connected)
+                {
+                    state = ConnectionState.Connected;
+                }
+                if (e.State == Core.ConnectionState.Lost)
+                {
+                    state = ConnectionState.Lost;
+                }
+
+                OnConnect?.Raise(sender, new ConnectEventArgs(state));
             };
         }
 
