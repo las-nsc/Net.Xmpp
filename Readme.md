@@ -42,8 +42,8 @@ a simple example that initializes a new instance of the XmppClient class and con
 server:
 
 	using System;
-	using S22.Xmpp;
-	using S22.Xmpp.Client;
+	using Net.Xmpp;
+	using Net.Xmpp.Client;
 
 	namespace Test {
 		class Program {
@@ -63,16 +63,11 @@ guide, examples and details on using the classes and methods exposed by the S22.
 
 ### Credits
 
-The Sharp.Xmpp library is copyright © 2015 Panagiotis Georgiou Stathopoulos.
+The Net.Xmpp library is copyright © 2020 LUZ Soluções Financeiras.
+The previous Sharp.Xmpp library is copyright © 2015 Panagiotis Georgiou Stathopoulos.
 The initial S22.Xmpp library is copyright © 2013-2014 Torben Könke.
 
 
 ### License
 
 This library is released under the [MIT license](https://github.com/pgstath/Sharp.Xmpp/blob/master/License.md).
-
-
-### Bug reports
-
-Please send your bug reports to [pgstath@gmail.com](mailto:pgstath@gmail.com) or create a new
-issue on the GitHub project homepage.
