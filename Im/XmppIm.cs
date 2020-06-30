@@ -292,6 +292,7 @@ namespace Sharp.Xmpp.Im
         /// <param name="validate">A delegate used for verifying the remote Secure Sockets
         /// Layer (SSL) certificate which is used for authentication. Can be null if not
         /// needed.</param>
+        /// <param name="serveradress">Adress if hostname is diferrent from resolution name</param>
         /// <exception cref="ArgumentNullException">The hostname parameter or the
         /// username parameter or the password parameter is null.</exception>
         /// <exception cref="ArgumentException">The hostname parameter or the username
@@ -299,9 +300,10 @@ namespace Sharp.Xmpp.Im
         /// <exception cref="ArgumentOutOfRangeException">The value of the port parameter
         /// is not a valid port number.</exception>
         public XmppIm(string hostname, string username, string password,
-            int port = 5222, bool tls = true, RemoteCertificateValidationCallback validate = null)
+            int port = 5222, bool tls = true, RemoteCertificateValidationCallback validate = null,
+            string serverAdress = "")
         {
-            core = new XmppCore(hostname, username, password, port, tls, validate);
+            core = new XmppCore(hostname, username, password, port, tls, validate, serverAdress);
             SetupEventHandlers();
         }
 
@@ -315,6 +317,7 @@ namespace Sharp.Xmpp.Im
         /// <param name="validate">A delegate used for verifying the remote Secure Sockets
         /// Layer (SSL) certificate which is used for authentication. Can be null if not
         /// needed.</param>
+        /// <param name="serveradress">Adress if hostname is diferrent from resolution name</param>
         /// <exception cref="ArgumentNullException">The hostname parameter is
         /// null.</exception>
         /// <exception cref="ArgumentException">The hostname parameter is the empty
@@ -322,9 +325,10 @@ namespace Sharp.Xmpp.Im
         /// <exception cref="ArgumentOutOfRangeException">The value of the port parameter
         /// is not a valid port number.</exception>
         public XmppIm(string hostname, int port = 5222, bool tls = true,
-            RemoteCertificateValidationCallback validate = null)
+            RemoteCertificateValidationCallback validate = null,
+            string serverAdress = "")
         {
-            core = new XmppCore(hostname, port, tls, validate);
+            core = new XmppCore(hostname, port, tls, validate, serverAdress);
             SetupEventHandlers();
         }
 
