@@ -1,8 +1,8 @@
-﻿using Sharp.Xmpp.Core;
+﻿using Net.Xmpp.Core;
 using System;
 using System.Xml;
 
-namespace Sharp.Xmpp
+namespace Net.Xmpp
 {
     /// <summary>
     /// Contains utility and extension methods.

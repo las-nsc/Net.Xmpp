@@ -1,7 +1,7 @@
-﻿using Sharp.Xmpp.Core;
-using Sharp.Xmpp.Extensions.Socks5;
-using Sharp.Xmpp.Extensions.Stun;
-using Sharp.Xmpp.Im;
+﻿using Net.Xmpp.Core;
+using Net.Xmpp.Extensions.Socks5;
+using Net.Xmpp.Extensions.Stun;
+using Net.Xmpp.Im;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,7 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace Sharp.Xmpp.Extensions
+namespace Net.Xmpp.Extensions
 {
     /// <summary>
     /// Implements the 'SOCKS5 Bytestreams' extension as defined in XEP-0065.

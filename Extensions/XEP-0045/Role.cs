@@ -1,4 +1,4 @@
-﻿namespace Sharp.Xmpp.Extensions
+﻿namespace Net.Xmpp.Extensions
 {
     /// <summary>
     /// Describes the role of a participant in a group chat.

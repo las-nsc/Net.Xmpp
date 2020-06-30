@@ -4,9 +4,9 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Sharp.Xmpp.Extensions.Dataforms;
+using Net.Xmpp.Extensions.Dataforms;
 
-namespace Sharp.Xmpp.Extensions
+namespace Net.Xmpp.Extensions
 {
     /// <summary>
     /// Room information provided upon inspection.

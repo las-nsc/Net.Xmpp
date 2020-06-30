@@ -1,6 +1,6 @@
-﻿using Sharp.Xmpp.Core;
-using Sharp.Xmpp.Extensions.Dataforms;
-using Sharp.Xmpp.Im;
+﻿using Net.Xmpp.Core;
+using Net.Xmpp.Extensions.Dataforms;
+using Net.Xmpp.Im;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 
-namespace Sharp.Xmpp.Extensions
+namespace Net.Xmpp.Extensions
 {
     /// <summary>
     /// Implements the 'SI File Transfer' extension as defined in XEP-0096.

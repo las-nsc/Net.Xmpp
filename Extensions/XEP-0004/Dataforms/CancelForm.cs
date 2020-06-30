@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Xml;
 
-namespace Sharp.Xmpp.Extensions.Dataforms
+namespace Net.Xmpp.Extensions.Dataforms
 {
     /// <summary>
     /// Represents a data-form that signals cancellation of submission of data.

@@ -1,4 +1,4 @@
-﻿namespace Sharp.Xmpp.Extensions
+﻿namespace Net.Xmpp.Extensions
 {
     /// <summary>
     /// Defines possible values for more specific activities of an XMPP user.

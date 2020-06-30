@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Xml;
 
-namespace Sharp.Xmpp.Extensions.Dataforms
+namespace Net.Xmpp.Extensions.Dataforms
 {
     /// <summary>
     /// The abstract base class from which all implementations of concrete

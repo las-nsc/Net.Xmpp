@@ -1,7 +1,7 @@
-﻿using Sharp.Xmpp.Im;
+﻿using Net.Xmpp.Im;
 using System.Collections.Generic;
 
-namespace Sharp.Xmpp.Extensions
+namespace Net.Xmpp.Extensions
 {
     /// <summary>
     /// The base class from which all implementations of XMPP extensions must

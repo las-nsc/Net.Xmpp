@@ -1,10 +1,10 @@
-﻿using Sharp.Xmpp.Im;
+﻿using Net.Xmpp.Im;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 
-namespace Sharp.Xmpp.Extensions
+namespace Net.Xmpp.Extensions
 {
     /// <summary>
     /// Implements the 'User Activity' extension as defined in XEP-0108.

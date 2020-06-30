@@ -4,7 +4,7 @@
 using System.Drawing;
 #endif
 
-namespace Sharp.Xmpp.Extensions
+namespace Net.Xmpp.Extensions
 {
     /// <summary>
     /// Provides data for the AvatarChanged event.

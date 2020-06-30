@@ -1,6 +1,6 @@
-﻿using Sharp.Xmpp.Extensions;
-using Sharp.Xmpp.Extensions.Dataforms;
-using Sharp.Xmpp.Im;
+﻿using Net.Xmpp.Extensions;
+using Net.Xmpp.Extensions.Dataforms;
+using Net.Xmpp.Im;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,7 +8,7 @@ using System.IO;
 using System.Net.Security;
 using System.Xml;
 
-namespace Sharp.Xmpp.Client
+namespace Net.Xmpp.Client
 {
     /// <summary>
     /// Implements an XMPP client providing basic instant messaging (IM) and
