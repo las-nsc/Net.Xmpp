@@ -38,7 +38,7 @@ namespace Sharp.Xmpp.Extensions
             get
             {
                 // FIXME: Move this to a resource file or to assembly metadata?
-                return "Sharp.Xmpp";
+                return "Net.Xmpp";
             }
         }
 
