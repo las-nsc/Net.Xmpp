@@ -120,6 +120,7 @@
     <Compile Include="Extensions\XEP-0045\RoomProtection.cs" />
     <Compile Include="Extensions\XEP-0045\RoomVisibility.cs" />
     <Compile Include="Extensions\XEP-0045\MucStatusType.cs" />
+    <Compile Include="Extensions\XEP-0055\JabberSearch.cs" />
     <Compile Include="Extensions\XEP-0065\IPAddressExtensions.cs" />
     <Compile Include="Extensions\XEP-0065\Socks5Bytestreams.cs" />
     <Compile Include="Extensions\XEP-0065\Socks5\ATyp.cs" />

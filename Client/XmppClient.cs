@@ -1,10 +1,12 @@
 ﻿using Sharp.Xmpp.Extensions;
+using Sharp.Xmpp.Extensions.Dataforms;
 using Sharp.Xmpp.Im;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Net.Security;
+using System.Xml;
 
 namespace Sharp.Xmpp.Client
 {
@@ -161,6 +163,11 @@ namespace Sharp.Xmpp.Client
         /// Provides the Message Carbons extension
         /// </summary>
         private MessageCarbons messageCarbons;
+
+        /// <summary>
+        /// Provides the Jabber Search extension
+        /// </summary>
+        private JabberSearch search;
 
         /// <summary>
         /// The hostname of the XMPP server to connect to.
@@ -1937,6 +1944,26 @@ namespace Sharp.Xmpp.Client
         }
 
         /// <summary>
+        /// Submit a serach forms
+        /// </summary>
+        /// <returns>Search result based on DataForm request</returns>
+        public DataForm Search(string searchServer, DataForm form)
+        {
+            AssertValid();
+            return this.search.Search(searchServer, form);
+        }
+
+        /// <summary>
+        /// Request the Search Form
+        /// </summary>
+        /// <returns>DataForm for avaible fields search</returns>
+        public DataForm RequestSearchForm(string searchServer)
+        {
+            AssertValid();
+            return this.search.RequestSearchForm(searchServer);
+        }
+
+        /// <summary>
         /// Closes the connection with the XMPP server. This automatically disposes
         /// of the object.
         /// </summary>
@@ -2034,6 +2061,7 @@ namespace Sharp.Xmpp.Client
             vcardAvatars = im.LoadExtension<VCardAvatars>();
             cusiqextension = im.LoadExtension<CustomIqExtension>();
             groupChat = im.LoadExtension<MultiUserChat>();
+            search = im.LoadExtension<JabberSearch>();
         }
     }
 }
