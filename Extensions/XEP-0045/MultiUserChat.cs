@@ -362,9 +362,9 @@ namespace Sharp.Xmpp.Extensions
         /// <summary>
         /// Allows owners and admins to grant privileges to an occupant.
         /// </summary>
-        public bool SetPrivilege(Jid room, Jid user, Affiliation privilege, string reason = null)
+        public bool SetPrivilege(Jid room, Jid user, Affiliation privilege, string reason = null, string nickname = null)
         {
-            return PostPrivilegeChange(room, user, privilege, reason);
+            return PostPrivilegeChange(room, user, privilege, reason, nickname);
         }
 
         public void ModifyRoomConfig(Jid room, RegistrationCallback callback)
@@ -466,16 +466,14 @@ namespace Sharp.Xmpp.Extensions
         {
             // Construct the response element.
             var query = Xml.Element("query", MucNs.NsOwner);
-            var xml = Xml.Element("x", MucNs.NsXData);
-            xml.Child(configForm.ToXmlElement());
-            query.Child(xml);
+            query.Child(configForm.ToXmlElement());
 
             Iq iq = im.IqRequest(IqType.Set, room, im.Jid, query);
             if (iq.Type == IqType.Error)
                 throw Util.ExceptionFromError(iq, "The configuration changes could not be completed.");
         }
 
-        private bool PostPrivilegeChange(Jid room, Jid user, Affiliation affiliation, string reason)
+        private bool PostPrivilegeChange(Jid room, Jid user, Affiliation affiliation, string reason, string nickname)
         {
             room.ThrowIfNull("room");
             user.ThrowIfNull("user");
@@ -483,6 +481,11 @@ namespace Sharp.Xmpp.Extensions
             var item = Xml.Element("item")
                     .Attr("affiliation", affiliation.ToString().ToLower())
                     .Attr("jid", user.ToString());
+
+            if (!string.IsNullOrWhiteSpace(nickname))
+            {
+                item.Attr("nick", nickname);
+            }
 
             if (!string.IsNullOrWhiteSpace(reason))
                 item.Child(Xml.Element("reason").Text(reason));

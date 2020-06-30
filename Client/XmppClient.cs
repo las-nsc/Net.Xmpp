@@ -12,7 +12,7 @@ namespace Sharp.Xmpp.Client
 {
     /// <summary>
     /// Implements an XMPP client providing basic instant messaging (IM) and
-    /// presence functionality as well as various XMPP extension functionality.
+    /// ] functionality as well as various XMPP extension functionality.
     /// </summary>
     /// <remarks>
     /// This provides most of the functionality exposed by the XmppIm class but
@@ -863,6 +863,7 @@ namespace Sharp.Xmpp.Client
             im.SendMessage(to, body, subject, thread, type, language);
         }
 
+
         /// <summary>
         /// Sends a chat message with the specified content to the specified JID.
         /// </summary>
@@ -1060,6 +1061,7 @@ namespace Sharp.Xmpp.Client
             // Request a subscription from the contact.
             im.RequestSubscription(jid);
         }
+
 
         /// <summary>
         /// Removes the item with the specified JID from the user's roster.
@@ -1890,6 +1892,26 @@ namespace Sharp.Xmpp.Client
             return groupChat.SetPrivilege(room, user, Affiliation.Outcast, reason);
         }
 
+        public bool AddAdminToRoom(Jid room, Jid user, string nick = null, string reason = null)
+        {
+            AssertValid();
+            groupChat.SetPrivilege(room, user, Affiliation.Admin, reason, nick);
+            return true;
+        }
+
+        public bool RemoveUser(Jid room, Jid user, string reason = null)
+        {
+            AssertValid();
+            return groupChat.SetPrivilege(room, user, Affiliation.None, reason);
+        }
+
+        public bool AddMemberToRoom(Jid room, Jid user, string nick = null, string reason = null)
+        {
+            AssertValid();
+            groupChat.SetPrivilege(room, user, Affiliation.Member, reason, nick);
+            return true;
+        }
+
         /// <summary>
         /// Sends a request to get X previous messages.
         /// </summary>
@@ -1925,6 +1947,15 @@ namespace Sharp.Xmpp.Client
         {
             AssertValid();
             return groupChat.GetMembers(chatRoom, Affiliation.Member);
+        }
+
+        /// <summary>
+        /// Requests a list of room admins within the specified room.
+        /// </summary>
+        public IEnumerable<Occupant> GetRoomAdmins(Jid chatRoom)
+        {
+            AssertValid();
+            return groupChat.GetMembers(chatRoom, Affiliation.Admin);
         }
 
         /// <summary>
