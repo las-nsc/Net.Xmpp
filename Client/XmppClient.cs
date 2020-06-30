@@ -688,6 +688,7 @@ namespace Sharp.Xmpp.Client
         /// <param name="validate">A delegate used for verifying the remote Secure Sockets
         /// Layer (SSL) certificate which is used for authentication. Can be null if not
         /// needed.</param>
+        /// <param name="serveradress">Adress if hostname is diferrent from resolution name</param>
         /// <exception cref="ArgumentNullException">The hostname parameter or the
         /// username parameter or the password parameter is null.</exception>
         /// <exception cref="ArgumentException">The hostname parameter or the username
@@ -697,9 +698,9 @@ namespace Sharp.Xmpp.Client
         /// <remarks>Use this constructor if you wish to connect to an XMPP server using
         /// an existing set of user credentials.</remarks>
         public XmppClient(string hostname, string username, string password,
-            int port = 5222, bool tls = true, RemoteCertificateValidationCallback validate = null)
+            int port = 5222, bool tls = true, RemoteCertificateValidationCallback validate = null, string serveradress = "")
         {
-            im = new XmppIm(hostname, username, password, port, tls, validate);
+            im = new XmppIm(hostname, username, password, port, tls, validate, serveradress);
             // Initialize the various extension modules.
             LoadExtensions();
         }
@@ -714,6 +715,7 @@ namespace Sharp.Xmpp.Client
         /// <param name="validate">A delegate used for verifying the remote Secure Sockets
         /// Layer (SSL) certificate which is used for authentication. Can be null if not
         /// needed.</param>
+        /// <param name="serveradress">Adress if hostname is diferrent from resolution name</param>
         /// <exception cref="ArgumentNullException">The hostname parameter is
         /// null.</exception>
         /// <exception cref="ArgumentException">The hostname parameter is the empty
@@ -723,9 +725,9 @@ namespace Sharp.Xmpp.Client
         /// <remarks>Use this constructor if you wish to register an XMPP account using
         /// the in-band account registration process supported by some servers.</remarks>
         public XmppClient(string hostname, int port = 5222, bool tls = true,
-            RemoteCertificateValidationCallback validate = null)
+            RemoteCertificateValidationCallback validate = null, string serverAdress = "")
         {
-            im = new XmppIm(hostname, port, tls, validate);
+            im = new XmppIm(hostname, port, tls, validate, serverAdress);
             LoadExtensions();
         }
 
