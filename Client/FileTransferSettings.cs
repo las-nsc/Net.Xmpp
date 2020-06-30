@@ -1,9 +1,9 @@
-﻿using Sharp.Xmpp.Extensions;
+﻿using Net.Xmpp.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Net;
 
-namespace Sharp.Xmpp.Client
+namespace Net.Xmpp.Client
 {
     /// <summary>
     /// Contains settings for configuring various file-transfer options.

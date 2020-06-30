@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Xml;
 
-namespace Sharp.Xmpp.Extensions.Dataforms
+namespace Net.Xmpp.Extensions.Dataforms
 {
     /// <summary>
     /// Represents a field that provides an either-or choice between two options.

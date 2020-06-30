@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Sockets;
 
-namespace Sharp.Xmpp.Extensions.Socks5
+namespace Net.Xmpp.Extensions.Socks5
 {
     /// <summary>
     /// Provides extension methods for the TcpListener class.

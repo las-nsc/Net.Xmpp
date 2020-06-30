@@ -1,4 +1,4 @@
-﻿namespace Sharp.Xmpp.Extensions
+﻿namespace Net.Xmpp.Extensions
 { 
     /// <summary>
     /// Describes whether a conference room is password protected.

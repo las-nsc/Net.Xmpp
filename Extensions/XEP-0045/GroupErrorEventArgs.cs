@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sharp.Xmpp.Extensions
+namespace Net.Xmpp.Extensions
 {
     /// <summary>
     /// Represents a group presence error event in a group chat. Ref XEP-0045

@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using Sharp.Xmpp.Core;
-using Sharp.Xmpp.Extensions.Dataforms;
-using Sharp.Xmpp.Im;
+using Net.Xmpp.Core;
+using Net.Xmpp.Extensions.Dataforms;
+using Net.Xmpp.Im;
 
-namespace Sharp.Xmpp.Extensions
+namespace Net.Xmpp.Extensions
 {
     internal class MultiUserChat : XmppExtension, IInputFilter<Im.Message>, IInputFilter<Im.Presence>
     {

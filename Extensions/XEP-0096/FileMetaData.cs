@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sharp.Xmpp.Extensions
+namespace Net.Xmpp.Extensions
 {
     /// <summary>
     /// Represents meta-data of a file.

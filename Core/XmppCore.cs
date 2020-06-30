@@ -1,5 +1,5 @@
 ﻿using ARSoft.Tools.Net.Dns;
-using Sharp.Xmpp.Core.Sasl;
+using Net.Xmpp.Core.Sasl;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace Sharp.Xmpp.Core
+namespace Net.Xmpp.Core
 {
     /// <summary>
     /// Implements the core features of the XMPP protocol.

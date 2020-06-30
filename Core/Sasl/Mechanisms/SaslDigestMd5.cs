@@ -3,7 +3,7 @@ using System.Collections.Specialized;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Sharp.Xmpp.Core.Sasl.Mechanisms
+namespace Net.Xmpp.Core.Sasl.Mechanisms
 {
     /// <summary>
     /// Implements the Sasl Digest-Md5 authentication method as described in

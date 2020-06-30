@@ -1,11 +1,11 @@
-﻿using Sharp.Xmpp.Extensions.Socks5;
+﻿using Net.Xmpp.Extensions.Socks5;
 using System;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.Serialization;
 
-namespace Sharp.Xmpp.Extensions.Stun
+namespace Net.Xmpp.Extensions.Stun
 {
     /// <summary>
     /// Represents a STUN 'Binding Response' message.
