@@ -78,6 +78,15 @@ namespace Net.Xmpp.Extensions
                 return true;
             }
 
+            if (DirectInvite.IsElement(stanza))
+            {
+                // Incoming chat room invite
+                var invite = new DirectInvite(stanza);
+                InviteReceived.Raise(this, new GroupInviteEventArgs(invite));
+                return true;
+            }
+
+
             if (InviteDeclined.IsElement(stanza))
             {
                 // Chat room invite was declined
@@ -171,7 +180,7 @@ namespace Net.Xmpp.Extensions
 
 
 				if (person != null) {
-					PrescenceChanged.Raise (this, new GroupPresenceEventArgs (person, statusCodeList));
+					PrescenceChanged.Raise (this, new GroupPresenceEventArgs (new Jid(stanza.From.Domain, stanza.From.Node), person, statusCodeList));
 					return true;
 				}
 			}
@@ -311,16 +320,34 @@ namespace Net.Xmpp.Extensions
             SendMessage(message);
         }
 
-        public void RequestRegistration(Jid room)
+        public DataForm RequestRegistration(Jid room)
         {
-            Iq iq = im.IqRequest(IqType.Get, room, im.Jid, Xml.Element("query", MucNs.NsOwner));
+            Iq iq = im.IqRequest(IqType.Get, room, im.Jid, Xml.Element("query", "jabber:iq:register"));
             if (iq.Type != IqType.Result)
                 throw new NotSupportedException("Could not query features: " + iq);
 
             // Parse the result.
             var query = iq.Data["query"];
-            if (query == null || query.NamespaceURI != MucNs.NsOwner)
+            if (query == null || query.NamespaceURI != "jabber:iq:register")
                 throw new NotSupportedException("Erroneous response: " + iq);
+
+            return DataFormFactory.Create(query["x"]);
+        }
+
+        public bool SendRegistration(Jid room, DataForm form)
+        {
+            Iq iq = im.IqRequest(IqType.Set, room, im.Jid, Xml.Element("query", "jabber:iq:register").Child(form.ToXmlElement()));
+            if (iq.Type != IqType.Result)
+                throw new NotSupportedException("Could not query features: " + iq);
+
+            return true;
+        }
+
+        public void RequestInstantRoom(Jid room)
+        {
+            Iq iq = im.IqRequest(IqType.Set, room, im.Jid, Xml.Element("query", MucNs.NsOwner).Child(Xml.Element("x", "jabber:x:data").Attr("type", "submit")));
+            if (iq.Type != IqType.Result)
+                throw new NotSupportedException("Could not query features: " + iq);
         }
 
         /// <summary>
@@ -334,9 +361,9 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// Allows owners and admins to grant privileges to an occupant.
         /// </summary>
-        public bool SetPrivilege(Jid room, string nickname, Affiliation privilege, string reason = null)
+        public bool SetPrivilege(Jid room, Jid user, Affiliation privilege, string reason = null, string nickname = null)
         {
-            return PostPrivilegeChange(room, nickname, privilege, reason);
+            return PostPrivilegeChange(room, user, privilege, reason, nickname);
         }
 
         public void ModifyRoomConfig(Jid room, RegistrationCallback callback)
@@ -378,7 +405,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="password">Password if any.</param>
         public void SendInvite(Jid to, Jid room, string message, string password = null)
         {
-            SendMessage(new Invite(to, im.Jid, room, message, password));
+            SendMessage(new DirectInvite(new Jid(to.Domain, to.Node), im.Jid, room, message, password));
         }
 
         /// <summary>
@@ -438,16 +465,14 @@ namespace Net.Xmpp.Extensions
         {
             // Construct the response element.
             var query = Xml.Element("query", MucNs.NsOwner);
-            var xml = Xml.Element("x", MucNs.NsXData);
-            xml.Child(configForm.ToXmlElement());
-            query.Child(xml);
+            query.Child(configForm.ToXmlElement());
 
             Iq iq = im.IqRequest(IqType.Set, room, im.Jid, query);
             if (iq.Type == IqType.Error)
                 throw Util.ExceptionFromError(iq, "The configuration changes could not be completed.");
         }
 
-        private bool PostPrivilegeChange(Jid room, Jid user, Affiliation affiliation, string reason)
+        private bool PostPrivilegeChange(Jid room, Jid user, Affiliation affiliation, string reason, string nickname)
         {
             room.ThrowIfNull("room");
             user.ThrowIfNull("user");
@@ -456,6 +481,10 @@ namespace Net.Xmpp.Extensions
                     .Attr("affiliation", affiliation.ToString().ToLower())
                     .Attr("jid", user.ToString());
 
+            if (!string.IsNullOrWhiteSpace(nickname))
+            {
+                item.Attr("nick", nickname);
+            }
             if (!string.IsNullOrWhiteSpace(reason))
                 item.Child(Xml.Element("reason").Text(reason));
 
@@ -584,7 +613,7 @@ namespace Net.Xmpp.Extensions
                 throw new NotSupportedException("Could not query items: " + iq);
             // Parse the result.
             var response = iq.Data["query"];
-            if (response == null || response.NamespaceURI != MucNs.NsRequestItems)
+            if (response == null)
                 throw new NotSupportedException("Erroneous response: " + iq);
             ISet<Item> items = new HashSet<Item>();
             foreach (XmlElement e in response.GetElementsByTagName("item"))

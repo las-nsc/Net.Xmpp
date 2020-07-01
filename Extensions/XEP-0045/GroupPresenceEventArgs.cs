@@ -16,6 +16,11 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// 
         /// </summary>
+        public Jid Room { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public IEnumerable<MucStatusType> Statuses { get; set; }
 
         /// <summary>
@@ -23,8 +28,9 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <param name="person"></param>
         /// <param name="statuses"></param>
-        public GroupPresenceEventArgs(Occupant person, IEnumerable<MucStatusType> statuses) : base()
+        public GroupPresenceEventArgs(Jid room, Occupant person, IEnumerable<MucStatusType> statuses) : base()
         {
+            Room = room;
             Person = person;
             Statuses = statuses;
         }

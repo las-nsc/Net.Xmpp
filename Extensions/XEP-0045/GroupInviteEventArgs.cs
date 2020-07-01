@@ -7,30 +7,26 @@ namespace Net.Xmpp.Extensions
     /// </summary>
     public class GroupInviteEventArgs : EventArgs
     {
-        /// <summary>
-        /// The full invite object.
-        /// </summary>
-        public Invite Data { get; private set; }
         
         /// <summary>
         /// Person who sent the invitation.
         /// </summary>
-        public Jid From { get { return Data.ReceivedFrom; } }
+        public Jid From { get; private set; }
 
         /// <summary>
         /// Chat room specified in the invitation.
         /// </summary>
-        public Jid ChatRoom { get { return Data.From; } }
+        public Jid ChatRoom { get; private set; }
 
         /// <summary>
         /// Message contained in the invitation.
         /// </summary>
-        public string Reason { get { return Data.Reason; } }
+        public string Reason { get; private set; }
 
         /// <summary>
         /// Password (if any).
         /// </summary>
-        public string Password { get { return Data.Password; } }
+        public string Password { get; private set; }
 
         /// <summary>
         /// Constructs a GroupInviteEventArgs.
@@ -39,7 +35,19 @@ namespace Net.Xmpp.Extensions
         public GroupInviteEventArgs(Invite invite)
         {
             invite.ThrowIfNull("invite");
-            Data = invite;
+            From = invite.From;
+            ChatRoom = invite.From;
+            Reason = invite.Reason;
+            Password = invite.Password;
+        }
+
+        public GroupInviteEventArgs(DirectInvite invite)
+        {
+            invite.ThrowIfNull("invite");
+            From = invite.From;
+            ChatRoom = invite.Room;
+            Reason = invite.Reason;
+            Password = invite.Password;
         }
     }
 }

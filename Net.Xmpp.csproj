@@ -98,6 +98,7 @@
     <Compile Include="Extensions\XEP-0004\Dataforms\XmlCollection.cs" />
     <Compile Include="Extensions\XEP-0020\FeatureNegotiation.cs" />
     <Compile Include="Extensions\XEP-0030\Item.cs" />
+    <Compile Include="Extensions\XEP-0045\DirectInvite.cs" />
     <Compile Include="Extensions\XEP-0045\GroupErrorEventArgs.cs" />
     <Compile Include="Extensions\XEP-0045\GroupInviteDeclinedEventArgs.cs" />
     <Compile Include="Extensions\XEP-0045\GroupInviteEventArgs.cs" />
