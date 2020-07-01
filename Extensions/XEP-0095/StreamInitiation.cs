@@ -21,8 +21,8 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// A dictionary of registered profiles.
         /// </summary>
-        private IDictionary<string, Func<Jid, XmlElement, XmlElement>> profiles =
-            new Dictionary<string, Func<Jid, XmlElement, XmlElement>>();
+        private IDictionary<string, Action<Jid, XmlElement, Action<XmlElement>>> profiles =
+            new Dictionary<string, Action<Jid, XmlElement, Action<XmlElement>>>();
 
         /// <summary>
         /// An enumerable collection of XMPP namespaces the extension implements.
@@ -80,13 +80,15 @@ namespace Net.Xmpp.Extensions
             }
             else
             {
+
+                //Chamar em paralelo
+                // Invoke the profile's callback.
+               
+                profiles[profile].BeginInvoke(stanza.From, stanza.Data["si"], (XmlElement response) =>
+                {
                 try
                 {
-                    // Invoke the profile's callback.
-                    var response = profiles[profile].Invoke(stanza.From, stanza.Data["si"]);
-                    // If response is an error element, send back an error response.
-                    im.IqResponse(response.Name == "error" ? IqType.Error : IqType.Result,
-                        stanza.Id, stanza.From, im.Jid, response);
+                        im.IqResponse(response.Name == "error" ? IqType.Error : IqType.Result, stanza.Id, stanza.From, im.Jid, response);
                 }
                 catch (Exception ex)
                 {
@@ -95,6 +97,7 @@ namespace Net.Xmpp.Extensions
                     // an exception.
                     im.IqError(stanza, ErrorType.Cancel, ErrorCondition.ServiceUnavailable);
                 }
+                }, profiles[profile].EndInvoke, null);
             }
             // We took care of this IQ request, so intercept it and don't pass it
             // on to other handlers.
@@ -238,7 +241,7 @@ namespace Net.Xmpp.Extensions
         /// cb parameter is null.</exception>
         /// <exception cref="ArgumentException">A profile with the specified name
         /// has already been registered.</exception>
-        public void RegisterProfile(string name, Func<Jid, XmlElement, XmlElement> cb)
+        public void RegisterProfile(string name, Action<Jid, XmlElement, Action<XmlElement>> cb)
         {
             name.ThrowIfNull("name");
             cb.ThrowIfNull("cb");

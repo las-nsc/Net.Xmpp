@@ -336,7 +336,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="si">The 'si' element of the request.</param>
         /// <returns>The response to the SI request or an error element to include
         /// in the IQ response.</returns>
-        private XmlElement OnStreamInitiationRequest(Jid from, XmlElement si)
+        private void OnStreamInitiationRequest(Jid from, XmlElement si, Action<XmlElement> resultado)
         {
             try
             {
@@ -344,7 +344,7 @@ namespace Net.Xmpp.Extensions
                 // If the session-id is already in use, we cannot process the request.
                 string sid = si.GetAttribute("id");
                 if (String.IsNullOrEmpty(sid) || siSessions.ContainsKey(sid))
-                    return new XmppError(ErrorType.Cancel, ErrorCondition.Conflict).Data;
+                    resultado(new XmppError(ErrorType.Cancel, ErrorCondition.Conflict).Data);
                 // Extract file information and hand to user.
                 var file = si["file"];
                 string desc = file["desc"] != null ? file["desc"].InnerText : null,
@@ -352,10 +352,13 @@ namespace Net.Xmpp.Extensions
                 int size = int.Parse(file.GetAttribute("size"));
                 FileTransfer transfer = new FileTransfer(from, im.Jid, name, size,
                     sid, desc);
-                string savePath = TransferRequest.Invoke(transfer);
+                TransferRequest.Invoke(transfer, (string savePath) =>
+                {
+                    try
+                    {
                 // User has rejected the request.
                 if (savePath == null)
-                    return new XmppError(ErrorType.Cancel, ErrorCondition.NotAcceptable).Data;
+                            resultado(new XmppError(ErrorType.Cancel, ErrorCondition.NotAcceptable).Data);
                 // Create an SI session instance.
                 SISession session = new SISession(sid, File.OpenWrite(savePath),
                     size, true, from, im.Jid, im.GetExtension(method) as IDataStream);
@@ -363,14 +366,22 @@ namespace Net.Xmpp.Extensions
                 // Store the file's meta data.
                 metaData.TryAdd(sid, new FileMetaData(name, desc));
                 // Construct and return the negotiation result.
-                return Xml.Element("si", "http://jabber.org/protocol/si").Child(
+                        resultado(Xml.Element("si", "http://jabber.org/protocol/si").Child(
                     FeatureNegotiation.Create(new SubmitForm(
-                        new ListField("stream-method", method))));
+                                new ListField("stream-method", method)))));
             }
             catch (Exception e)
             {
                 System.Diagnostics.Debug.WriteLine("Exception raised", e.ToString() + e.StackTrace);
-                return new XmppError(ErrorType.Cancel, ErrorCondition.BadRequest).Data;
+                        resultado(new XmppError(ErrorType.Cancel, ErrorCondition.BadRequest).Data);
+                    }
+                });
+
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine("Exception raised", e.ToString() + e.StackTrace);
+                resultado(new XmppError(ErrorType.Cancel, ErrorCondition.BadRequest).Data);
             }
         }
 
