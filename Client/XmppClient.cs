@@ -495,6 +495,12 @@ namespace Net.Xmpp.Client
             }
         }
 
+        public void EditRoomSubject(Jid room, string subject)
+        {
+            AssertValid();
+            groupChat.EditRoomSubject(room, subject);
+        }
+
         /// <summary>
         /// The event that is raised when a participant's presence is changed in a group chat.
         /// </summary>
@@ -1800,6 +1806,24 @@ namespace Net.Xmpp.Client
             groupChat.JoinRoom(chatRoom, nickname, password);
         }
 
+        public DataForm RequestRegistration(Jid room)
+        {
+            AssertValid();
+            return groupChat.RequestRegistration(room);
+        }
+
+        public bool SendRegistration(Jid room, DataForm form)
+        {
+            AssertValid();
+            return groupChat.SendRegistration(room, form);
+        }
+
+        public void RequestInstantRoom(Jid room)
+        {
+            AssertValid();
+            groupChat.RequestInstantRoom(room);
+        }
+
         /// <summary>
         /// Leaves the specified room.
         /// </summary>
@@ -1807,6 +1831,38 @@ namespace Net.Xmpp.Client
         {
             AssertValid();
             groupChat.LeaveRoom(chatRoom, nickname);
+        }
+
+        public bool DestroyRoom(Jid room, string reason = null)
+        {
+            AssertValid();
+            return groupChat.DestroyRoom(room, reason);
+        }
+
+        public bool BanUser(Jid room, Jid user, string reason = null)
+        {
+            AssertValid();
+            return groupChat.SetPrivilege(room, user, Affiliation.Outcast, reason);
+        }
+
+        public bool AddAdminToRoom(Jid room, Jid user, string nick = null, string reason = null)
+        {
+            AssertValid();
+            groupChat.SetPrivilege(room, user, Affiliation.Admin, reason, nick);
+            return true;
+        }
+
+        public bool RemoveUser(Jid room, Jid user, string reason = null)
+        {
+            AssertValid();
+            return groupChat.SetPrivilege(room, user, Affiliation.None, reason);
+        }
+
+        public bool AddMemberToRoom(Jid room, Jid user, string nick = null, string reason = null)
+        {
+            AssertValid();
+            groupChat.SetPrivilege(room, user, Affiliation.Member, reason, nick);
+            return true;
         }
 
         /// <summary>
@@ -1844,6 +1900,15 @@ namespace Net.Xmpp.Client
         {
             AssertValid();
             return groupChat.GetMembers(chatRoom, Affiliation.Member);
+        }
+
+        /// <summary>
+        /// Requests a list of room admins within the specified room.
+        /// </summary>
+        public IEnumerable<Occupant> GetRoomAdmins(Jid chatRoom)
+        {
+            AssertValid();
+            return groupChat.GetMembers(chatRoom, Affiliation.Admin);
         }
 
         /// <summary>
