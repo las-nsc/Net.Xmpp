@@ -251,6 +251,16 @@ namespace Net.Xmpp.Im
         public event EventHandler<MessageEventArgs> Message;
 
         /// <summary>
+        /// The event that is raised when a connection state changed.
+        /// </summary>
+        public event EventHandler<ConnectEventArgs> OnConnect;
+        
+        /// <summary>
+        /// The event that is raised when an error message is received.
+        /// </summary>
+        public event EventHandler<MessageEventArgs> ErrorMessage;
+
+        /// <summary>
         /// The event that is raised when a subscription request made by the JID
         /// associated with this instance has been approved.
         /// </summary>
@@ -411,6 +421,17 @@ namespace Net.Xmpp.Im
             username.ThrowIfNull("username");
             password.ThrowIfNull("password");
             core.Authenticate(username, password);
+            // Establish a session (Refer to RFC 3921, Section 3. Session Establishment).
+            EstablishSession();
+            // Retrieve user's roster as recommended (Refer to RFC 3921, Section 7.3).
+            Roster roster = GetRoster();
+            // Send initial presence.
+            SendPresence(new Presence());
+        }
+
+        public void Reconnect()
+        {
+            core.Reconnect();
             // Establish a session (Refer to RFC 3921, Section 3. Session Establishment).
             EstablishSession();
             // Retrieve user's roster as recommended (Refer to RFC 3921, Section 7.3).
@@ -1551,6 +1572,20 @@ namespace Net.Xmpp.Im
             {
                 Error.Raise(sender, new ErrorEventArgs(e.Exception));
             };
+            core.OnConnect += (sender, e) =>
+            {
+                Im.ConnectionState state = ConnectionState.Disconnected;
+                if (e.State == Core.ConnectionState.Connected)
+                {
+                    state = ConnectionState.Connected;
+                }
+                if (e.State == Core.ConnectionState.Lost)
+                {
+                    state = ConnectionState.Lost;
+                }
+
+                OnConnect?.Raise(sender, new ConnectEventArgs(state));
+            };
         }
 
         /// <summary>
@@ -1662,12 +1697,15 @@ namespace Net.Xmpp.Im
                 }
             }
 
-            // Only raise the Message event, if the message stanza actually contains
-            // a body.
-            if (message.Data["body"] != null)
+            if (message.Type == MessageType.Error)
+            {
+                ErrorMessage.Raise(this, new MessageEventArgs(message.From, message));
+            }
+            else if (message.Data["body"] != null)
+            {
                 Message.Raise(this, new MessageEventArgs(message.From, message));
         }
-
+        }
         /// <summary>
         /// Processes presence stanzas containing availability and status
         /// information.

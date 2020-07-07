@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Net.Security;
 using System.Xml;
+using System.Threading.Tasks;
 
 namespace Net.Xmpp.Client
 {
@@ -32,6 +33,16 @@ namespace Net.Xmpp.Client
         /// </summary>
         private XmppIm im;
 
+        /// <summary>
+        /// Provides access to the 'Message Archiving' XMPP extension functionality.
+        /// </summary>
+        private MessageArchiving messageArchiving;
+
+        /// <summary>
+        /// Provices access to the 'Message Archive management' XMPP extension functionality.
+        /// </summary>
+        private MessageArchiveManagement messageArchiveManagement;
+        
         /// <summary>
         /// Provides access to the 'Software Version' XMPP extension functionality.
         /// </summary>
@@ -159,6 +170,11 @@ namespace Net.Xmpp.Client
         /// </summary>
         private VCardAvatars vcardAvatars;
 
+        /// <summary>
+        /// Provides vcard functionality
+        /// </summary>
+        private VCards vcard;
+        
         /// <summary>
         /// Provides the Message Carbons extension
         /// </summary>
@@ -304,6 +320,21 @@ namespace Net.Xmpp.Client
                 {
                     return false;
                 }
+            }
+        }
+
+        /// <summary>
+        /// The event that is raised when a connection state changed.
+        /// </summary>
+        public event EventHandler<ConnectEventArgs> OnConnect
+        {
+            add
+            {
+                im.OnConnect += value;
+            }
+            remove
+            {
+                im.OnConnect -= value;
             }
         }
 
@@ -477,6 +508,21 @@ namespace Net.Xmpp.Client
             remove
             {
                 im.Message -= value;
+            }
+        }
+        
+        /// <summary>
+        /// The event that is raised when an error message is received.
+        /// </summary>
+        public event EventHandler<MessageEventArgs> ErrorMessage
+        {
+            add
+            {
+                im.ErrorMessage += value;
+            }
+            remove
+            {
+                im.ErrorMessage -= value;
             }
         }
 
@@ -790,6 +836,11 @@ namespace Net.Xmpp.Client
         public void Authenticate(string username, string password)
         {
             im.Autenticate(username, password);
+        }
+
+        public void Reconnect()
+        {
+            im.Reconnect();
         }
 
         /// <summary>
@@ -1141,7 +1192,7 @@ namespace Net.Xmpp.Client
         /// <param name="jid">The string jid of the user</param>
         /// <param name="filepath">The filepath where the avatar will be stored</param>
         /// <param name="callback">The action that will be executed after the file has been downloaded</param>
-        public void GetvCardAvatar(string jid, string filepath, Action callback)
+        public void GetvCardAvatar(string jid, string filepath, Action<string, Jid> callback)
         {
             AssertValid();
             vcardAvatars.RequestAvatar(new Jid(jid), filepath, callback);
@@ -1657,6 +1708,71 @@ namespace Net.Xmpp.Client
         }
 
         /// <summary>
+        /// Fetch message history from the server.
+        ///
+        /// The 'start' and 'end' attributes MAY be specified to indicate a date range.
+        ///
+        /// If the 'with' attribute is omitted then collections with any JID are returned.
+        ///
+        /// If only 'start' is specified then all collections on or after that date should be returned.
+        ///
+        /// If only 'end' is specified then all collections prior to that date should be returned.
+        /// </summary>
+        /// <param name="pageRequest">Paging options</param>
+        /// <param name="start">Optional start date range to query</param>
+        /// <param name="end">Optional enddate range to query</param>
+        /// <param name="with">Optional JID to filter archive results by</param>
+        public XmppPage<ArchivedChatId> GetArchivedChatIds(XmppPageRequest pageRequest, DateTimeOffset? start = null, DateTimeOffset? end = null, Jid with = null)
+        {
+            return messageArchiving.GetArchivedChatIds(pageRequest, start, end, with);
+        }
+
+        /// <summary>
+        /// Fetch a page of archived messages from a chat
+        /// </summary>
+        /// <param name="pageRequest">Paging options</param>
+        /// <param name="with">The id of the entity that the chat was with</param>
+        /// <param name="start">The start time of the chat</param>
+        public ArchivedChatPage GetArchivedChat(XmppPageRequest pageRequest, Jid with, DateTimeOffset start)
+        {
+            return messageArchiving.GetArchivedChat(pageRequest, with, start);
+        }
+
+        /// <summary>
+        /// Fetch a page of archived messages
+        /// </summary>
+        /// <param name="pageRequest">Paging options</param>
+        /// <param name="with">Optional filter to only return messages if they match the supplied JID</param>
+        /// <param name="start">Optional filter to only return messages whose timestamp is equal to or later than the given timestamp.</param>
+        /// <param name="end">Optional filter to only return messages whose timestamp is equal to or earlier than the timestamp given in the 'end' field.</param>
+        public Task<XmppPage<Message>> GetArchivedMessages(XmppPageRequest pageRequest, Jid with = null, DateTimeOffset? start = null, DateTimeOffset? end = null)
+        {
+            return messageArchiveManagement.GetArchivedMessages(pageRequest, with, null, start, end);
+        }
+
+        /// <summary>
+        /// Fetch a page of archived messages from a multi-user chat room
+        /// </summary>
+        /// <param name="pageRequest">Paging options</param>
+        /// <param name="roomId">The JID of the room</param>
+        /// <param name="start">Optional filter to only return messages whose timestamp is equal to or later than the given timestamp.</param>
+        /// <param name="end">Optional filter to only return messages whose timestamp is equal to or earlier than the timestamp given in the 'end' field.</param>
+        public Task<XmppPage<Message>> GetArchivedMucMessages(XmppPageRequest pageRequest, Jid roomId, DateTimeOffset? start = null, DateTimeOffset? end = null)
+        {
+            return messageArchiveManagement.GetArchivedMessages(pageRequest, roomId, roomId, start, end);
+        }
+
+        /// <summary>
+        /// Fetch a page of archived messages from a chat
+        /// </summary>
+        /// <param name="pageRequest">Paging options</param>
+        /// <param name="chatId">The id of the chat</param>
+        public ArchivedChatPage GetArchivedChat(XmppPageRequest pageRequest, ArchivedChatId chatId)
+        {
+            return messageArchiving.GetArchivedChat(pageRequest, chatId);
+        }
+		
+        /// <summary>
         /// Unblocks all communication to and from the XMPP entity with the specified
         /// JID.
         /// </summary>
@@ -2124,9 +2240,12 @@ namespace Net.Xmpp.Client
             chatStateNotifications = im.LoadExtension<ChatStateNotifications>();
             bitsOfBinary = im.LoadExtension<BitsOfBinary>();
             vcardAvatars = im.LoadExtension<VCardAvatars>();
+            vcard = im.LoadExtension<VCards>();
             cusiqextension = im.LoadExtension<CustomIqExtension>();
             groupChat = im.LoadExtension<MultiUserChat>();
             search = im.LoadExtension<JabberSearch>();
+            messageArchiving = im.LoadExtension<MessageArchiving>();
+            messageArchiveManagement = im.LoadExtension<MessageArchiveManagement>();
         }
     }
 }

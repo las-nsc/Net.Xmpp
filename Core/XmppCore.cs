@@ -136,6 +136,9 @@ namespace Net.Xmpp.Core
         /// </summary>
         private CancellationTokenSource cancelDispatch = new CancellationTokenSource();
 
+
+        internal event EventHandler<ConnectEventArgs> OnConnect;
+
         /// <summary>
         /// The hostname of the XMPP server to connect to.
         /// </summary>
@@ -294,10 +297,18 @@ namespace Net.Xmpp.Core
         /// <summary>
         /// Determines whether the instance is connected to the XMPP server.
         /// </summary>
+        private bool connected;
         public bool Connected
         {
-            get;
-            private set;
+            get
+            {
+                return connected;
+            }
+
+            private set
+            {
+                this.connected = value;
+            }
         }
 
         /// <summary>
@@ -508,6 +519,7 @@ namespace Net.Xmpp.Core
                 SetupConnection(this.resource);
                 // We are connected.
                 Connected = true;
+                OnConnect?.Raise(this, new ConnectEventArgs(ConnectionState.Connected));
                 // Set up the listener and dispatcher tasks.
                 Task.Factory.StartNew(ReadXmlStream, TaskCreationOptions.LongRunning);
                 Task.Factory.StartNew(DispatchEvents, TaskCreationOptions.LongRunning);
@@ -555,6 +567,16 @@ namespace Net.Xmpp.Core
             Disconnect();
             Connect(this.resource);
         }
+
+        public void Reconnect()
+        {
+            AssertValid();
+            Username.ThrowIfNull("username");
+            Password.ThrowIfNull("password");
+            Disconnect();
+            Connect(this.resource);
+        }
+        
 
         /// <summary>
         /// Sends a Message stanza with the specified attributes and content to the
@@ -728,7 +750,11 @@ namespace Net.Xmpp.Core
 
                 if (request.To.Domain == Jid.Domain && (request.To.Node == null || request.To.Node == "") && (ping != null && ping.NamespaceURI == "urn:xmpp:ping"))
                 {
-                    Connected = false;
+                    if (Connected)
+                    {
+                        Connected = false;
+                        OnConnect?.Raise(this, new ConnectEventArgs(ConnectionState.Lost));
+                    }
                     var e = new XmppDisconnectionException("Timeout Disconnection happened at IqRequest");
                     if (!disposed)
                         Error.Raise(this, new ErrorEventArgs(e));
@@ -1194,7 +1220,11 @@ namespace Net.Xmpp.Core
                 }
                 catch (IOException e)
                 {
-                    Connected = false;
+                    if (Connected)
+                    {
+                        Connected = false;
+                        OnConnect?.Raise(this, new ConnectEventArgs(ConnectionState.Lost));
+                    }
                     throw new XmppDisconnectionException(e.Message, e);
                 }
                 //FIXME
@@ -1238,7 +1268,11 @@ namespace Net.Xmpp.Core
             }
             catch (XmppDisconnectionException e)
             {
-                Connected = false;
+                if (Connected)
+                {
+                    Connected = false;
+                    OnConnect?.Raise(this, new ConnectEventArgs(ConnectionState.Lost));
+                }
                 throw e;
             }
         }
@@ -1287,7 +1321,11 @@ namespace Net.Xmpp.Core
                 //Add the failed connection
                 if ((e is IOException) || (e is XmppDisconnectionException))
                 {
-                    Connected = false;
+                    if (Connected)
+                    {
+                        Connected = false;
+                        OnConnect?.Raise(this, new ConnectEventArgs(ConnectionState.Lost));
+                    }
                     var ex = new XmppDisconnectionException(e.ToString());
                     e = ex;
                 }
@@ -1370,6 +1408,7 @@ namespace Net.Xmpp.Core
                 return;
             Connected = false;
             Authenticated = false;
+            OnConnect?.Raise(this, new ConnectEventArgs(ConnectionState.Disconnected));
             // Close the XML stream.
             Send("</stream:stream>");
         }

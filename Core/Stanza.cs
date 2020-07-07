@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace Net.Xmpp.Core
 {
@@ -167,6 +168,15 @@ namespace Net.Xmpp.Core
             this.element = element;
         }
 
+		/// <summary>
+        /// Converts the data XmlElement to an XElement.
+        /// </summary>
+        /// <returns>The data of the stanza as an XElement.</returns>
+        public XElement DataXElememt()
+        {
+            return XElement.Parse(this.ToString());
+        }
+        
         /// <summary>
         /// Returns a textual representation of this instance of the Stanza class.
         /// </summary>
