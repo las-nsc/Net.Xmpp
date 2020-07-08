@@ -6,7 +6,7 @@ namespace Net.Xmpp.Extensions
     /// Represents an item of an XMPP entity as defined in XEP-0030.
     /// </summary>
     [Serializable]
-    internal class Item
+    public class XmppItem
     {
         /// <summary>
         /// The JID of the item.
@@ -72,7 +72,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="name">The name of the item.</param>
         /// <exception cref="ArgumentNullException">The jid parameter is
         /// null.</exception>
-        public Item(Jid jid, string node = null, string name = null)
+        public XmppItem(Jid jid, string node = null, string name = null)
         {
             jid.ThrowIfNull("jid");
             Jid = jid;
@@ -91,7 +91,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="jid">JID</param>
         /// <param name="nickname">Occupant nickname</param>
         /// <param name="role">Privilege level within a room.</param>
-        public Item(string affiliation, Jid jid, string nickname = null, string role = null)
+        public XmppItem(string affiliation, Jid jid, string nickname = null, string role = null)
         {
             affiliation.ThrowIfNull("affiliation");
             jid.ThrowIfNull("jid");
@@ -113,7 +113,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="nickname">Occupant nickname</param>
         /// <param name="role">Privilege level within a room.</param>
         /// <param name="affiliation">A long-lived association or connection with a room.</param>
-        public Item(Jid jid, string node = null, string name = null, string nickname = null, string role = null, string affiliation = null)
+        public XmppItem(Jid jid, string node = null, string name = null, string nickname = null, string role = null, string affiliation = null)
         {
             jid.ThrowIfNull("jid");
             Jid = jid;

@@ -2,10 +2,11 @@
 using Net.Xmpp.Im;
 using System;
 using System.Collections.Generic;
+using Message = Net.Xmpp.Im.Message;
 
 namespace Net.Xmpp.Extensions
 {
-    internal class MessageCarbons : XmppExtension
+    internal class MessageCarbons : XmppExtension, IInputFilter<Message>
     {
         private static readonly string[] _namespaces = { "urn:xmpp:carbons:2" };
         private EntityCapabilities ecapa;
@@ -37,6 +38,18 @@ namespace Net.Xmpp.Extensions
             if (iq.Type == IqType.Error)
                 throw Util.ExceptionFromError(iq, "Message Carbons could not " +
                     "be enabled.");
+        }
+
+        public bool Input(Message stanza)
+        {
+            if (stanza.CarbonMessage)
+            {
+                this.im.OnMessage(stanza.ForwardedMessage);
+
+                return true;
+            }
+
+            return false;
         }
 
         public MessageCarbons(XmppIm im) :

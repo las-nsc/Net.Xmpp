@@ -1,5 +1,5 @@
-﻿using S22.Xmpp.Core;
-using S22.Xmpp.Im;
+﻿using Net.Xmpp.Core;
+using Net.Xmpp.Im;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +8,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Linq;
 
-namespace S22.Xmpp.Extensions
+namespace Net.Xmpp.Extensions
 {
        
 	/// <summary>

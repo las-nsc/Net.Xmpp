@@ -144,6 +144,11 @@
         vCardsAvatars,
 
         /// <summary>
+        /// An extestion for downloading-uploading vcard data
+        /// </summary>
+        vCards,
+
+        /// <summary>
         /// Wrapper for providing Custom IQ Extensions
         /// </summary>
         CustomIqExtension,
@@ -154,6 +159,17 @@
         /// </summary>
         MessageCarbons,
 
+        /// <summary>
+        /// An extension for the server-side archiving and retrieval of XMPP messages.
+        /// </summary>
+        /// <remarks>Defined in XEP-0136.</remarks>
+        MessageArchiving,
+
+        /// <summary>
+        /// An extension to record conversations that take place on clients that do not support local history storage, to synchronise conversation history seamlessly between multiple clients, to read the history of a MUC room, or to view old items in a pubsub node.
+        /// </summary>
+        /// <remarks>Defined in XEP-0313.</remarks>
+        MessageArchiveManagement,
         /// <summary>
         /// An extension for communicating with multiple users in the same chat instance
         /// (many-to-many chat)

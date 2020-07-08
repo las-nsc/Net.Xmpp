@@ -137,7 +137,7 @@ namespace Net.Xmpp.Extensions
         /// error condition.</exception>
         /// <exception cref="XmppException">The server returned invalid data or another
         /// unspecified XMPP error occurred.</exception>
-        public void RequestAvatar(Jid jid, string filepath, Action callback)
+        public void RequestAvatar(Jid jid, string filepath, Action<string,  Jid> callback)
         {
             jid.ThrowIfNull("jid");
             filepath.ThrowIfNull("filePath");
@@ -179,8 +179,55 @@ namespace Net.Xmpp.Extensions
                                     }
                                     if (callback != null)
                                     {
-                                        callback.Invoke();
+                                        
+                                        callback.Invoke(filepath, jid);
                                     }
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                System.Diagnostics.Debug.WriteLine("Error downloading and writing avatar file" + e.StackTrace + e.ToString());
+                                //Exception is not contained here. Fix?
+                            }
+                        }
+                    }
+                }
+            });
+                                    }
+
+
+
+        public void RequestAvatar(Jid jid, Action<byte[], Jid> callback)
+        {
+            jid.ThrowIfNull("jid");
+            //filepath.ThrowIfNull("filePath");
+
+            //Make the request
+            var xml = Xml.Element("vCard", "vcard-temp");
+
+            //The Request is Async
+            im.IqRequestAsync(IqType.Get, jid, im.Jid, xml, null, (id, iq) =>
+            {
+                XmlElement query = iq.Data["vCard"];
+                if (iq.Data["vCard"].NamespaceURI == "vcard-temp")
+                {
+                    XElement root = XElement.Parse(iq.Data.OuterXml);
+                    XNamespace aw = "vcard-temp"; //SOS the correct namespace
+                    IEnumerable<string> b64collection = (from el in root.Descendants(aw + "BINVAL") select (string)el);
+                    string b64 = null;
+                    if (b64collection != null)
+                    {
+                        b64 = b64collection.FirstOrDefault();
+
+                        if (b64 != null)
+                        {
+
+                            try
+                            {
+                                byte[] data = Convert.FromBase64String(b64);
+                                if (data != null)
+                                {
+                                    callback.Invoke(data, jid);
                                 }
                             }
                             catch (Exception e)
