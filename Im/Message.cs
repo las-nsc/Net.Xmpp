@@ -47,6 +47,11 @@ namespace Net.Xmpp.Im
         public Message ForwardedMessage { get; protected set; }
 
         /// <summary>
+        /// A forwarded message that is contained within this message, if there is one present.
+        /// </summary>
+        public bool CarbonMessage { get; protected set; }
+
+        /// <summary>
         /// The conversation thread this message belongs to.
         /// </summary>
         public string Thread
@@ -257,11 +262,25 @@ namespace Net.Xmpp.Im
             AlternateBodies = new XmlDictionary(element, "body", "xml:lang");
             Timestamp = timestamp;
 
-            var forwardedMessageNode = element["forwarded"];
-            if (forwardedMessageNode != null && forwardedMessageNode.NamespaceURI == "urn:xmpp:forward:0")
+            var carbonNode = element["sent"];
+            if (carbonNode != null && carbonNode.NamespaceURI == "urn:xmpp:carbons:2")
             {
-                var forwardedTimestamp = DelayedDelivery.GetDelayedTimestampOrNow(forwardedMessageNode);
-                ForwardedMessage = new Message(forwardedMessageNode["message"], forwardedTimestamp);
+                CarbonMessage = true;
+                var forwardedMessageNode = carbonNode["forwarded"];
+                if (forwardedMessageNode != null && forwardedMessageNode.NamespaceURI == "urn:xmpp:forward:0")
+                {
+                    var forwardedTimestamp = DelayedDelivery.GetDelayedTimestampOrNow(forwardedMessageNode);
+                    ForwardedMessage = new Message(forwardedMessageNode["message"], forwardedTimestamp);
+                }
+            }
+            else
+            {
+                var forwardedMessageNode = element["forwarded"];
+                if (forwardedMessageNode != null && forwardedMessageNode.NamespaceURI == "urn:xmpp:forward:0")
+                {
+                    var forwardedTimestamp = DelayedDelivery.GetDelayedTimestampOrNow(forwardedMessageNode);
+                    ForwardedMessage = new Message(forwardedMessageNode["message"], forwardedTimestamp);
+                }
             }
         }
 

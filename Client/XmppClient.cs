@@ -843,6 +843,11 @@ namespace Net.Xmpp.Client
             im.Reconnect();
         }
 
+        public void EnableCarbons()
+        {
+            messageCarbons.EnableCarbons(true);
+        }
+
         /// <summary>
         /// Sends a chat message with the specified content to the specified JID.
         /// </summary>

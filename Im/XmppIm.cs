@@ -1612,7 +1612,7 @@ namespace Net.Xmpp.Im
         /// Callback method when an IQ-request stanza has been received.
         /// </summary>
         /// <param name="iq">The received IQ stanza.</param>
-        private void OnIq(Iq iq)
+        internal void OnIq(Iq iq)
         {
             // Invoke IInput<Iq> Plugins.
             foreach (var ext in extensions)
@@ -1644,7 +1644,7 @@ namespace Net.Xmpp.Im
         /// Callback invoked when a presence stanza has been received.
         /// </summary>
         /// <param name="presence">The received presence stanza.</param>
-        private void OnPresence(Presence presence)
+        internal void OnPresence(Presence presence)
         {
             // Invoke IInput<Presence> Plugins.
             foreach (var ext in extensions)
@@ -1683,7 +1683,7 @@ namespace Net.Xmpp.Im
         /// Callback invoked when a message stanza has been received.
         /// </summary>
         /// <param name="message">The received message stanza.</param>
-        private void OnMessage(Message message)
+        internal void OnMessage(Message message)
         {
             // Invoke IInput<Message> Plugins.
             foreach (var ext in extensions)
@@ -1704,7 +1704,7 @@ namespace Net.Xmpp.Im
             else if (message.Data["body"] != null)
             {
                 Message.Raise(this, new MessageEventArgs(message.From, message));
-        }
+            }
         }
         /// <summary>
         /// Processes presence stanzas containing availability and status
