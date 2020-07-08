@@ -100,7 +100,7 @@ namespace Net.Xmpp.Core
         /// <summary>
         /// The default value for debugging stanzas is false
         /// </summary>
-        private bool debugStanzas = false;
+        private bool debugStanzas = true;
 
         /// <summary>
         /// A thread-safe dictionary of wait handles for pending IQ requests.
@@ -576,7 +576,6 @@ namespace Net.Xmpp.Core
             Disconnect();
             Connect(this.resource);
         }
-        
 
         /// <summary>
         /// Sends a Message stanza with the specified attributes and content to the
@@ -1294,10 +1293,17 @@ namespace Net.Xmpp.Core
                     {
                         case "iq":
                             Iq iq = new Iq(elem);
-                            if (iq.IsRequest)
-                                stanzaQueue.Add(iq);
+                            if (iq.IsResponse)
+                            {
+                                if (!HandleIqResponseBlocking(iq))
+                                {
+                                    stanzaQueue.Add(iq);
+                                }
+                            }
                             else
-                                HandleIqResponse(iq);
+                            {
+                                stanzaQueue.Add(iq);
+                            }
                             break;
 
                         case "message":
@@ -1306,6 +1312,8 @@ namespace Net.Xmpp.Core
 
                         case "presence":
                             stanzaQueue.Add(new Presence(elem));
+                            break;
+                        default:
                             break;
                     }
                 }
@@ -1350,9 +1358,14 @@ namespace Net.Xmpp.Core
                     Stanza stanza = stanzaQueue.Take(cancelDispatch.Token);
                     if (debugStanzas) System.Diagnostics.Debug.WriteLine(stanza.ToString());
                     if (stanza is Iq)
-                        Iq.Raise(this, new IqEventArgs(stanza as Iq));
+                    {
+                        if (!((stanza as Iq).IsResponse && HandleIqResponseAsync(stanza as Iq)))
+                            Iq.Raise(this, new IqEventArgs(stanza as Iq));
+                    }
                     else if (stanza is Message)
+                    {
                         Message.Raise(this, new MessageEventArgs(stanza as Message));
+                    }
                     else if (stanza is Presence)
                         Presence.Raise(this, new PresenceEventArgs(stanza as Presence));
                 }
@@ -1375,18 +1388,31 @@ namespace Net.Xmpp.Core
         /// Handles incoming IQ responses for previously issued IQ requests.
         /// </summary>
         /// <param name="iq">The received IQ response stanza.</param>
-        private void HandleIqResponse(Iq iq)
+        private bool HandleIqResponseBlocking(Iq iq)
         {
-            string id = iq.Id;
             AutoResetEvent ev;
-            Action<string, Iq> cb;
-            iqResponses[id] = iq;
+            string id = iq.Id;
             // Signal the event if it's a blocking call.
             if (waitHandles.TryRemove(id, out ev))
+            {
+                iqResponses[id] = iq;
                 ev.Set();
-            // Call the callback if it's an asynchronous call.
-            else if (iqCallbacks.TryRemove(id, out cb))
-                Task.Factory.StartNew(() => { cb(id, iq); });
+                return true;
+            }
+            return false;    
+        }
+
+        private bool HandleIqResponseAsync(Iq iq)
+        {
+            string id = iq.Id;
+            Action<string, Iq> cb;
+            if (iqCallbacks.TryRemove(id, out cb))
+            {
+                cb(id, iq);
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
