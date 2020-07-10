@@ -146,44 +146,52 @@ namespace Net.Xmpp.Extensions
 				return true;
 			}
 
-			// Things that could happen here:
-			// Service Sends Notice of Membership
-			// Service Passes Along Changed Presence
-			// Service Updates Nick
-			XmlElement xElement = stanza.Data ["x"];
-			if (xElement != null && xElement.NamespaceURI == MucNs.NsUser) {
-				Occupant person = null;
-				foreach (XmlElement item in xElement.GetElementsByTagName ("item")) {
-					// There is only ever one item in a message here but, 
-					// I don't have a better way of getting the first element as an element, not a node.
-					var itemJid = item.GetAttribute ("jid");
-					var itemAffiliation = item.GetAttribute ("affiliation");
-					var itemRole = item.GetAttribute ("role");
-					if (!String.IsNullOrWhiteSpace (itemJid) && !String.IsNullOrWhiteSpace (itemAffiliation) &&
-							!String.IsNullOrWhiteSpace (itemRole)) {
-						person = new Occupant (
-						   item.GetAttribute ("jid"),
-						   item.GetAttribute ("affiliation"),
-						   item.GetAttribute ("role"));
-					}
-				}
+            // Things that could happen here:
+            // Service Sends Notice of Membership
+            // Service Passes Along Changed Presence
+            // Service Updates Nick
+            foreach (XmlElement xElement in stanza.Data.ChildNodes)
+            {
+                if (xElement != null && xElement.NamespaceURI == MucNs.NsUser)
+                {
+                    Occupant person = null;
+                    foreach (XmlElement item in xElement.GetElementsByTagName("item"))
+                    {
+                        // There is only ever one item in a message here but, 
+                        // I don't have a better way of getting the first element as an element, not a node.
+                        var itemJid = item.GetAttribute("jid");
+                        var itemAffiliation = item.GetAttribute("affiliation");
+                        var itemRole = item.GetAttribute("role");
+                        if (!String.IsNullOrWhiteSpace(itemJid) && !String.IsNullOrWhiteSpace(itemAffiliation) &&
+                                !String.IsNullOrWhiteSpace(itemRole))
+                        {
+                            person = new Occupant(
+                               item.GetAttribute("jid"),
+                               item.GetAttribute("affiliation"),
+                               item.GetAttribute("role"));
+                        }
+                    }
 
 
-				IList<MucStatusType> statusCodeList = new List<MucStatusType> ();
-				foreach (XmlElement item in xElement.GetElementsByTagName ("status")) {
-					string codeAttribute = item.GetAttribute ("code");
-					if (!string.IsNullOrWhiteSpace (codeAttribute)) {
-						var code = (MucStatusType)Enum.Parse (typeof (MucStatusType), codeAttribute);
-						statusCodeList.Add (code);
-					}
-				}
+                    IList<MucStatusType> statusCodeList = new List<MucStatusType>();
+                    foreach (XmlElement item in xElement.GetElementsByTagName("status"))
+                    {
+                        string codeAttribute = item.GetAttribute("code");
+                        if (!string.IsNullOrWhiteSpace(codeAttribute))
+                        {
+                            var code = (MucStatusType)Enum.Parse(typeof(MucStatusType), codeAttribute);
+                            statusCodeList.Add(code);
+                        }
+                    }
 
 
-				if (person != null) {
-					PrescenceChanged.Raise (this, new GroupPresenceEventArgs (new Jid(stanza.From.Domain, stanza.From.Node), person, statusCodeList));
-					return true;
-				}
-			}
+                    if (person != null)
+                    {
+                        PrescenceChanged.Raise(this, new GroupPresenceEventArgs(new Jid(stanza.From.Domain, stanza.From.Node), person, statusCodeList));
+                        return true;
+                    }
+                }
+            }
 
 			// Any message with an Availability status can be managed by the Presence extension
 			return false;
