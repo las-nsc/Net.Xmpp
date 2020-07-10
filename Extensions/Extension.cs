@@ -179,6 +179,11 @@
         /// <summary>
         /// An extension for JabberSearch
         /// </summary>
-        JabberSearch
+        JabberSearch,
+
+        /// <summary>
+        /// An extension for HTTP File Upload
+        /// </summary>
+        HTTPUpload
     }
 }

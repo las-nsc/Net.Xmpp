@@ -30,19 +30,20 @@ optional procotol extensions. More specifically, the following features are supp
 + [XEP-0107](https://xmpp.org/extensions/xep-0107.html) User Mood
 + [XEP-0108](https://xmpp.org/extensions/xep-0108.html) User Activity
 + [XEP-0115](https://xmpp.org/extensions/xep-0115.html) Entity Capabilities
-+ [XEP-0118](https://xmpp.org/extensions/xep-0118.html) 	User Tune
-+ [XEP-0136](https://xmpp.org/extensions/xep-0136.html) 	Message Archiving
-+ [XEP-0153](https://xmpp.org/extensions/xep-0153.html) 	vCard-Based Avatars
-+ [XEP-0163](https://xmpp.org/extensions/xep-0163.html) 	Personal Eventing Protocol
-+ [XEP-0191](https://xmpp.org/extensions/xep-0191.html) 	Blocking Command
-+ [XEP-0199](https://xmpp.org/extensions/xep-0199.html) 	XMPP Ping
-+ [XEP-0202](https://xmpp.org/extensions/xep-0202.html) 	Entity Time
-+ [XEP-0203](https://xmpp.org/extensions/xep-0203.html) 	Delayed Delivery
-+ [XEP-0224](https://xmpp.org/extensions/xep-0224.html) 	Attention
-+ [XEP-0231](https://xmpp.org/extensions/xep-0231.html) 		Bits of Binary
-+ [XEP-0279](https://xmpp.org/extensions/xep-0279.html) 		Server IP Check
-+ [XEP-0280](https://xmpp.org/extensions/xep-0280.html) 		Message Carbons
-+ [XEP-0313](https://xmpp.org/extensions/xep-0313.html) 		Message Archive Management
++ [XEP-0118](https://xmpp.org/extensions/xep-0118.html) User Tune
++ [XEP-0136](https://xmpp.org/extensions/xep-0136.html) Message Archiving
++ [XEP-0153](https://xmpp.org/extensions/xep-0153.html) vCard-Based Avatars
++ [XEP-0163](https://xmpp.org/extensions/xep-0163.html) Personal Eventing Protocol
++ [XEP-0191](https://xmpp.org/extensions/xep-0191.html) Blocking Command
++ [XEP-0199](https://xmpp.org/extensions/xep-0199.html) XMPP Ping
++ [XEP-0202](https://xmpp.org/extensions/xep-0202.html) Entity Time
++ [XEP-0203](https://xmpp.org/extensions/xep-0203.html) Delayed Delivery
++ [XEP-0224](https://xmpp.org/extensions/xep-0224.html) Attention
++ [XEP-0231](https://xmpp.org/extensions/xep-0231.html) Bits of Binary
++ [XEP-0279](https://xmpp.org/extensions/xep-0279.html) Server IP Check
++ [XEP-0280](https://xmpp.org/extensions/xep-0280.html) Message Carbons
++ [XEP-0313](https://xmpp.org/extensions/xep-0313.html) Message Archive Management
++ [XEP-0363](https://xmpp.org/extensions/xep-0363.html) HTTP Upload File
 
 
 
