@@ -186,6 +186,11 @@ namespace Net.Xmpp.Client
         private JabberSearch search;
 
         /// <summary>
+        /// Provides the HTTP File Upload extension
+        /// </summary>
+        private HTTPFileUpload httpUpload;
+
+        /// <summary>
         /// The hostname of the XMPP server to connect to.
         /// </summary>
         public string Hostname
@@ -2150,6 +2155,16 @@ namespace Net.Xmpp.Client
         }
 
         /// <summary>
+        /// Request the Search Form
+        /// </summary>
+        /// <returns>DataForm for avaible fields search</returns>
+        public void RequestSlot(string fileName, long size, string contentType, Action<Slot> upload, Action<String> error)
+        {
+            AssertValid();
+            this.httpUpload.RequestSlot(fileName, size, contentType, upload, error);
+        }
+
+        /// <summary>
         /// Closes the connection with the XMPP server. This automatically disposes
         /// of the object.
         /// </summary>
@@ -2251,6 +2266,7 @@ namespace Net.Xmpp.Client
             search = im.LoadExtension<JabberSearch>();
             messageArchiving = im.LoadExtension<MessageArchiving>();
             messageArchiveManagement = im.LoadExtension<MessageArchiveManagement>();
+            httpUpload = im.LoadExtension<HTTPFileUpload>();
         }
     }
 }
