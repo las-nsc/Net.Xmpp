@@ -10,7 +10,11 @@ namespace Net.Xmpp.Extensions
     internal class HTTPFileUpload : XmppExtension
     {
         private const string xmlns = "urn:xmpp:http:upload:0";
-        private EntityCapabilities ecapa;
+
+        /// <summary>
+        /// A reference to the 'Service Discovery' extension instance.
+        /// </summary>
+        private ServiceDiscovery sdisco;
 
         public override IEnumerable<string> Namespaces
         {
@@ -25,6 +29,14 @@ namespace Net.Xmpp.Extensions
         public HTTPFileUpload(XmppIm im)
             : base(im)
         {
+        }
+
+        /// <summary>
+        /// Invoked after all extensions have been loaded.
+        /// </summary>
+        public override void Initialize()
+        {
+            sdisco = im.GetExtension<ServiceDiscovery>();
         }
 
         /// <summary>
@@ -47,12 +59,29 @@ namespace Net.Xmpp.Extensions
         /// </param>
         public void RequestSlot(string fileName, long size, string contentType, Action<Slot> upload, Action<String> error)
         {
+            Jid uploadDomain = null;
+            foreach (var item in sdisco.GetItems(im.Jid.Domain))
+            {
+                // Query each item for its identities and look for a 'store' identity.
+                foreach (var ident in sdisco.GetIdentities(item.Jid))
+                {
+                    if (ident.Category == "store" && ident.Type == "file")
+                    {
+                        uploadDomain = item.Jid;
+                    }
+                }
+            }
+
+            if (uploadDomain == null)
+            {
+                throw new Exception("Service Unavaible");
+            }
             string id = Guid.NewGuid().ToString("N");
             SlotRequest request = new SlotRequest(fileName, size, contentType);
-            im.IqRequestAsync(Core.IqType.Get, new Jid("upload.lx-vm031-scl.lef.intra"), null, request.ToXmlElement(), null, 
+            im.IqRequestAsync(Core.IqType.Get, uploadDomain, null, request.ToXmlElement(), null,
                 (string result, Core.Iq response) =>
                 {
-                    if(response.Type == Core.IqType.Error)
+                    if (response.Type == Core.IqType.Error)
                     {
                         error(response.Data["error"]["text"].InnerText);
                     }
