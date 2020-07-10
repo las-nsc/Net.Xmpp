@@ -2137,21 +2137,22 @@ namespace Net.Xmpp.Client
         /// <summary>
         /// Submit a serach forms
         /// </summary>
+        /// <param name="form">DataForm with search criterias.</param>
         /// <returns>Search result based on DataForm request</returns>
-        public DataForm Search(string searchServer, DataForm form)
+        public DataForm Search(DataForm form)
         {
             AssertValid();
-            return this.search.Search(searchServer, form);
+            return this.search.Search(form);
         }
 
         /// <summary>
         /// Request the Search Form
         /// </summary>
-        /// <returns>DataForm for avaible fields search</returns>
-        public DataForm RequestSearchForm(string searchServer)
+        /// <returns>DataForm for avaible fields search.</returns>
+        public DataForm RequestSearchForm()
         {
             AssertValid();
-            return this.search.RequestSearchForm(searchServer);
+            return this.search.RequestSearchForm();
         }
 
         /// <summary>
