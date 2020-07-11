@@ -1,6 +1,7 @@
 ﻿using Net.Xmpp.Core;
 using Net.Xmpp.Extensions.Socks5;
 using Net.Xmpp.Extensions.Stun;
+using Net.Xmpp.Extensions.Upnp;
 using Net.Xmpp.Im;
 using System;
 using System.Collections.Generic;

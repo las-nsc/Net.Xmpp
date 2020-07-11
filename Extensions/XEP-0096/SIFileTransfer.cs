@@ -520,10 +520,10 @@ namespace Net.Xmpp.Extensions
         private void OnInitiationResult(InitiationResult result, Jid to, string name,
             Stream stream, long size, string description, Action<bool, FileTransfer> cb)
         {
-            FileTransfer transfer = new FileTransfer(im.Jid, to, name, size, null,
-                description);
             try
             {
+                FileTransfer transfer = new FileTransfer(im.Jid, to, name, size, result.SessionId,
+                    description);
                 // Get the instance of the data-stream extension that the other site has
                 // selected.
                 IDataStream ext = im.GetExtension(result.Method) as IDataStream;
@@ -549,6 +549,8 @@ namespace Net.Xmpp.Extensions
             }
             catch
             {
+                FileTransfer transfer = new FileTransfer(im.Jid, to, name, size, null,
+                    description);
                 // Something went wrong. Invoke user-provided callback to let them know
                 // the file-transfer can't be performed.
                 if (cb != null)
