@@ -1,6 +1,12 @@
 ﻿#if WINDOWSPLATFORM
+using Net.Xmpp.Im;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
+using System.Security.Cryptography;
+using System.Xml;
 #endif
 
 namespace Net.Xmpp.Extensions
@@ -57,11 +63,11 @@ namespace Net.Xmpp.Extensions
 			}
 		}
 
-		/// <summary>
-		/// The event that is raised when another XMPP entity has changed its
-		/// avatar image.
-		/// </summary>
-		public event EventHandler<AvatarChangedEventArgs> AvatarChanged;
+        /// <summary>
+        /// The event that is raised when another XMPP entity has changed its
+        /// avatar image.
+        /// </summary>
+        public event EventHandler<AvatarChangedEventArgs> AvatarChanged;
 
 		/// <summary>
 		/// Invoked after all extensions have been loaded.
