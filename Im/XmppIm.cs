@@ -429,6 +429,44 @@ namespace Net.Xmpp.Im
             SendPresence(new Presence());
         }
 
+        /// <summary>
+        /// Authenticates with the XMPP server using the specified username and
+        /// password, but not GetRosters and Presence to Server, this must be done explicit by the client.
+        /// </summary>
+        /// <param name="username">The username to authenticate with.</param>
+        /// <param name="password">The password to authenticate with.</param>
+        /// <exception cref="ArgumentNullException">The username parameter or the
+        /// password parameter is null.</exception>
+        /// <exception cref="AuthenticationException">An authentication error occured while
+        /// trying to establish a secure connection, or the provided credentials were
+        /// rejected by the server, or the server requires TLS/SSL and the Tls property has
+        /// been set to false.</exception>
+        /// <exception cref="IOException">There was a failure while writing to or reading
+        /// from the network. If the InnerException is of type SocketExcption, use the
+        /// ErrorCode property to obtain the specific socket error code.</exception>
+        /// <exception cref="ObjectDisposedException">The XmppIm object has been
+        /// disposed.</exception>
+        /// <exception cref="XmppException">An XMPP error occurred while negotiating the
+        /// XML stream with the server, or resource binding failed, or the initialization
+        /// of an XMPP extension failed.</exception>
+        public void SimpleAutenticate(string username, string password)
+        {
+            username.ThrowIfNull("username");
+            password.ThrowIfNull("password");
+            core.Authenticate(username, password);
+            // Establish a session (Refer to RFC 3921, Section 3. Session Establishment).
+            EstablishSession();
+        }
+
+        /// <summary>
+        /// Send my Presence Signal to Server.
+        /// </summary>
+        public void SetPresence()
+        {
+            // Send initial presence.
+            SendPresence(new Presence());
+        }
+
         public void Reconnect()
         {
             core.Reconnect();
