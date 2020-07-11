@@ -843,6 +843,40 @@ namespace Net.Xmpp.Client
             im.Autenticate(username, password);
         }
 
+        /// <summary>
+        /// Authenticates with the XMPP server using the specified username and
+        /// password, but not GetRosters and Presence to Server, this must be done explicit by the client.
+        /// </summary>
+        /// <param name="username">The username to authenticate with.</param>
+        /// <param name="password">The password to authenticate with.</param>
+        /// <exception cref="ArgumentNullException">The username parameter or the
+        /// password parameter is null.</exception>
+        /// <exception cref="AuthenticationException">An authentication error occured while
+        /// trying to establish a secure connection, or the provided credentials were
+        /// rejected by the server, or the server requires TLS/SSL and the Tls property has
+        /// been set to false.</exception>
+        /// <exception cref="IOException">There was a failure while writing to or reading
+        /// from the network. If the InnerException is of type SocketExcption, use the
+        /// ErrorCode property to obtain the specific socket error code.</exception>
+        /// <exception cref="ObjectDisposedException">The XmppIm object has been
+        /// disposed.</exception>
+        /// <exception cref="XmppException">An XMPP error occurred while negotiating the
+        /// XML stream with the server, or resource binding failed, or the initialization
+        /// of an XMPP extension failed.</exception>
+        public void SimpleAutenticate(string username, string password)
+        {
+            im.Autenticate(username, password);
+        }
+
+        /// <summary>
+        /// Send my Presence Signal to Server.
+        /// </summary>
+        public void SetPresence()
+        {
+            // Send initial presence.
+            im.SetPresence();
+        }
+
         public void Reconnect()
         {
             im.Reconnect();
@@ -1971,19 +2005,38 @@ namespace Net.Xmpp.Client
             return groupChat.SetPrivilege(room, user, Affiliation.Outcast, reason);
         }
 
+        /// <summary>
+        /// Add a user as admin of a MUC Room
+        /// </summary>
+        /// <param name="room">Chat room</param>
+        /// <param name="user">User with admin permission</param>
+        /// <param name="nick">(Optional) Desired nickname</param>
+        /// <param name="reason">(Optional) Reason</param>
         public bool AddAdminToRoom(Jid room, Jid user, string nick = null, string reason = null)
         {
             AssertValid();
-            groupChat.SetPrivilege(room, user, Affiliation.Admin, reason, nick);
-            return true;
+            return groupChat.SetPrivilege(room, user, Affiliation.Admin, reason, nick);
         }
 
+        /// <summary>
+        /// Remove user from a MUC Room
+        /// </summary>
+        /// <param name="room">Chat room</param>
+        /// <param name="user">User with admin permission</param>
+        /// <param name="reason">(Optional) Reason</param>
         public bool RemoveUser(Jid room, Jid user, string reason = null)
         {
             AssertValid();
             return groupChat.SetPrivilege(room, user, Affiliation.None, reason);
         }
 
+        /// <summary>
+        /// Add a user as Member from a MUC Room
+        /// </summary>
+        /// <param name="room">Chat room</param>
+        /// <param name="user">User with admin permission</param>
+        /// <param name="nick">(Optional) Desired nickname</param>
+        /// <param name="reason">(Optional) Reason</param>
         public bool AddMemberToRoom(Jid room, Jid user, string nick = null, string reason = null)
         {
             AssertValid();
