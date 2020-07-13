@@ -83,20 +83,20 @@ namespace Net.Xmpp.Extensions
 
                 //Chamar em paralelo
                 // Invoke the profile's callback.
-               
+
                 profiles[profile].BeginInvoke(stanza.From, stanza.Data["si"], (XmlElement response) =>
                 {
-                try
-                {
+                    try
+                    {
                         im.IqResponse(response.Name == "error" ? IqType.Error : IqType.Result, stanza.Id, stanza.From, im.Jid, response);
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine("Exception was raised during Stream Initiation " + ex.ToString());
-                    // Send back an error response in case the callback method threw
-                    // an exception.
-                    im.IqError(stanza, ErrorType.Cancel, ErrorCondition.ServiceUnavailable);
-                }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine("Exception was raised during Stream Initiation " + ex.ToString());
+                        // Send back an error response in case the callback method threw
+                        // an exception.
+                        im.IqError(stanza, ErrorType.Cancel, ErrorCondition.ServiceUnavailable);
+                    }
                 }, profiles[profile].EndInvoke, null);
             }
             // We took care of this IQ request, so intercept it and don't pass it
