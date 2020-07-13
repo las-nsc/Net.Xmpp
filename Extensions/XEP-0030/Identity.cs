@@ -7,7 +7,7 @@ namespace Net.Xmpp.Extensions
     /// Represents an identity of an XMPP entity as defined in XEP-0030.
     /// </summary>
     [Serializable]
-    internal class Identity
+    public class Identity
     {
         /// <summary>
         /// The category the XMPP entity belongs to (i.e. 'client', 'server').

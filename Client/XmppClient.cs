@@ -865,7 +865,7 @@ namespace Net.Xmpp.Client
         /// of an XMPP extension failed.</exception>
         public void SimpleAutenticate(string username, string password)
         {
-            im.Autenticate(username, password);
+            im.SimpleAutenticate(username, password);
         }
 
         /// <summary>
@@ -1643,6 +1643,38 @@ namespace Net.Xmpp.Client
         {
             AssertValid();
             return ecapa.GetExtensions(jid);
+        }
+
+        /// <summary>
+        /// Queries the XMPP entity with the specified JID for identity information.
+        /// </summary>
+        /// <param name="jid">The JID of the XMPP entity to query.</param>
+        /// <returns>An enumerable collection of identities of the XMPP entity
+        /// with the specified JID.</returns>
+        /// <exception cref="ArgumentNullException">The jid parameter
+        /// is null.</exception>
+        /// <exception cref="NotSupportedException">The query could not be
+        /// performed or the response was invalid.</exception>
+        public IEnumerable<Identity> GetIdentities(Jid jid)
+        {
+            AssertValid();
+            return sdisco.GetIdentities(jid);
+        }
+
+        /// <summary>
+        /// Queries the XMPP entity with the specified JID for item information.
+        /// </summary>
+        /// <param name="jid">The JID of the XMPP entity to query.</param>
+        /// <returns>An enumerable collection of items of the XMPP entity with
+        /// the specified JID.</returns>
+        /// <exception cref="ArgumentNullException">The jid parameter is
+        /// null.</exception>
+        /// <exception cref="NotSupportedException">The query could not be
+        /// performed or the response was invalid.</exception>
+        public IEnumerable<XmppItem> GetItems(Jid jid)
+        {
+            AssertValid();
+            return sdisco.GetItems(jid);
         }
 
         /// <summary>
