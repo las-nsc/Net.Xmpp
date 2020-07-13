@@ -34,9 +34,3 @@ jobs:
     # Build project
     - name: Build-project
       run: msbuild Net.Xmpp.sln /p:Configuration=Release /t:Rebuild
-    # Check reamde links
-    - name: HashiCorp's Link Checker
-      uses: hashicorp/gh-action-check-broken-links@v1.0.1
-      with:
-        # A list of files that will be scanned for the presence of links
-        files: Readme.md
