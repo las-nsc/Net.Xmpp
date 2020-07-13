@@ -4,6 +4,7 @@ This repository contains an easy-to-use and well-documented .NET assembly for co
 an XMPP server. It supports basic Instant Messaging and Presence funtionality as well as a variety
 of XMPP extensions.
 
+![Project Health](https://github.com/luz-sf/Net.Xmpp/workflows/Project%20Health/badge.svg)
 
 ### Supported XMPP Features
 
