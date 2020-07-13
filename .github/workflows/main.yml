@@ -25,7 +25,12 @@ jobs:
     # Setup MSBuild
     - name: setup-msbuild
       uses: microsoft/setup-msbuild@v1
-      
+    # Setup Nuget
+    - name: Setup NuGet.exe for use with actions
+      uses: NuGet/setup-nuget@v1.0.2
+    # Restore package
+    - name: Build-project
+      run: nuget restore Net.Xmpp.sln
     # Build project
     - name: Build-project
       run: msbuild Net.Xmpp.sln /p:Configuration=Release;TrackFileAccess=false /t:Rebuild
