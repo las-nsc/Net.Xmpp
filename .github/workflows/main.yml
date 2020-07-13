@@ -33,4 +33,4 @@ jobs:
       run: nuget restore Net.Xmpp.sln
     # Build project
     - name: Build-project
-      run: msbuild Net.Xmpp.sln /p:Configuration=Release;TrackFileAccess=false /t:Rebuild
+      run: msbuild Net.Xmpp.sln /p:Configuration=Release /t:Rebuild
