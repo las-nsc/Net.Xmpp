@@ -302,7 +302,7 @@ namespace Net.Xmpp.Im
         /// <param name="validate">A delegate used for verifying the remote Secure Sockets
         /// Layer (SSL) certificate which is used for authentication. Can be null if not
         /// needed.</param>
-        /// <param name="serveradress">Adress if hostname is diferrent from resolution name</param>
+        /// <param name="serverAdress">Adress if hostname is diferrent from resolution name</param>
         /// <exception cref="ArgumentNullException">The hostname parameter or the
         /// username parameter or the password parameter is null.</exception>
         /// <exception cref="ArgumentException">The hostname parameter or the username
@@ -327,7 +327,7 @@ namespace Net.Xmpp.Im
         /// <param name="validate">A delegate used for verifying the remote Secure Sockets
         /// Layer (SSL) certificate which is used for authentication. Can be null if not
         /// needed.</param>
-        /// <param name="serveradress">Adress if hostname is diferrent from resolution name</param>
+        /// <param name="serverAdress">Adress if hostname is diferrent from resolution name</param>
         /// <exception cref="ArgumentNullException">The hostname parameter is
         /// null.</exception>
         /// <exception cref="ArgumentException">The hostname parameter is the empty
@@ -467,6 +467,9 @@ namespace Net.Xmpp.Im
             SendPresence(new Presence());
         }
 
+        /// <summary>
+        /// Reconnect XMPP in case of connection lost
+        /// </summary>
         public void Reconnect()
         {
             core.Reconnect();

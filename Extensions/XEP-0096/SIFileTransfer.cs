@@ -48,9 +48,9 @@ namespace Net.Xmpp.Extensions
         /// we must support SOCKS5 and In-Band Bytestreams.
         /// </summary>
         private static readonly Type[] supportedMethods = new Type[] {
-			typeof(Socks5Bytestreams),
-			typeof(InBandBytestreams)
-		};
+            typeof(Socks5Bytestreams),
+            typeof(InBandBytestreams)
+        };
 
         /// <summary>
         /// An enumerable collection of XMPP namespaces the extension implements.
@@ -62,8 +62,8 @@ namespace Net.Xmpp.Extensions
             get
             {
                 return new string[] {
-					"http://jabber.org/protocol/si/profile/file-transfer"
-				};
+                    "http://jabber.org/protocol/si/profile/file-transfer"
+                };
             }
         }
 
@@ -334,9 +334,9 @@ namespace Net.Xmpp.Extensions
         /// <param name="from">The JID of the XMPP entity that wishes to initiate
         /// the data-stream.</param>
         /// <param name="si">The 'si' element of the request.</param>
-        /// <returns>The response to the SI request or an error element to include
-        /// in the IQ response.</returns>
-        private void OnStreamInitiationRequest(Jid from, XmlElement si, Action<XmlElement> resultado)
+        /// <param name="result">The response to the SI request or an error element to include
+        /// in the IQ response.</param>
+        private void OnStreamInitiationRequest(Jid from, XmlElement si, Action<XmlElement> result)
         {
             try
             {
@@ -344,7 +344,7 @@ namespace Net.Xmpp.Extensions
                 // If the session-id is already in use, we cannot process the request.
                 string sid = si.GetAttribute("id");
                 if (String.IsNullOrEmpty(sid) || siSessions.ContainsKey(sid))
-                    resultado(new XmppError(ErrorType.Cancel, ErrorCondition.Conflict).Data);
+                    result(new XmppError(ErrorType.Cancel, ErrorCondition.Conflict).Data);
                 // Extract file information and hand to user.
                 var file = si["file"];
                 string desc = file["desc"] != null ? file["desc"].InnerText : null,
@@ -356,24 +356,29 @@ namespace Net.Xmpp.Extensions
                 {
                     try
                     {
-                // User has rejected the request.
-                if (savePath == null)
-                            resultado(new XmppError(ErrorType.Cancel, ErrorCondition.NotAcceptable).Data);
-                // Create an SI session instance.
-                SISession session = new SISession(sid, File.OpenWrite(savePath),
-                    size, true, from, im.Jid, im.GetExtension(method) as IDataStream);
-                siSessions.TryAdd(sid, session);
-                // Store the file's meta data.
-                metaData.TryAdd(sid, new FileMetaData(name, desc));
-                // Construct and return the negotiation result.
-                        resultado(Xml.Element("si", "http://jabber.org/protocol/si").Child(
-                    FeatureNegotiation.Create(new SubmitForm(
-                                new ListField("stream-method", method)))));
-            }
-            catch (Exception e)
-            {
-                System.Diagnostics.Debug.WriteLine("Exception raised", e.ToString() + e.StackTrace);
-                        resultado(new XmppError(ErrorType.Cancel, ErrorCondition.BadRequest).Data);
+                        // User has rejected the request.
+                        if (savePath == null)
+                        {
+                            result(new XmppError(ErrorType.Cancel, ErrorCondition.NotAcceptable).Data);
+                        }
+                        else
+                        {
+                            // Create an SI session instance.
+                            SISession session = new SISession(sid, File.OpenWrite(savePath),
+                                size, true, from, im.Jid, im.GetExtension(method) as IDataStream);
+                            siSessions.TryAdd(sid, session);
+                            // Store the file's meta data.
+                            metaData.TryAdd(sid, new FileMetaData(name, desc));
+                            // Construct and return the negotiation result.
+                            result(Xml.Element("si", "http://jabber.org/protocol/si").Child(
+                                FeatureNegotiation.Create(new SubmitForm(
+                                    new ListField("stream-method", method)))));
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        System.Diagnostics.Debug.WriteLine("Exception raised", e.ToString() + e.StackTrace);
+                        result(new XmppError(ErrorType.Cancel, ErrorCondition.BadRequest).Data);
                     }
                 });
 
@@ -381,7 +386,7 @@ namespace Net.Xmpp.Extensions
             catch (Exception e)
             {
                 System.Diagnostics.Debug.WriteLine("Exception raised", e.ToString() + e.StackTrace);
-                resultado(new XmppError(ErrorType.Cancel, ErrorCondition.BadRequest).Data);
+                result(new XmppError(ErrorType.Cancel, ErrorCondition.BadRequest).Data);
             }
         }
 
@@ -422,9 +427,9 @@ namespace Net.Xmpp.Extensions
             ListField field = form.Fields["stream-method"] as ListField;
             // Order of preference: Socks5, Ibb.
             string[] methods = new string[] {
-				"http://jabber.org/protocol/bytestreams",
-				"http://jabber.org/protocol/ibb"
-			};
+                "http://jabber.org/protocol/bytestreams",
+                "http://jabber.org/protocol/ibb"
+            };
             for (int i = 0; i < methods.Length; i++)
             {
                 if (ForceInBandBytestreams &&

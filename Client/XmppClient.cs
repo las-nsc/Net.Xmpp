@@ -546,6 +546,9 @@ namespace Net.Xmpp.Client
             }
         }
 
+        /// <summary>
+        /// Edit Subject of a group chat.
+        /// </summary>
         public void EditRoomSubject(Jid room, string subject)
         {
             AssertValid();
@@ -779,7 +782,7 @@ namespace Net.Xmpp.Client
         /// <param name="validate">A delegate used for verifying the remote Secure Sockets
         /// Layer (SSL) certificate which is used for authentication. Can be null if not
         /// needed.</param>
-        /// <param name="serveradress">Adress if hostname is diferrent from resolution name</param>
+        /// <param name="serverAdress">Adress if hostname is diferrent from resolution name</param>
         /// <exception cref="ArgumentNullException">The hostname parameter is
         /// null.</exception>
         /// <exception cref="ArgumentException">The hostname parameter is the empty
@@ -851,10 +854,6 @@ namespace Net.Xmpp.Client
         /// <param name="password">The password to authenticate with.</param>
         /// <exception cref="ArgumentNullException">The username parameter or the
         /// password parameter is null.</exception>
-        /// <exception cref="AuthenticationException">An authentication error occured while
-        /// trying to establish a secure connection, or the provided credentials were
-        /// rejected by the server, or the server requires TLS/SSL and the Tls property has
-        /// been set to false.</exception>
         /// <exception cref="IOException">There was a failure while writing to or reading
         /// from the network. If the InnerException is of type SocketExcption, use the
         /// ErrorCode property to obtain the specific socket error code.</exception>
@@ -877,11 +876,17 @@ namespace Net.Xmpp.Client
             im.SetPresence();
         }
 
+        /// <summary>
+        /// Recconection in case of lost connection.
+        /// </summary>
         public void Reconnect()
         {
             im.Reconnect();
         }
 
+        /// <summary>
+        /// Enable this connection to receive carbon messages.
+        /// </summary>
         public void EnableCarbons()
         {
             messageCarbons.EnableCarbons(true);
@@ -1998,18 +2003,32 @@ namespace Net.Xmpp.Client
             groupChat.JoinRoom(chatRoom, nickname, password);
         }
 
+        /// <summary>
+        /// Request form with options to create a group chat
+        /// </summary>
+        /// <param name="room">Chat room</param>
         public DataForm RequestRegistration(Jid room)
         {
             AssertValid();
             return groupChat.RequestRegistration(room);
         }
 
+        /// <summary>
+        /// Send registration form to create a chat room
+        /// </summary>
+        /// <param name="room">Chat room</param>
+        /// <param name="form">Options of room</param>
         public bool SendRegistration(Jid room, DataForm form)
         {
             AssertValid();
             return groupChat.SendRegistration(room, form);
         }
 
+
+        /// <summary>
+        /// Request immediate room creation with default server options
+        /// </summary>
+        /// <param name="room">Chat room</param>
         public void RequestInstantRoom(Jid room)
         {
             AssertValid();
@@ -2019,18 +2038,31 @@ namespace Net.Xmpp.Client
         /// <summary>
         /// Leaves the specified room.
         /// </summary>
-        public void LeaveRoom(Jid chatRoom, string nickname)
+        /// <param name="room">Chat room</param>
+        /// <param name="nickname">Registered user nick in the room</param>
+        public void LeaveRoom(Jid room, string nickname)
         {
             AssertValid();
-            groupChat.LeaveRoom(chatRoom, nickname);
+            groupChat.LeaveRoom(room, nickname);
         }
 
+        /// <summary>
+        /// Destroy the specified room.
+        /// </summary>
+        /// <param name="room">Chat room</param>
+        /// <param name="reason">(Optional) Reason to destroy room.</param>
         public bool DestroyRoom(Jid room, string reason = null)
         {
             AssertValid();
             return groupChat.DestroyRoom(room, reason);
         }
 
+        /// <summary>
+        /// Ban User from a chat group.
+        /// </summary>
+        /// <param name="room">Chat room</param>
+        /// <param name="user">User to be banned</param>
+        /// <param name="reason">(Optional) Reason for the ban.</param>
         public bool BanUser(Jid room, Jid user, string reason = null)
         {
             AssertValid();

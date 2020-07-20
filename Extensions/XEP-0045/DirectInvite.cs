@@ -14,6 +14,10 @@ namespace Net.Xmpp.Extensions
         private const string reasonTag = "reason",
             passwordTag = "password";
 
+        /// <summary>
+        /// The tag name of the stanza's root element
+        /// Allows the element tag name to be overridden.
+        /// </summary>
         protected override string RootElementName
         {
             get { return "message"; }

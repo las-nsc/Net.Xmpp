@@ -26,6 +26,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="room">Group chat</param>
         /// <param name="person"></param>
         /// <param name="statuses"></param>
         public GroupPresenceEventArgs(Jid room, Occupant person, IEnumerable<MucStatusType> statuses) : base()

@@ -41,6 +41,10 @@ namespace Net.Xmpp.Extensions
             Password = invite.Password;
         }
 
+        /// <summary>
+        /// Constructs a GroupInviteEventArgs.
+        /// </summary>
+        /// <param name="invite">Group Chat Invitation.</param>
         public GroupInviteEventArgs(DirectInvite invite)
         {
             invite.ThrowIfNull("invite");
