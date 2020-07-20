@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Net.Xmpp")]
-[assembly: AssemblyDescription("Net.Xmpp is a multiplatform, Windows and Android, .NET XMPP client assembly. Sharp.Xmpp supports IM functionality and a variety of XMPP extensions, is simple and is extensively tested against Android Xamarin. It is a fork of the currently frozen excellent S22.Xmpp project.")]
+[assembly: AssemblyDescription("Net.Xmpp is a multiplatform, Windows and Android, .NET XMPP client assembly. Net.Xmpp supports IM functionality and a variety of XMPP extensions, is simple and is extensively tested against Windows. It is a fork of the currently frozen excellent Sharp.Xmpp project.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("LUZ Soluções Financeiras")]
 [assembly: AssemblyProduct("Net.Xmpp")]

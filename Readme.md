@@ -66,7 +66,7 @@ as HTML or CHM and can be downloaded from
 
 ### Usage & Examples
 
-To use the library add the S22.Xmpp.dll assembly to your project references in Visual Studio. Here's
+To use the library add the Net.Xmpp.dll assembly to your project references in Visual Studio. Here's
 a simple example that initializes a new instance of the XmppClient class and connects to an XMPP
 server:
 
@@ -87,7 +87,7 @@ server:
 	}
 
 Please see the [documentation](http://smiley22.github.com/S22.Xmpp/Documentation/) for a getting started
-guide, examples and details on using the classes and methods exposed by the S22.Xmpp assembly.
+guide, examples and details on using the classes and methods exposed by the Net.Xmpp assembly.
 
 
 ### Credits
