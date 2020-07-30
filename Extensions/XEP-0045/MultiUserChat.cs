@@ -452,7 +452,7 @@ namespace Net.Xmpp.Extensions
             var queryElement = Xml.Element("query", MucNs.NsOwner)
                 .Child(item);
 
-            Iq iq = im.IqRequest(IqType.Get, room, im.Jid, queryElement);
+            Iq iq = im.IqRequest(IqType.Set, room, im.Jid, queryElement);
             return iq.Type == IqType.Result;
         }
 
@@ -499,7 +499,7 @@ namespace Net.Xmpp.Extensions
             var queryElement = Xml.Element("query", MucNs.NsAdmin)
                 .Child(item);
 
-            Iq iq = im.IqRequest(IqType.Get, room, im.Jid, queryElement);
+            Iq iq = im.IqRequest(IqType.Set, room, im.Jid, queryElement);
             return iq.Type == IqType.Result;
         }
 
@@ -518,7 +518,7 @@ namespace Net.Xmpp.Extensions
             var queryElement = Xml.Element("query", MucNs.NsAdmin)
                 .Child(item);
 
-            Iq iq = im.IqRequest(IqType.Get, room, im.Jid, queryElement);
+            Iq iq = im.IqRequest(IqType.Set, room, im.Jid, queryElement);
             return iq.Type == IqType.Result;
         }
 
