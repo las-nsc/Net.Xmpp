@@ -1,6 +1,4 @@
-﻿using ARSoft.Tools.Net.Dns;
-using Net.Xmpp.Core.Sasl;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
@@ -14,8 +12,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
+using ARSoft.Tools.Net.Dns;
+
 namespace Net.Xmpp.Core
 {
+    using Sasl;
+
     /// <summary>
     /// Implements the core features of the XMPP protocol.
     /// </summary>
@@ -410,7 +412,7 @@ namespace Net.Xmpp.Core
             string serverAdress = "")
         {
             if (serverAdress == "")
-        {
+            {
                 serverAdress = hostname;
             }
 
@@ -747,7 +749,7 @@ namespace Net.Xmpp.Core
                 //Make sure that its a request towards the server and not towards any client
                 var ping = request.Data["ping"];
 
-                if (request.To.Domain == Jid.Domain && (request.To.Node == null || request.To.Node == "") && (ping != null && ping.NamespaceURI == "urn:xmpp:ping"))
+                if (request.To != null && request.To.Domain == Jid.Domain && (request.To.Node == null || request.To.Node == "") && (ping != null && ping.NamespaceURI == "urn:xmpp:ping"))
                 {
                     if (Connected)
                     {
@@ -925,11 +927,9 @@ namespace Net.Xmpp.Core
                 // Get rid of managed resources.
                 if (disposing)
                 {
-                    if (parser != null)
-                        parser.Close();
+                    parser?.Close();
                     parser = null;
-                    if (client != null)
-                        client.Close();
+                    client?.Close();
                     client = null;
                 }
                 // Get rid of unmanaged resources.
@@ -1399,7 +1399,7 @@ namespace Net.Xmpp.Core
                 ev.Set();
                 return true;
             }
-            return false;    
+            return false;
         }
 
         private bool HandleIqResponseAsync(Iq iq)
