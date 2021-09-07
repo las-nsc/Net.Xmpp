@@ -124,10 +124,10 @@ namespace Net.Xmpp.Extensions
         public InitiationResult InitiateStream(Jid to, string mimeType, string profile,
             IEnumerable<string> streamOptions, XmlElement data = null)
         {
-            to.ThrowIfNull("to");
-            mimeType.ThrowIfNull("mimeType");
-            profile.ThrowIfNull("profile");
-            streamOptions.ThrowIfNull("streamOptions");
+            to.ThrowIfNull(nameof(to));
+            mimeType.ThrowIfNull(nameof(mimeType));
+            profile.ThrowIfNull(nameof(profile));
+            streamOptions.ThrowIfNull(nameof(streamOptions));
             if (!streamOptions.Any())
             {
                 throw new ArgumentException("The streamOptions enumerable must " +
@@ -182,10 +182,10 @@ namespace Net.Xmpp.Extensions
             IEnumerable<string> streamOptions, XmlElement data = null,
             Action<InitiationResult, Iq> cb = null)
         {
-            to.ThrowIfNull("to");
-            mimeType.ThrowIfNull("mimeType");
-            profile.ThrowIfNull("profile");
-            streamOptions.ThrowIfNull("streamOptions");
+            to.ThrowIfNull(nameof(to));
+            mimeType.ThrowIfNull(nameof(mimeType));
+            profile.ThrowIfNull(nameof(profile));
+            streamOptions.ThrowIfNull(nameof(streamOptions));
             if (!streamOptions.Any())
             {
                 throw new ArgumentException("The streamOptions enumerable must " +
@@ -230,8 +230,8 @@ namespace Net.Xmpp.Extensions
         /// has already been registered.</exception>
         public void RegisterProfile(string name, Action<Jid, XmlElement, Action<XmlElement>> cb)
         {
-            name.ThrowIfNull("name");
-            cb.ThrowIfNull("cb");
+            name.ThrowIfNull(nameof(name));
+            cb.ThrowIfNull(nameof(cb));
             profiles.Add(name, cb);
         }
 
@@ -256,7 +256,7 @@ namespace Net.Xmpp.Extensions
         /// is null.</exception>
         private XmlElement CreateFeatureElement(IEnumerable<string> streamOptions)
         {
-            streamOptions.ThrowIfNull("streamOptions");
+            streamOptions.ThrowIfNull(nameof(streamOptions));
             // Create the data-form for stream-method selection.
             DataForm form = new RequestForm();
             HashSet<Option> options = new();
@@ -309,7 +309,7 @@ namespace Net.Xmpp.Extensions
         /// invalid data.</exception>
         private string ParseStreamMethod(XmlElement feature)
         {
-            feature.ThrowIfNull("feature");
+            feature.ThrowIfNull(nameof(feature));
             DataForm form = FeatureNegotiation.Parse(feature);
             // The data-form must contain a field named 'stream-method'.
             var field = form.Fields["stream-method"];

@@ -46,7 +46,7 @@ namespace Net.Xmpp.Extensions.Socks5
         /// not contain a valid SOCKS5 auth-response message.</exception>
         public static AuthResponse Deserialize(byte[] buffer)
         {
-            buffer.ThrowIfNull("buffer");
+            buffer.ThrowIfNull(nameof(buffer));
             using var ms = new MemoryStream(buffer);
             using BinaryReader r = new(ms);
             if (r.ReadByte() != version)

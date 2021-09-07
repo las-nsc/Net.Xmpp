@@ -36,7 +36,7 @@ namespace Net.Xmpp.Extensions
         /// null.</exception>
         public MoodChangedEventArgs(Jid jid, Mood mood, string description = null)
         {
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             Jid = jid;
             Mood = mood;
             Description = description;

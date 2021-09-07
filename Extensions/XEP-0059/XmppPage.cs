@@ -32,7 +32,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="xml">A set xml node</param>
         internal XmppPage(XmlElement xml)
         {
-            xml.ThrowIfNull("xml");
+            xml.ThrowIfNull(nameof(xml));
 
             try
             {
@@ -105,7 +105,7 @@ namespace Net.Xmpp.Extensions
         internal XmppPage(XmlElement xml, Func<XmlElement, IList<T>> itemSelector)
             : base(xml["set"])
         {
-            itemSelector.ThrowIfNull("itemSelector");
+            itemSelector.ThrowIfNull(nameof(itemSelector));
 
             Items = itemSelector(xml);
         }

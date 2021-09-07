@@ -80,7 +80,7 @@ namespace Net.Xmpp.Extensions
                 InviteWasDeclined.Raise(this, new GroupInviteDeclinedEventArgs(invite));
                 return true;
             }
-            
+
             if (stanza.Subject != null)
             {
                 // Subject change
@@ -114,7 +114,7 @@ namespace Net.Xmpp.Extensions
                         // 9.9 Approving Registration Requests
                         // I'm unsure on how to implement this.
                         // return true;
-                        break;                       
+                        break;
                 }
             }
 
@@ -123,14 +123,15 @@ namespace Net.Xmpp.Extensions
             return false;
         }
 
-        public bool Input (Im.Presence stanza)
-		{
-			if (MucError.IsError (stanza)) {
-				// Unable to join - No nickname specified / Duplicate nickname exists ... etc
-				var error = new MucError (stanza);
-				MucErrorResponse?.Raise (this, new GroupErrorEventArgs (error));
-				return true;
-			}
+        public bool Input(Im.Presence stanza)
+        {
+            if (MucError.IsError(stanza))
+            {
+                // Unable to join - No nickname specified / Duplicate nickname exists ... etc
+                var error = new MucError(stanza);
+                MucErrorResponse?.Raise(this, new GroupErrorEventArgs(error));
+                return true;
+            }
 
             // Things that could happen here:
             // Service Sends Notice of Membership
@@ -177,9 +178,9 @@ namespace Net.Xmpp.Extensions
                 }
             }
 
-			// Any message with an Availability status can be managed by the Presence extension
-			return false;
-		}
+            // Any message with an Availability status can be managed by the Presence extension
+            return false;
+        }
 
         /// <summary>
         /// Returns a list of active public chat room messages.
@@ -188,7 +189,7 @@ namespace Net.Xmpp.Extensions
         /// <returns>List of Room JIDs</returns>
         public IEnumerable<RoomInfoBasic> DiscoverRooms(Jid chatService)
         {
-            chatService.ThrowIfNull("chatService");
+            chatService.ThrowIfNull(nameof(chatService));
             return QueryRooms(chatService);
         }
 
@@ -199,7 +200,7 @@ namespace Net.Xmpp.Extensions
         /// <returns>Information about room</returns>
         public RoomInfoExtended GetRoomInfo(Jid chatRoom)
         {
-            chatRoom.ThrowIfNull("chatRoom");
+            chatRoom.ThrowIfNull(nameof(chatRoom));
             return QueryRoom(chatRoom);
         }
 
@@ -268,7 +269,7 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         public void SetNickName(Jid room, string nickname)
         {
-            room.ThrowIfNull("room");
+            room.ThrowIfNull(nameof(room));
             nickname.ThrowIfNullOrEmpty("nickname");
 
             Jid request = new(room.Domain, room.Node, nickname);
@@ -301,7 +302,7 @@ namespace Net.Xmpp.Extensions
                 .Attr("label", "Requested Role")
                 .Child(requestedRoleValue);
 
-            DataField[] fields = 
+            DataField[] fields =
             {
                 new DataField(formType),
                 new DataField(requestedRole)
@@ -411,7 +412,7 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         public void EditRoomSubject(Jid room, string subject)
         {
-            subject.ThrowIfNull("subject");
+            subject.ThrowIfNull(nameof(subject));
             Im.Message message = new(room, null, subject, null, MessageType.Groupchat);
             SendMessage(message);
         }
@@ -421,7 +422,7 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         public bool DestroyRoom(Jid room, string reason = null)
         {
-            room.ThrowIfNull("room");
+            room.ThrowIfNull(nameof(room));
 
             var item = Xml.Element("destroy")
                     .Attr("jid", room.ToString());
@@ -462,8 +463,8 @@ namespace Net.Xmpp.Extensions
 
         private bool PostPrivilegeChange(Jid room, Jid user, Affiliation affiliation, string reason, string nickname)
         {
-            room.ThrowIfNull("room");
-            user.ThrowIfNull("user");
+            room.ThrowIfNull(nameof(room));
+            user.ThrowIfNull(nameof(user));
 
             var item = Xml.Element("item")
                     .Attr("affiliation", affiliation.ToString().ToLower())
@@ -485,8 +486,8 @@ namespace Net.Xmpp.Extensions
 
         private bool PostPrivilegeChange(Jid room, string nickname, Role role, string reason)
         {
-            room.ThrowIfNull("room");
-            nickname.ThrowIfNull("nickname");
+            room.ThrowIfNull(nameof(room));
+            nickname.ThrowIfNull(nameof(nickname));
 
             var item = Xml.Element("item")
                     .Attr("role", role.ToString().ToLower())
@@ -515,7 +516,7 @@ namespace Net.Xmpp.Extensions
         /// performed or the response was invalid.</exception>
         private IEnumerable<Occupant> QueryOccupants(Jid room)
         {
-            room.ThrowIfNull("room");
+            room.ThrowIfNull(nameof(room));
             var items = QueryItems(room, Xml.Element("query", MucNs.NsRequestItems));
             return items.Select(x => new Occupant(x.Jid, x.Affiliation, x.Role));
         }
@@ -534,7 +535,7 @@ namespace Net.Xmpp.Extensions
         /// performed or the response was invalid.</exception>
         private IEnumerable<Occupant> QueryOccupants(Jid room, Affiliation affiliation)
         {
-            room.ThrowIfNull("room");
+            room.ThrowIfNull(nameof(room));
             var queryElement = Xml.Element("query", MucNs.NsAdmin)
                 .Child(Xml.Element("item").Attr("affiliation", affiliation.ToString().ToLower()));
 
@@ -556,7 +557,7 @@ namespace Net.Xmpp.Extensions
         /// performed or the response was invalid.</exception>
         private IEnumerable<Occupant> QueryOccupants(Jid room, Role role)
         {
-            room.ThrowIfNull("room");
+            room.ThrowIfNull(nameof(room));
             var queryElement = Xml.Element("query", MucNs.NsAdmin)
                 .Child(Xml.Element("item").Attr("role", role.ToString().ToLower()));
 
@@ -594,8 +595,8 @@ namespace Net.Xmpp.Extensions
         /// performed or the response was invalid.</exception>
         private IEnumerable<XmppItem> QueryItems(Jid jid, XmlElement query)
         {
-            jid.ThrowIfNull("jid");
-            query.ThrowIfNull("query");
+            jid.ThrowIfNull(nameof(jid));
+            query.ThrowIfNull(nameof(query));
             Iq iq = im.IqRequest(IqType.Get, jid, im.Jid, query);
             if (iq.Type != IqType.Result)
                 throw new NotSupportedException("Could not query items: " + iq);
@@ -631,7 +632,7 @@ namespace Net.Xmpp.Extensions
         /// <returns>A more detailed description of the specified room.</returns>
         private RoomInfoExtended QueryRoom(Jid room)
         {
-            room.ThrowIfNull("roomInfo");
+            room.ThrowIfNull(nameof(room));
             Iq iq = im.IqRequest(IqType.Get, room, im.Jid,
                 Xml.Element("query", MucNs.NsRequestInfo));
             if (iq.Type != IqType.Result)

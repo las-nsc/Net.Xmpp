@@ -55,7 +55,7 @@ namespace Net.Xmpp.Extensions.Dataforms
             string description = null, Jid jid = null)
             : base(DataFieldType.JidSingle, name, required, label, description)
         {
-            name.ThrowIfNull("name");
+            name.ThrowIfNull(nameof(name));
             Jid = jid;
         }
 

@@ -29,7 +29,7 @@ namespace Net.Xmpp.Extensions
         /// null.</exception>
         public FileMetaData(string name, string description = null)
         {
-            name.ThrowIfNull("name");
+            name.ThrowIfNull(nameof(name));
             Name = name;
             Description = description;
         }

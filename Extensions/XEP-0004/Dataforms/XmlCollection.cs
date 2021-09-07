@@ -50,7 +50,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// serialized into XML.</exception>
         public void Add(T item)
         {
-            item.ThrowIfNull("item");
+            item.ThrowIfNull(nameof(item));
             XmlElement elem = Xml.Element(tag);
             try
             {
@@ -83,7 +83,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// null.</exception>
         public bool Contains(T item)
         {
-            item.ThrowIfNull("item");
+            item.ThrowIfNull(nameof(item));
             foreach (var i in GetItems())
             {
                 if (item.Equals(i))
@@ -119,7 +119,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// null.</exception>
         public bool Remove(T item)
         {
-            item.ThrowIfNull("item");
+            item.ThrowIfNull(nameof(item));
             XmlElement elem = null;
             foreach (var e in GetElements())
             {
@@ -174,9 +174,9 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// parameter or the conversion parameter is null.</exception>
         public XmlCollection(XmlElement element, string tag, Func<XmlElement, T> conversion)
         {
-            element.ThrowIfNull("element");
-            tag.ThrowIfNull("tag");
-            conversion.ThrowIfNull("conversion");
+            element.ThrowIfNull(nameof(element));
+            tag.ThrowIfNull(nameof(tag));
+            conversion.ThrowIfNull(nameof(conversion));
             this.element = element;
             this.tag = tag;
             this.conversion = conversion;

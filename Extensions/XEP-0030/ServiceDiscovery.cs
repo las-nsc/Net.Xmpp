@@ -98,7 +98,7 @@ namespace Net.Xmpp.Extensions
         /// JID does not support querying of feature information.</exception>
         public bool Supports<T>(Jid jid) where T : XmppExtension
         {
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             T ext = im.GetExtension<T>();
             return Supports(jid, ext.Xep);
         }
@@ -117,8 +117,8 @@ namespace Net.Xmpp.Extensions
         /// specified JID does not support querying of feature information.</exception>
         public bool Supports(Jid jid, params Extension[] extensions)
         {
-            jid.ThrowIfNull("jid");
-            extensions.ThrowIfNull("extensions");
+            jid.ThrowIfNull(nameof(jid));
+            extensions.ThrowIfNull(nameof(extensions));
             // Have the features of the JID been cached yet?
             if (!cache.ContainsKey(jid))
                 // Perform SDisco request and cache the result.
@@ -146,7 +146,7 @@ namespace Net.Xmpp.Extensions
         /// specified JID does not support querying of feature information.</exception>
         public IEnumerable<Extension> GetExtensions(Jid jid)
         {
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             if (!cache.ContainsKey(jid))
                 cache.Add(jid, QueryFeatures(jid));
             return cache[jid];
@@ -224,7 +224,7 @@ namespace Net.Xmpp.Extensions
         /// performed or the response was invalid.</exception>
         private IEnumerable<Extension> QueryFeatures(Jid jid)
         {
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             Iq iq = im.IqRequest(IqType.Get, jid, im.Jid,
                 Xml.Element("query", "http://jabber.org/protocol/disco#info"));
             if (iq.Type != IqType.Result)
@@ -259,7 +259,7 @@ namespace Net.Xmpp.Extensions
         /// performed or the response was invalid.</exception>
         private IEnumerable<Identity> QueryIdentities(Jid jid)
         {
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             Iq iq = im.IqRequest(IqType.Get, jid, im.Jid,
                 Xml.Element("query", "http://jabber.org/protocol/disco#info"));
             if (iq.Type != IqType.Result)
@@ -295,7 +295,7 @@ namespace Net.Xmpp.Extensions
         /// performed or the response was invalid.</exception>
         private IEnumerable<XmppItem> QueryItems(Jid jid)
         {
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             Iq iq = im.IqRequest(IqType.Get, jid, im.Jid,
                 Xml.Element("query", "http://jabber.org/protocol/disco#items"));
             if (iq.Type != IqType.Result)

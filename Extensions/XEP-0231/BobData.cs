@@ -82,8 +82,8 @@ namespace Net.Xmpp.Extensions
         /// type parameter is null.</exception>
         public BobData(byte[] data, string type)
         {
-            data.ThrowIfNull("data");
-            type.ThrowIfNull("type");
+            data.ThrowIfNull(nameof(data));
+            type.ThrowIfNull(nameof(type));
             Data = data;
             Type = type;
             Cid = "sha1+" + Sha1(Data) + "@bob.xmpp.org";
@@ -99,9 +99,9 @@ namespace Net.Xmpp.Extensions
         /// type parameter or the cid parameter is null.</exception>
         private BobData(byte[] data, string type, string cid)
         {
-            data.ThrowIfNull("data");
-            type.ThrowIfNull("type");
-            cid.ThrowIfNull("cid");
+            data.ThrowIfNull(nameof(data));
+            type.ThrowIfNull(nameof(type));
+            cid.ThrowIfNull(nameof(cid));
             Data = data;
             Type = type;
             Cid = cid;
@@ -116,7 +116,7 @@ namespace Net.Xmpp.Extensions
         /// null.</exception>
         private string Sha1(byte[] data)
         {
-            data.ThrowIfNull("data");
+            data.ThrowIfNull(nameof(data));
             using var sha1 = new SHA1Managed();
             byte[] hash = sha1.ComputeHash(data);
             StringBuilder builder = new();

@@ -57,7 +57,7 @@ namespace Net.Xmpp.Extensions.Dataforms
             string description = null, string value = null)
             : base(DataFieldType.TextSingle, name, required, label, description)
         {
-            name.ThrowIfNull("name");
+            name.ThrowIfNull(nameof(name));
             Value = value;
         }
 

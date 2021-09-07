@@ -36,9 +36,9 @@ namespace Net.Xmpp.Im
         /// <exception cref="ArgumentNullException">Any of the parameters are null.</exception>
         public XmlDictionary(XmlElement element, string tag, string key)
         {
-            element.ThrowIfNull("element");
-            tag.ThrowIfNull("tag");
-            key.ThrowIfNull("key");
+            element.ThrowIfNull(nameof(element));
+            tag.ThrowIfNull(nameof(tag));
+            key.ThrowIfNull(nameof(key));
             this.element = element;
             this.tag = tag;
             this.key = key;
@@ -58,7 +58,7 @@ namespace Net.Xmpp.Im
         /// read-only.</exception>
         public void Add(string key, string value)
         {
-            key.ThrowIfNull("key");
+            key.ThrowIfNull(nameof(key));
             if (ContainsKey(key))
                 throw new ArgumentException("An element with the same key already " +
                     "exists in the dictionary.");
@@ -77,7 +77,7 @@ namespace Net.Xmpp.Im
         /// <exception cref="ArgumentNullException">The key parameter is null.</exception>
         public bool ContainsKey(string key)
         {
-            key.ThrowIfNull("key");
+            key.ThrowIfNull(nameof(key));
             return GetElement(key) != null;
         }
 
@@ -109,7 +109,7 @@ namespace Net.Xmpp.Im
         /// <exception cref="ArgumentNullException">The key parameter is null.</exception>
         public bool Remove(string key)
         {
-            key.ThrowIfNull("key");
+            key.ThrowIfNull(nameof(key));
             XmlElement e = GetElement(key);
             if (e != null)
                 element.RemoveChild(e);
@@ -129,7 +129,7 @@ namespace Net.Xmpp.Im
         /// <exception cref="ArgumentNullException">The key parameter is null.</exception>
         public bool TryGetValue(string key, out string value)
         {
-            key.ThrowIfNull("key");
+            key.ThrowIfNull(nameof(key));
             XmlElement e = GetElement(key);
             value = (e?.InnerText);
             return e != null;
@@ -165,7 +165,7 @@ namespace Net.Xmpp.Im
         {
             get
             {
-                key.ThrowIfNull("key");
+                key.ThrowIfNull(nameof(key));
                 foreach (XmlElement e in element.GetElementsByTagName(tag))
                 {
                     string k = e.GetAttribute(this.key);
@@ -177,7 +177,7 @@ namespace Net.Xmpp.Im
 
             set
             {
-                key.ThrowIfNull("key");
+                key.ThrowIfNull(nameof(key));
                 if (element.IsReadOnly)
                     throw new NotSupportedException("The dictionary is read-only.");
                 XmlElement e = GetElement(key);
@@ -252,7 +252,7 @@ namespace Net.Xmpp.Im
         /// to the end of the destination array.</exception>
         public void CopyTo(KeyValuePair<string, string>[] array, int arrayIndex)
         {
-            array.ThrowIfNull("array");
+            array.ThrowIfNull(nameof(array));
             if (arrayIndex < 0)
                 throw new IndexOutOfRangeException("arrayIndex");
             int size = array.Length - arrayIndex;
@@ -327,7 +327,7 @@ namespace Net.Xmpp.Im
         /// <exception cref="ArgumentNullException">The key parameter is null.</exception>
         private XmlElement GetElement(string key)
         {
-            key.ThrowIfNull("key");
+            key.ThrowIfNull(nameof(key));
             foreach (XmlElement e in element.GetElementsByTagName(tag))
             {
                 string k = e.GetAttribute(this.key);

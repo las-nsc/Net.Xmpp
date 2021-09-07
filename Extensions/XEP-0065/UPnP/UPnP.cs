@@ -172,8 +172,8 @@ namespace Net.Xmpp.Extensions.Upnp
 		/// trying to forward the specified port.</exception>
 		static void ForwardPort(UPnPDevice wanDevice, IPAddress targetAddress, int port,
 			ProtocolType? protocol = null, string description = null) {
-			wanDevice.ThrowIfNull("wanDevice");
-			targetAddress.ThrowIfNull("targetAddress");
+			wanDevice.ThrowIfNull(nameof(wanDevice));
+			targetAddress.ThrowIfNull(nameof(targetAddress));
 			port.ThrowIfOutOfRange("port", 0, 65535);
 			if (protocol.HasValue && protocol != ProtocolType.Tcp &&
 				protocol != ProtocolType.Udp) {
@@ -216,7 +216,7 @@ namespace Net.Xmpp.Extensions.Upnp
 		/// InvalidOperationException.</remarks>
 		static void UnforwardPort(UPnPDevice wanDevice, int port,
 			ProtocolType? protocol = null) {
-			wanDevice.ThrowIfNull("wanDevice");
+			wanDevice.ThrowIfNull(nameof(wanDevice));
 			port.ThrowIfOutOfRange("port", 0, 65535);
 			if (protocol.HasValue && protocol != ProtocolType.Tcp &&
 				protocol != ProtocolType.Udp) {
@@ -254,8 +254,8 @@ namespace Net.Xmpp.Extensions.Upnp
 		/// <remarks>This is an extension method for the UPnPDevice class.</remarks>
 		static object[] InvokeAction(this UPnPDevice device, string serviceType,
 			string action, params object[] args) {
-			serviceType.ThrowIfNull("serviceType");
-			action.ThrowIfNull("action");
+			serviceType.ThrowIfNull(nameof(serviceType));
+			action.ThrowIfNull(nameof(action));
 			try {
 				foreach (IUPnPService srv in device.Services) {
 					if (srv.ServiceTypeIdentifier != serviceType)

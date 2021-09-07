@@ -49,7 +49,7 @@ namespace Net.Xmpp.Core
         /// XML-stream in it's 'xml:lang' attribute could not be found.</exception>
         public StreamParser(Stream stream, bool leaveOpen = false)
         {
-            stream.ThrowIfNull("stream");
+            stream.ThrowIfNull(nameof(stream));
             this.leaveOpen = leaveOpen;
             this.stream = stream;
             reader = XmlReader.Create(stream, new XmlReaderSettings()

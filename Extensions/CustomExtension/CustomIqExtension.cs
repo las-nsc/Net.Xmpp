@@ -1,8 +1,9 @@
-﻿using Net.Xmpp.Core;
-using Net.Xmpp.Im;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Xml;
+
+using Net.Xmpp.Core;
+using Net.Xmpp.Im;
 
 namespace Net.Xmpp.Extensions
 {
@@ -121,8 +122,8 @@ namespace Net.Xmpp.Extensions
         /// unspecified XMPP error occurred.</exception>
         public void RequestCustomIqAsync(Jid jid, string request, Action callback)
         {
-            jid.ThrowIfNull("jid");
-            request.ThrowIfNull("str");
+            jid.ThrowIfNull(nameof(jid));
+            request.ThrowIfNull(nameof(request));
 
             //First check if the Jid entity supports the namespace
             if (!ecapa.Supports(jid, Extension.CustomIqExtension))
@@ -171,8 +172,8 @@ namespace Net.Xmpp.Extensions
         /// unspecified XMPP error occurred.</exception>
         public void RequestCustomIq(Jid jid, string request)
         {
-            jid.ThrowIfNull("jid");
-            request.ThrowIfNull("str");
+            jid.ThrowIfNull(nameof(jid));
+            request.ThrowIfNull(nameof(request));
 
             //First check if the Jid entity supports the namespace
             if (!ecapa.Supports(jid, Extension.CustomIqExtension))

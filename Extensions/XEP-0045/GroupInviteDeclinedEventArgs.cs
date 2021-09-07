@@ -33,7 +33,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="invite">Group Chat Invitation.</param>
         public GroupInviteDeclinedEventArgs(InviteDeclined invite)
         {
-            invite.ThrowIfNull("invite");
+            invite.ThrowIfNull(nameof(invite));
             Data = invite;
         }
     }

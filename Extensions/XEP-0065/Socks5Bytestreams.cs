@@ -289,7 +289,7 @@ namespace Net.Xmpp.Extensions
         /// null.</exception>
         public void CancelTransfer(SISession session)
         {
-            session.ThrowIfNull("session");
+            session.ThrowIfNull(nameof(session));
             siFileTransfer.InvalidateSession(session.Sid);
         }
 
@@ -302,7 +302,7 @@ namespace Net.Xmpp.Extensions
         /// null.</exception>
         private string Sha1(string s)
         {
-            s.ThrowIfNull("s");
+            s.ThrowIfNull(nameof(s));
             using var sha1 = new SHA1Managed();
             byte[] hash = sha1.ComputeHash(Encoding.UTF8.GetBytes(s));
             StringBuilder builder = new();
@@ -470,7 +470,7 @@ namespace Net.Xmpp.Extensions
         /// unspecified XMPP error occurred.</exception>
         private Streamhost GetNetworkAddress(Jid jid)
         {
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             var iq = im.IqRequest(IqType.Get, jid, im.Jid,
                 Xml.Element("query", "http://jabber.org/protocol/bytestreams"));
             if (iq.Type == IqType.Error)
@@ -584,7 +584,7 @@ namespace Net.Xmpp.Extensions
         /// safe.</remarks>
         private bool BehindNAT(IPAddress address)
         {
-            address.ThrowIfNull("address");
+            address.ThrowIfNull(nameof(address));
             // See if the specified address is assigned to one of the network interfaces
             // of the system. If it isn't, we assume it's behind a NAT.
             try

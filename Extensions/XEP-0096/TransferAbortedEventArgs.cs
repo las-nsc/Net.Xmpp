@@ -22,7 +22,7 @@ namespace Net.Xmpp.Extensions
         /// is null.</exception>
         public TransferAbortedEventArgs(SISession session)
         {
-            session.ThrowIfNull("session");
+            session.ThrowIfNull(nameof(session));
             Session = session;
         }
     }

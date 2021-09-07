@@ -29,7 +29,7 @@ namespace Net.Xmpp.Extensions
         /// null.</exception>
         public ChatStateChangedEventArgs(Jid jid, ChatState state)
         {
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             Jid = jid;
             ChatState = state;
         }

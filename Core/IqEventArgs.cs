@@ -20,7 +20,7 @@ namespace Net.Xmpp.Core
         /// <exception cref="ArgumentNullException">The stanza parameter is null.</exception>
         public IqEventArgs(Iq stanza)
         {
-            stanza.ThrowIfNull("stanza");
+            stanza.ThrowIfNull(nameof(stanza));
             Stanza = stanza;
         }
     }

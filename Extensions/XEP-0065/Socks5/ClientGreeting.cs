@@ -54,7 +54,7 @@ namespace Net.Xmpp.Extensions.Socks5
         /// not contain a valid SOCKS5 client-greeting message.</exception>
         public static ClientGreeting Deserialize(byte[] buffer)
         {
-            buffer.ThrowIfNull("buffer");
+            buffer.ThrowIfNull(nameof(buffer));
             using var ms = new MemoryStream(buffer);
             using BinaryReader r = new(ms);
             if (r.ReadByte() != version)
@@ -89,7 +89,7 @@ namespace Net.Xmpp.Extensions.Socks5
         /// null.</exception>
         public ClientGreeting(IEnumerable<AuthMethod> methods)
         {
-            methods.ThrowIfNull("methods");
+            methods.ThrowIfNull(nameof(methods));
             foreach (var m in methods)
                 this.methods.Add(m);
         }

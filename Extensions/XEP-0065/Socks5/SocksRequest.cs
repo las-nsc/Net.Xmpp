@@ -119,7 +119,7 @@ namespace Net.Xmpp.Extensions.Socks5
         public SocksRequest(SocksCommand command, IPAddress destination,
             ushort port)
         {
-            destination.ThrowIfNull("destination");
+            destination.ThrowIfNull(nameof(destination));
             Command = command;
             ATyp = destination.AddressFamily == AddressFamily.InterNetworkV6 ?
                 ATyp.IPv6 : ATyp.IPv4;
@@ -140,7 +140,7 @@ namespace Net.Xmpp.Extensions.Socks5
         /// exceeds 255 characters.</exception>
         public SocksRequest(SocksCommand command, string domain, ushort port)
         {
-            domain.ThrowIfNull("domain");
+            domain.ThrowIfNull(nameof(domain));
             if (domain.Length > 255)
             {
                 throw new ArgumentException("The length of the domain string must " +

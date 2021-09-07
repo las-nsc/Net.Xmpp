@@ -63,7 +63,7 @@ namespace Net.Xmpp.Extensions
         /// unspecified XMPP error occurred.</exception>
         public void Register(RegistrationCallback callback)
         {
-            callback.ThrowIfNull("callback");
+            callback.ThrowIfNull(nameof(callback));
             Iq iq = im.IqRequest(IqType.Get, null, null,
                 Xml.Element("query", "jabber:iq:register"));
             if (iq.Type == IqType.Error)
@@ -119,7 +119,7 @@ namespace Net.Xmpp.Extensions
         /// another unspecified XMPP error occurred.</exception>
         public void ChangePassword(string newPassword)
         {
-            newPassword.ThrowIfNull("newPassword");
+            newPassword.ThrowIfNull(nameof(newPassword));
             Iq iq = im.IqRequest(IqType.Set, null, null,
                 Xml.Element("query", "jabber:iq:register")
                     .Child(Xml.Element("username").Text(im.Username))

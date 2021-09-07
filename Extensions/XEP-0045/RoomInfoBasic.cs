@@ -12,7 +12,7 @@
         /// <param name="name">Room name</param>
         public RoomInfoBasic(Jid jid, string name = null)
         {
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             Jid = jid;
 
             Name = string.IsNullOrWhiteSpace(name) ? jid.Node : name;

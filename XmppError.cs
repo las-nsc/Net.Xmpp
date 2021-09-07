@@ -132,7 +132,7 @@ namespace Net.Xmpp
         /// invalid XML data.</exception>
         internal XmppError(XmlElement error)
         {
-            error.ThrowIfNull("error");
+            error.ThrowIfNull(nameof(error));
             // Verify mandatory error type attribute.
             ErrorType type = (ErrorType)Enum.Parse(typeof(ErrorType),
                 error.GetAttribute("type"), true);
@@ -206,7 +206,7 @@ namespace Net.Xmpp
         /// is not a valid XMPP error condition.</exception>
         private ErrorCondition TagNameToErrorCondition(string tagName)
         {
-            tagName.ThrowIfNull("tagName");
+            tagName.ThrowIfNull(nameof(tagName));
             foreach (var v in Enum.GetValues(typeof(ErrorCondition)))
             {
                 if (ErrorConditionToTagName((ErrorCondition)v) == tagName)

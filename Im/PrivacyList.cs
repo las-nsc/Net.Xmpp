@@ -36,7 +36,7 @@ namespace Net.Xmpp.Im
         /// <exception cref="ArgumentNullException">The name parameter is null.</exception>
         public PrivacyList(string name)
         {
-            name.ThrowIfNull("name");
+            name.ThrowIfNull(nameof(name));
             Name = name;
         }
 
@@ -69,7 +69,7 @@ namespace Net.Xmpp.Im
         /// a rule with the same order value as the item specified.</exception>
         public void Add(PrivacyRule item)
         {
-            item.ThrowIfNull("item");
+            item.ThrowIfNull(nameof(item));
             foreach (PrivacyRule rule in rules)
             {
                 if (rule.Order == item.Order)
@@ -89,7 +89,7 @@ namespace Net.Xmpp.Im
         /// <exception cref="ArgumentNullException">The item parameter is null.</exception>
         public uint Add(PrivacyRule item, bool overWriteOrder)
         {
-            item.ThrowIfNull("item");
+            item.ThrowIfNull(nameof(item));
             uint? highest = null;
             foreach (PrivacyRule rule in rules)
             {
@@ -123,7 +123,7 @@ namespace Net.Xmpp.Im
         /// <exception cref="ArgumentNullException">The item parameter is null.</exception>
         public bool Contains(PrivacyRule item)
         {
-            item.ThrowIfNull("item");
+            item.ThrowIfNull(nameof(item));
             return rules.Contains(item);
         }
 
@@ -143,7 +143,7 @@ namespace Net.Xmpp.Im
         /// to the end of the destination array.</exception>
         public void CopyTo(PrivacyRule[] array, int arrayIndex)
         {
-            array.ThrowIfNull("array");
+            array.ThrowIfNull(nameof(array));
             rules.CopyTo(array, arrayIndex);
         }
 
@@ -160,7 +160,7 @@ namespace Net.Xmpp.Im
         /// read-only.</exception>
         public bool Remove(PrivacyRule item)
         {
-            item.ThrowIfNull("item");
+            item.ThrowIfNull(nameof(item));
             return rules.Remove(item);
         }
     }

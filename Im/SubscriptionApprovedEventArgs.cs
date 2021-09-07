@@ -19,7 +19,7 @@ namespace Net.Xmpp.Im
         /// <exception cref="ArgumentNullException">The jid parameter is null.</exception>
         public SubscriptionApprovedEventArgs(Jid jid)
         {
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             Jid = jid;
         }
     }

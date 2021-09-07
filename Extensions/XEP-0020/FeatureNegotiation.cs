@@ -1,8 +1,9 @@
-﻿using Net.Xmpp.Extensions.Dataforms;
-using Net.Xmpp.Im;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Xml;
+
+using Net.Xmpp.Extensions.Dataforms;
+using Net.Xmpp.Im;
 
 namespace Net.Xmpp.Extensions
 {
@@ -35,7 +36,7 @@ namespace Net.Xmpp.Extensions
         /// null.</exception>
         public static XmlElement Create(DataForm form)
         {
-            form.ThrowIfNull("form");
+            form.ThrowIfNull(nameof(form));
             return Xml.Element("feature",
                 "http://jabber.org/protocol/feature-neg").Child(form.ToXmlElement());
         }
@@ -52,7 +53,7 @@ namespace Net.Xmpp.Extensions
         /// data.</exception>
         public static DataForm Parse(XmlElement feature)
         {
-            feature.ThrowIfNull("feature");
+            feature.ThrowIfNull(nameof(feature));
             return feature.Name != "feature" || feature.NamespaceURI !=
                 "http://jabber.org/protocol/feature-neg" || feature["x"] == null
                 ? throw new ArgumentException("Invalid XML 'feature' element.")

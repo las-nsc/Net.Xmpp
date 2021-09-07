@@ -24,7 +24,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="start">The start date of the conversation</param>
         public ArchivedChatId(Jid with, DateTimeOffset start)
         {
-            with.ThrowIfNull("with");
+            with.ThrowIfNull(nameof(with));
 
             With = with;
             Start = start;

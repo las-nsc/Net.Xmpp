@@ -62,7 +62,7 @@ namespace Net.Xmpp.Extensions
         /// null.</exception>
         public void SetChatState(Jid jid, ChatState state)
         {
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             Message m = new(jid);
             m.Type = MessageType.Chat;
             m.Data.Child(Xml.Element(state.ToString().ToLowerInvariant(),

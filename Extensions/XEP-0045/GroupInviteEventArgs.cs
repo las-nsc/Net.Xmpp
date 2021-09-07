@@ -33,7 +33,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="invite">Group Chat Invitation.</param>
         public GroupInviteEventArgs(Invite invite)
         {
-            invite.ThrowIfNull("invite");
+            invite.ThrowIfNull(nameof(invite));
             From = invite.From;
             ChatRoom = invite.From;
             Reason = invite.Reason;
@@ -46,7 +46,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="invite">Group Chat Invitation.</param>
         public GroupInviteEventArgs(DirectInvite invite)
         {
-            invite.ThrowIfNull("invite");
+            invite.ThrowIfNull(nameof(invite));
             From = invite.From;
             ChatRoom = invite.Room;
             Reason = invite.Reason;

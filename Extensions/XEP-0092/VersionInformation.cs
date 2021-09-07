@@ -34,8 +34,8 @@ namespace Net.Xmpp.Extensions
         /// parameter is null.</exception>
         public VersionInformation(string name, string version, string os = null)
         {
-            name.ThrowIfNull("name");
-            version.ThrowIfNull("version");
+            name.ThrowIfNull(nameof(name));
+            version.ThrowIfNull(nameof(version));
             Name = name;
             Version = version;
             Os = os;

@@ -33,8 +33,8 @@ namespace Net.Xmpp.Extensions
         /// type parameter is null.</exception>
         public Identity(string category, string type, string name = null)
         {
-            category.ThrowIfNull("category");
-            type.ThrowIfNull("type");
+            category.ThrowIfNull(nameof(category));
+            type.ThrowIfNull(nameof(type));
             Category = category;
             Type = type;
             Name = name;

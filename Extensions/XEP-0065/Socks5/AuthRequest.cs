@@ -51,8 +51,8 @@ namespace Net.Xmpp.Extensions.Socks5
         /// the password parameter is null.</exception>
         public AuthRequest(string username, string password)
         {
-            username.ThrowIfNull("username");
-            password.ThrowIfNull("password");
+            username.ThrowIfNull(nameof(username));
+            password.ThrowIfNull(nameof(password));
             Username = username;
             Password = password;
         }

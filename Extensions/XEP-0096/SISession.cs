@@ -79,12 +79,12 @@ namespace Net.Xmpp.Extensions
         public SISession(string sid, Stream stream, long size, bool receiving,
             Jid from, Jid to, IDataStream extension)
         {
-            sid.ThrowIfNull("sid");
-            stream.ThrowIfNull("stream");
+            sid.ThrowIfNull(nameof(sid));
+            stream.ThrowIfNull(nameof(stream));
             size.ThrowIfOutOfRange(0, long.MaxValue);
-            from.ThrowIfNull("from");
-            to.ThrowIfNull("to");
-            extension.ThrowIfNull("extension");
+            from.ThrowIfNull(nameof(from));
+            to.ThrowIfNull(nameof(to));
+            extension.ThrowIfNull(nameof(extension));
             if (receiving && !stream.CanWrite)
                 throw new ArgumentException("The specified stream cannot be written.");
             if (!receiving && !stream.CanRead)

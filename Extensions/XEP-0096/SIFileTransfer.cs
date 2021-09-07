@@ -130,9 +130,9 @@ namespace Net.Xmpp.Extensions
         /// parameter or the to parameter is null.</exception>
         public SISession GetSession(string sid, Jid from, Jid to)
         {
-            sid.ThrowIfNull("sid");
-            from.ThrowIfNull("from");
-            to.ThrowIfNull("to");
+            sid.ThrowIfNull(nameof(sid));
+            from.ThrowIfNull(nameof(from));
+            to.ThrowIfNull(nameof(to));
             return siSessions.TryGetValue(sid, out var value)
                 ? value.From == from && value.To == to ? value
                 : null : null;
@@ -146,7 +146,7 @@ namespace Net.Xmpp.Extensions
         /// is null.</exception>
         public void InvalidateSession(string sid)
         {
-            sid.ThrowIfNull("sid");
+            sid.ThrowIfNull(nameof(sid));
             if (siSessions.TryRemove(sid, out var value))
             {
                 value.Stream?.Dispose();
@@ -190,8 +190,8 @@ namespace Net.Xmpp.Extensions
         public string InitiateFileTransfer(Jid to, string path,
             string description = null, Action<bool, FileTransfer> cb = null)
         {
-            to.ThrowIfNull("to");
-            path.ThrowIfNull("path");
+            to.ThrowIfNull(nameof(to));
+            path.ThrowIfNull(nameof(path));
             FileInfo info = new(path);
             return InitiateFileTransfer(to, File.OpenRead(path), info.Name, info.Length,
                 description, cb);
@@ -228,9 +228,9 @@ namespace Net.Xmpp.Extensions
         public string InitiateFileTransfer(Jid to, Stream stream, string name, long size,
             string description = null, Action<bool, FileTransfer> cb = null)
         {
-            to.ThrowIfNull("to");
-            stream.ThrowIfNull("stream");
-            name.ThrowIfNull("name");
+            to.ThrowIfNull(nameof(to));
+            stream.ThrowIfNull(nameof(stream));
+            name.ThrowIfNull(nameof(name));
             size.ThrowIfOutOfRange(0, long.MaxValue);
             //FIXME FIXME
             //if (!ecapa.Supports(to, Extension.SIFileTransfer)) {
@@ -257,8 +257,8 @@ namespace Net.Xmpp.Extensions
         public void CancelFileTransfer(string sid, Jid from, Jid to)
         {
             sid.ThrowIfNullOrEmpty("sid");
-            from.ThrowIfNull("from");
-            to.ThrowIfNull("to");
+            from.ThrowIfNull(nameof(from));
+            to.ThrowIfNull(nameof(to));
             SISession session = GetSession(sid, from,
                 to);
             if (session == null)
@@ -281,7 +281,7 @@ namespace Net.Xmpp.Extensions
         /// not represent an active data-transfer operation.</exception>
         public void CancelFileTransfer(FileTransfer transfer)
         {
-            transfer.ThrowIfNull("transfer");
+            transfer.ThrowIfNull(nameof(transfer));
             SISession session = GetSession(transfer.SessionId, transfer.From,
                 transfer.To);
             if (session == null)
@@ -374,7 +374,7 @@ namespace Net.Xmpp.Extensions
         /// null.</exception>
         private bool SupportsNamespace(string @namespace)
         {
-            @namespace.ThrowIfNull("namespace");
+            @namespace.ThrowIfNull(nameof(@namespace));
             foreach (var ext in im.Extensions)
             {
                 foreach (string ns in ext.Namespaces)

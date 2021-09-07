@@ -21,7 +21,7 @@ namespace Net.Xmpp.Core
         /// is null.</exception>
         public MessageEventArgs(Message stanza)
         {
-            stanza.ThrowIfNull("stanza");
+            stanza.ThrowIfNull(nameof(stanza));
             Stanza = stanza;
         }
     }

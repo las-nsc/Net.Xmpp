@@ -46,7 +46,7 @@ namespace Net.Xmpp.Im
         /// specified presence stanza is invalid.</exception>
         public Presence(Core.Presence presence)
         {
-            presence.ThrowIfNull("presence");
+            presence.ThrowIfNull(nameof(presence));
             type = ParseType(presence.Data.GetAttribute("type"));
             element = presence.Data;
         }

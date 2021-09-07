@@ -693,7 +693,7 @@ namespace Net.Xmpp.Client
             CultureInfo language = null)
         {
             AssertValid();
-            to.ThrowIfNull("to");
+            to.ThrowIfNull(nameof(to));
             body.ThrowIfNullOrEmpty("body");
             Im.SendMessage(to, body, subject, thread, type, language);
         }
@@ -733,8 +733,8 @@ namespace Net.Xmpp.Client
             MessageType type = MessageType.Normal, CultureInfo language = null)
         {
             AssertValid();
-            to.ThrowIfNull("to");
-            bodies.ThrowIfNull("bodies");
+            to.ThrowIfNull(nameof(to));
+            bodies.ThrowIfNull(nameof(bodies));
             Im.SendMessage(to, bodies, subjects, thread, type, language);
         }
 
@@ -753,7 +753,7 @@ namespace Net.Xmpp.Client
         public void SendMessage(Message message)
         {
             AssertValid();
-            message.ThrowIfNull("message");
+            message.ThrowIfNull(nameof(message));
             Im.SendMessage(message);
         }
 
@@ -828,7 +828,7 @@ namespace Net.Xmpp.Client
         public void SetStatus(Status status)
         {
             AssertValid();
-            status.ThrowIfNull("status");
+            status.ThrowIfNull(nameof(status));
             Im.SetStatus(status);
         }
 
@@ -882,7 +882,7 @@ namespace Net.Xmpp.Client
         public void AddContact(Jid jid, string name = null, params string[] groups)
         {
             AssertValid();
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             // Create a roster item for the new contact.
             Im.AddToRoster(new RosterItem(jid, name, groups));
             // Request a subscription from the contact.
@@ -909,7 +909,7 @@ namespace Net.Xmpp.Client
         public void RemoveContact(Jid jid)
         {
             AssertValid();
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             // This removes the contact from the user's roster AND also cancels any
             // subscriptions.
             Im.RemoveFromRoster(jid);
@@ -935,7 +935,7 @@ namespace Net.Xmpp.Client
         public void RemoveContact(RosterItem item)
         {
             AssertValid();
-            item.ThrowIfNull("item");
+            item.ThrowIfNull(nameof(item));
             Im.RemoveFromRoster(item);
         }
 
@@ -980,7 +980,7 @@ namespace Net.Xmpp.Client
         /// </remarks>
 		public void SetAvatar(string filePath) {
 			AssertValid();
-			filePath.ThrowIfNull("filePath");
+			filePath.ThrowIfNull(nameof(filePath));
 			userAvatar.Publish(filePath);
 		}
 #endif
@@ -992,7 +992,7 @@ namespace Net.Xmpp.Client
         public void SetvCardAvatar(string filePath)
         {
             AssertValid();
-            filePath.ThrowIfNull("filePath");
+            filePath.ThrowIfNull(nameof(filePath));
 
             try
             {
@@ -1260,7 +1260,7 @@ namespace Net.Xmpp.Client
         public void CancelFileTransfer(FileTransfer transfer)
         {
             AssertValid();
-            transfer.ThrowIfNull("transfer");
+            transfer.ThrowIfNull(nameof(transfer));
             siFileTransfer.CancelFileTransfer(transfer);
         }
 
@@ -1287,8 +1287,8 @@ namespace Net.Xmpp.Client
 
             AssertValid();
             sid.ThrowIfNullOrEmpty("sid");
-            from.ThrowIfNull("from");
-            to.ThrowIfNull("to");
+            from.ThrowIfNull(nameof(from));
+            to.ThrowIfNull(nameof(to));
 
             siFileTransfer.CancelFileTransfer(sid, from, to);
         }
@@ -1315,7 +1315,7 @@ namespace Net.Xmpp.Client
         /// </remarks>
         public void Register(RegistrationCallback callback)
         {
-            callback.ThrowIfNull("callback");
+            callback.ThrowIfNull(nameof(callback));
             inBandRegistration.Register(callback);
         }
 
@@ -1517,7 +1517,7 @@ namespace Net.Xmpp.Client
         public void Block(Jid jid)
         {
             AssertValid();
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             // If our server supports the 'Blocking Command' extension, we can just
             // use that.
             if (block.Supported)
@@ -1638,7 +1638,7 @@ namespace Net.Xmpp.Client
         public void Unblock(Jid jid)
         {
             AssertValid();
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             // If our server supports the 'Blocking Command' extension, we can just
             // use that.
             if (block.Supported)

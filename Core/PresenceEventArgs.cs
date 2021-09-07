@@ -21,7 +21,7 @@ namespace Net.Xmpp.Core
         /// null.</exception>
         public PresenceEventArgs(Presence stanza)
         {
-            stanza.ThrowIfNull("stanza");
+            stanza.ThrowIfNull(nameof(stanza));
             Stanza = stanza;
         }
     }

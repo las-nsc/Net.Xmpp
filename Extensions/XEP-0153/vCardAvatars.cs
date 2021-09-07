@@ -1,12 +1,13 @@
-﻿using Net.Xmpp.Core;
-using Net.Xmpp.Im;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Xml;
 using System.Xml.Linq;
+
+using Net.Xmpp.Core;
+using Net.Xmpp.Im;
 
 namespace Net.Xmpp.Extensions
 {
@@ -70,7 +71,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="stream">Avatar stream</param>
         public void SetAvatar(Stream stream)
         {
-            stream.ThrowIfNull("stream");
+            stream.ThrowIfNull(nameof(stream));
 
             string mimeType = "image/png";
 
@@ -103,7 +104,7 @@ namespace Net.Xmpp.Extensions
         /// <returns></returns>
         private string Hash(byte[] data)
         {
-            data.ThrowIfNull("data");
+            data.ThrowIfNull(nameof(data));
             using var sha1 = new SHA1Managed();
             return Convert.ToBase64String(sha1.ComputeHash(data));
         }
@@ -123,10 +124,10 @@ namespace Net.Xmpp.Extensions
         /// error condition.</exception>
         /// <exception cref="XmppException">The server returned invalid data or another
         /// unspecified XMPP error occurred.</exception>
-        public void RequestAvatar(Jid jid, string filepath, Action<string,  Jid> callback)
+        public void RequestAvatar(Jid jid, string filepath, Action<string, Jid> callback)
         {
-            jid.ThrowIfNull("jid");
-            filepath.ThrowIfNull("filePath");
+            jid.ThrowIfNull(nameof(jid));
+            filepath.ThrowIfNull(nameof(filepath));
 
             //Make the request
             var xml = Xml.Element("vCard", "vcard-temp");
@@ -140,7 +141,7 @@ namespace Net.Xmpp.Extensions
                     XElement root = XElement.Parse(iq.Data.OuterXml);
                     XNamespace aw = "vcard-temp"; //SOS the correct namespace
                     IEnumerable<string> b64collection = from el in root.Descendants(aw + "BINVAL")
-                                                         select (string)el;
+                                                        select (string)el;
                     string b64 = null;
                     if (b64collection != null)
                     {
@@ -175,12 +176,12 @@ namespace Net.Xmpp.Extensions
                     }
                 }
             });
-                                    }
+        }
 
         public void RequestAvatar(Jid jid, Action<byte[], Jid> callback)
         {
-            jid.ThrowIfNull("jid");
-            //filepath.ThrowIfNull("filePath");
+            jid.ThrowIfNull(nameof(jid));
+            //filepath.ThrowIfNull(nameof(filePath));
 
             //Make the request
             var xml = Xml.Element("vCard", "vcard-temp");

@@ -56,7 +56,7 @@ namespace Net.Xmpp.Extensions.Dataforms
             string value = null)
             : base(DataFieldType.Fixed, name, false, label, description)
         {
-            name.ThrowIfNull("name");
+            name.ThrowIfNull(nameof(name));
             Value = value;
         }
 

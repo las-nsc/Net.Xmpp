@@ -65,9 +65,9 @@ namespace Net.Xmpp.Extensions
         internal FileTransfer(Jid from, Jid to, string name, long size,
             string sessionId = null, string description = null, long transferred = 0)
         {
-            from.ThrowIfNull("from");
-            to.ThrowIfNull("to");
-            name.ThrowIfNull("name");
+            from.ThrowIfNull(nameof(from));
+            to.ThrowIfNull(nameof(to));
+            name.ThrowIfNull(nameof(name));
             size.ThrowIfOutOfRange("size", 0, long.MaxValue);
             transferred.ThrowIfOutOfRange("transferred", 0, size);
             From = from;

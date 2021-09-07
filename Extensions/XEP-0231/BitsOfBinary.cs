@@ -1,7 +1,8 @@
-﻿using Net.Xmpp.Core;
-using Net.Xmpp.Im;
-using System;
+﻿using System;
 using System.Collections.Generic;
+
+using Net.Xmpp.Core;
+using Net.Xmpp.Im;
 
 namespace Net.Xmpp.Extensions
 {
@@ -54,8 +55,8 @@ namespace Net.Xmpp.Extensions
         /// parameter is null.</exception>
         public BobData Create(byte[] data, string type, bool cache = true)
         {
-            data.ThrowIfNull("data");
-            type.ThrowIfNull("type");
+            data.ThrowIfNull(nameof(data));
+            type.ThrowIfNull(nameof(type));
             BobData b = new(data, type);
             if (cache)
                 this.cache[b.Cid] = b;
@@ -71,7 +72,7 @@ namespace Net.Xmpp.Extensions
         /// null.</exception>
         public void Add(BobData bob)
         {
-            bob.ThrowIfNull("bob");
+            bob.ThrowIfNull(nameof(bob));
             cache[bob.Cid] = bob;
         }
 
@@ -87,7 +88,7 @@ namespace Net.Xmpp.Extensions
         /// does not exist in the local cache of data-items.</exception>
         public BobData Get(string cid)
         {
-            cid.ThrowIfNull("cid");
+            cid.ThrowIfNull(nameof(cid));
             return cache.ContainsKey(cid)
                 ? cache[cid]
                 : throw new ArgumentException("A data-item with the specified CID does " +
@@ -116,8 +117,8 @@ namespace Net.Xmpp.Extensions
         /// unspecified XMPP error occurred.</exception>
         public BobData Get(string cid, Jid from, bool cache = true)
         {
-            cid.ThrowIfNull("cid");
-            from.ThrowIfNull("from");
+            cid.ThrowIfNull(nameof(cid));
+            from.ThrowIfNull(nameof(from));
             // If the data is already in the cache, return it.
             if (this.cache.ContainsKey(cid))
                 return this.cache[cid];

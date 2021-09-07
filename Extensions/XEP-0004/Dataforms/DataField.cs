@@ -188,7 +188,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// valid data-field element.</exception>
         internal DataField(XmlElement element)
         {
-            element.ThrowIfNull("element");
+            element.ThrowIfNull(nameof(element));
             this.element = element;
             try
             {
@@ -266,7 +266,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// the named constants of the DataFieldType enumeration.</exception>
         private DataFieldType AttributeValueToType(string value)
         {
-            value.ThrowIfNull("value");
+            value.ThrowIfNull(nameof(value));
             StringBuilder b = new();
             string s = value;
             for (int i = 0; i < s.Length; i++)

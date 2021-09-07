@@ -113,10 +113,10 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// the empty string.</exception>
         public SaslScramSha1(string username, string password)
         {
-            username.ThrowIfNull("username");
+            username.ThrowIfNull(nameof(username));
             if (username?.Length == 0)
                 throw new ArgumentException("The username must not be empty.");
-            password.ThrowIfNull("password");
+            password.ThrowIfNull(nameof(password));
 
             Username = username;
             Password = password;
@@ -244,7 +244,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// is null.</exception>
         private NameValueCollection ParseServerFirstMessage(byte[] challenge)
         {
-            challenge.ThrowIfNull("challenge");
+            challenge.ThrowIfNull(nameof(challenge));
             string message = Encoding.UTF8.GetString(challenge);
             NameValueCollection coll = new();
             foreach (string s in message.Split(','))
@@ -333,8 +333,8 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// are not of the same length.</exception>
         private byte[] Xor(byte[] a, byte[] b)
         {
-            a.ThrowIfNull("a");
-            b.ThrowIfNull("b");
+            a.ThrowIfNull(nameof(a));
+            b.ThrowIfNull(nameof(b));
             if (a.Length != b.Length)
                 throw new ArgumentException();
             byte[] ret = new byte[a.Length];

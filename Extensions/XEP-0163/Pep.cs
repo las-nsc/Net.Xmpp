@@ -1,8 +1,9 @@
-﻿using Net.Xmpp.Core;
-using Net.Xmpp.Im;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Xml;
+
+using Net.Xmpp.Core;
+using Net.Xmpp.Im;
 
 namespace Net.Xmpp.Extensions
 {
@@ -104,7 +105,7 @@ namespace Net.Xmpp.Extensions
         /// unspecified XMPP error occurred.</exception>
         public void Publish(string node, string itemId = null, params XmlElement[] data)
         {
-            node.ThrowIfNull("node");
+            node.ThrowIfNull(nameof(node));
             if (!Supported)
             {
                 throw new NotSupportedException("The server does not support publishing " +
@@ -142,8 +143,8 @@ namespace Net.Xmpp.Extensions
         /// has already been installed.</exception>
         public void Subscribe(string node, Action<Jid, XmlElement> cb)
         {
-            node.ThrowIfNull("node");
-            cb.ThrowIfNull("cb");
+            node.ThrowIfNull(nameof(node));
+            cb.ThrowIfNull(nameof(cb));
             callbacks.Add(node, cb);
         }
 
@@ -156,7 +157,7 @@ namespace Net.Xmpp.Extensions
         /// method does nothing.</remarks>
         public void Unsubscribe(string node)
         {
-            node.ThrowIfNull("node");
+            node.ThrowIfNull(nameof(node));
             if (callbacks.ContainsKey(node))
                 callbacks.Remove(node);
         }
@@ -177,8 +178,8 @@ namespace Net.Xmpp.Extensions
         /// unspecified XMPP error occurred.</exception>
         public IEnumerable<XmlElement> RetrieveItems(Jid jid, string node)
         {
-            jid.ThrowIfNull("jid");
-            node.ThrowIfNull("node");
+            jid.ThrowIfNull(nameof(jid));
+            node.ThrowIfNull(nameof(node));
             var xml = Xml.Element("pubsub", "http://jabber.org/protocol/pubsub")
                 .Child(Xml.Element("items").Attr("node", node));
             Iq iq = im.IqRequest(IqType.Get, jid, im.Jid, xml);
@@ -213,9 +214,9 @@ namespace Net.Xmpp.Extensions
         /// unspecified XMPP error occurred.</exception>
         public XmlElement RetrieveItem(Jid jid, string node, string itemId)
         {
-            jid.ThrowIfNull("jid");
-            node.ThrowIfNull("node");
-            itemId.ThrowIfNull("itemId");
+            jid.ThrowIfNull(nameof(jid));
+            node.ThrowIfNull(nameof(node));
+            itemId.ThrowIfNull(nameof(itemId));
             var xml = Xml.Element("pubsub", "http://jabber.org/protocol/pubsub").Child(
                 Xml.Element("items").Attr("node", node).Child(
                 Xml.Element("item").Attr("id", itemId))

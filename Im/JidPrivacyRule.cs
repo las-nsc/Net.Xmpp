@@ -24,7 +24,7 @@ namespace Net.Xmpp.Im
             PrivacyGranularity granularity = 0)
             : base(allow, order, granularity)
         {
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             Jid = jid;
         }
     }

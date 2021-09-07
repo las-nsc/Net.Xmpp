@@ -28,7 +28,7 @@ namespace Net.Xmpp.Im
         /// <exception cref="ArgumentNullException">The item parameter is null.</exception>
         public RosterUpdatedEventArgs(RosterItem item, bool removed)
         {
-            item.ThrowIfNull("item");
+            item.ThrowIfNull(nameof(item));
             Item = item;
             Removed = removed;
         }

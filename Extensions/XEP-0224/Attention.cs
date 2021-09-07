@@ -57,7 +57,7 @@ namespace Net.Xmpp.Extensions
         /// extension.</exception>
         public void GetAttention(Jid jid, string message = null)
         {
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             if (!ecapa.Supports(jid, Extension.Attention))
             {
                 throw new NotSupportedException("The XMPP entity does not support the " +

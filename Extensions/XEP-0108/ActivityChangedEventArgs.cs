@@ -46,7 +46,7 @@ namespace Net.Xmpp.Extensions
             SpecificActivity specific = SpecificActivity.Other,
             string description = null)
         {
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             Jid = jid;
             Activity = activity;
             Specific = specific;

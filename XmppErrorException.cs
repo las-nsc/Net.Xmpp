@@ -23,7 +23,7 @@ namespace Net.Xmpp
         public XmppErrorException(XmppError error)
             : base()
         {
-            error.ThrowIfNull("error");
+            error.ThrowIfNull(nameof(error));
             Error = error;
         }
 
@@ -38,7 +38,7 @@ namespace Net.Xmpp
         public XmppErrorException(XmppError error, string message)
             : base(message)
         {
-            error.ThrowIfNull("error");
+            error.ThrowIfNull(nameof(error));
             Error = error;
         }
 
@@ -55,7 +55,7 @@ namespace Net.Xmpp
         public XmppErrorException(XmppError error, string message, Exception inner)
             : base(message, inner)
         {
-            error.ThrowIfNull("error");
+            error.ThrowIfNull(nameof(error));
             Error = error;
         }
 
@@ -72,7 +72,7 @@ namespace Net.Xmpp
         protected XmppErrorException(XmppError error, SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            error.ThrowIfNull("error");
+            error.ThrowIfNull(nameof(error));
             Error = error;
         }
     }

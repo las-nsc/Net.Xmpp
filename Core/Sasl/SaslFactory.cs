@@ -28,7 +28,7 @@ namespace Net.Xmpp.Core.Sasl
         /// specified name is not registered with Sasl.SaslFactory.</exception>
         public static SaslMechanism Create(string name)
         {
-            name.ThrowIfNull("name");
+            name.ThrowIfNull(nameof(name));
             if (!Mechanisms.ContainsKey(name))
             {
                 throw new SaslException("A Sasl mechanism with the specified name " +
@@ -55,8 +55,8 @@ namespace Net.Xmpp.Core.Sasl
         /// details.</exception>
         public static void Add(string name, Type t)
         {
-            name.ThrowIfNull("name");
-            t.ThrowIfNull("t");
+            name.ThrowIfNull(nameof(name));
+            t.ThrowIfNull(nameof(t));
             if (!t.IsSubclassOf(typeof(SaslMechanism)))
             {
                 throw new ArgumentException("The type t must be a subclass " +
@@ -82,10 +82,10 @@ namespace Net.Xmpp.Core.Sasl
 
             // Could be moved to App.config to support SASL "plug-in" mechanisms.
             var list = new Dictionary<string, Type>() {
-				{ "PLAIN", typeof(Mechanisms.SaslPlain) },
-				{ "DIGEST-MD5", typeof(Mechanisms.SaslDigestMd5) },
-				{ "SCRAM-SHA-1", typeof(Mechanisms.SaslScramSha1) },
-			};
+                { "PLAIN", typeof(Mechanisms.SaslPlain) },
+                { "DIGEST-MD5", typeof(Mechanisms.SaslDigestMd5) },
+                { "SCRAM-SHA-1", typeof(Mechanisms.SaslScramSha1) },
+            };
             foreach (string key in list.Keys)
                 Mechanisms.Add(key, list[key]);
         }

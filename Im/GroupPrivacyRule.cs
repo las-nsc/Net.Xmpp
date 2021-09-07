@@ -26,7 +26,7 @@ namespace Net.Xmpp.Im
             PrivacyGranularity granularity = 0)
             : base(allow, order, granularity)
         {
-            group.ThrowIfNull("group");
+            group.ThrowIfNull(nameof(group));
             Group = group;
         }
     }

@@ -40,7 +40,7 @@ namespace Net.Xmpp.Extensions
         /// extension is being created.</param>
         public XmppExtension(XmppIm im)
         {
-            im.ThrowIfNull("im");
+            im.ThrowIfNull(nameof(im));
             this.im = im;
         }
 

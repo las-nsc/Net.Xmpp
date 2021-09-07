@@ -53,7 +53,7 @@ namespace Net.Xmpp.Extensions.Dataforms
             string description = null, bool? value = null)
             : base(DataFieldType.Boolean, name, required, label, description)
         {
-            name.ThrowIfNull("name");
+            name.ThrowIfNull(nameof(name));
             Value = value;
         }
 
@@ -97,7 +97,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// null.</exception>
         private bool ParseValue(string value)
         {
-            value.ThrowIfNull("value");
+            value.ThrowIfNull(nameof(value));
             if (value is "0" or "false")
                 return false;
             // Be lenient.

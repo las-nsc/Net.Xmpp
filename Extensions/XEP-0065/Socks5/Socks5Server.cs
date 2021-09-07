@@ -113,7 +113,7 @@ namespace Net.Xmpp.Extensions.Socks5
         /// disposed.</exception>
         public void Reply(SocksReply reply)
         {
-            reply.ThrowIfNull("reply");
+            reply.ThrowIfNull(nameof(reply));
             AssertValid();
             var bytes = reply.Serialize();
             stream.Write(bytes, 0, bytes.Length);

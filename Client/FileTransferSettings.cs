@@ -1,7 +1,8 @@
-﻿using Net.Xmpp.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
+
+using Net.Xmpp.Extensions;
 
 namespace Net.Xmpp.Client
 {
@@ -111,8 +112,8 @@ namespace Net.Xmpp.Client
         internal FileTransferSettings(Socks5Bytestreams socks5,
             SIFileTransfer siFileTransfer)
         {
-            socks5.ThrowIfNull("socks5");
-            siFileTransfer.ThrowIfNull("siFileTransfer");
+            socks5.ThrowIfNull(nameof(socks5));
+            siFileTransfer.ThrowIfNull(nameof(siFileTransfer));
             this.socks5 = socks5;
             this.siFileTransfer = siFileTransfer;
         }

@@ -137,7 +137,7 @@ namespace Net.Xmpp.Extensions
         /// another unspecified XMPP error occurred.</exception>
         public void Transfer(SISession session)
         {
-            session.ThrowIfNull("session");
+            session.ThrowIfNull(nameof(session));
             // Open the negotiated IBB.
             OpenStream(session.To, session.Sid);
             byte[] buf = new byte[blockSize];
@@ -195,7 +195,7 @@ namespace Net.Xmpp.Extensions
         /// null.</exception>
         public void CancelTransfer(SISession session)
         {
-            session.ThrowIfNull("session");
+            session.ThrowIfNull(nameof(session));
             siFileTransfer.InvalidateSession(session.Sid);
             TransferAborted.Raise(this, new TransferAbortedEventArgs(session));
         }
@@ -223,8 +223,8 @@ namespace Net.Xmpp.Extensions
         /// stanzas (i.e. message stanzas).</exception>
         private void Open(string sessionId, Iq stanza)
         {
-            sessionId.ThrowIfNull("sessionId");
-            stanza.ThrowIfNull("stanza");
+            sessionId.ThrowIfNull(nameof(sessionId));
+            stanza.ThrowIfNull(nameof(stanza));
             if (siFileTransfer.GetSession(sessionId, stanza.From, im.Jid) == null)
                 throw new XmppException("Invalid session-id.");
             string s = stanza.Data["open"].GetAttribute("stanza");
@@ -242,8 +242,8 @@ namespace Net.Xmpp.Extensions
         /// stanza parameter is null.</exception>
         private void Close(string sessionId, Iq stanza)
         {
-            sessionId.ThrowIfNull("sessionId");
-            stanza.ThrowIfNull("stanza");
+            sessionId.ThrowIfNull(nameof(sessionId));
+            stanza.ThrowIfNull(nameof(stanza));
             SISession session = siFileTransfer.GetSession(sessionId,
                 stanza.From, stanza.To);
             // We don't allow the other site to close a session that we opened.
@@ -275,8 +275,8 @@ namespace Net.Xmpp.Extensions
         /// to obtain the specific reason.</exception>
         private void Data(string sessionId, Iq stanza)
         {
-            sessionId.ThrowIfNull("sessionId");
-            stanza.ThrowIfNull("stanza");
+            sessionId.ThrowIfNull(nameof(sessionId));
+            stanza.ThrowIfNull(nameof(stanza));
             var data = stanza.Data["data"];
             if (data == null)
                 throw new ArgumentException("Invalid stanza, missing data element.");

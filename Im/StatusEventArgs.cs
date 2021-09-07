@@ -24,8 +24,8 @@ namespace Net.Xmpp.Im
         /// parameter is null.</exception>
         public StatusEventArgs(Jid jid, Status status)
         {
-            jid.ThrowIfNull("jid");
-            status.ThrowIfNull("status");
+            jid.ThrowIfNull(nameof(jid));
+            status.ThrowIfNull(nameof(status));
             Jid = jid;
             Status = status;
         }

@@ -80,7 +80,7 @@ namespace Net.Xmpp.Extensions.Socks5
         /// not contain a valid SOCKS5 reply message.</exception>
         public static SocksReply Deserialize(byte[] buffer)
         {
-            buffer.ThrowIfNull("buffer");
+            buffer.ThrowIfNull(nameof(buffer));
             using var ms = new MemoryStream(buffer);
             using BinaryReader r = new(ms);
             if (r.ReadByte() != version)
@@ -117,7 +117,7 @@ namespace Net.Xmpp.Extensions.Socks5
         /// is null.</exception>
         public SocksReply(ReplyStatus status, IPAddress address, ushort port)
         {
-            address.ThrowIfNull("address");
+            address.ThrowIfNull(nameof(address));
             Status = status;
             ATyp = address.AddressFamily == AddressFamily.InterNetworkV6 ?
                 ATyp.IPv6 : ATyp.IPv4;
@@ -138,7 +138,7 @@ namespace Net.Xmpp.Extensions.Socks5
         /// exceeds 255 characters.</exception>
         public SocksReply(ReplyStatus status, string domain, ushort port)
         {
-            domain.ThrowIfNull("domain");
+            domain.ThrowIfNull(nameof(domain));
             if (domain.Length > 255)
             {
                 throw new ArgumentException("The length of the domain string must " +

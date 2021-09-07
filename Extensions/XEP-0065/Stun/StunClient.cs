@@ -59,7 +59,7 @@ namespace Net.Xmpp.Extensions.Stun
         public static IPAddress Query(string host, int port = 3478,
             int timeout = int.MaxValue)
         {
-            host.ThrowIfNull("host");
+            host.ThrowIfNull(nameof(host));
             port.ThrowIfOutOfRange("port", 0, 65535);
             var addresses = Dns.GetHostAddresses(host);
             // Prefer IPv4 addresses if any.
@@ -95,7 +95,7 @@ namespace Net.Xmpp.Extensions.Stun
         public static IPAddress Query(IPAddress address, int port = 3478,
             int timeout = int.MaxValue)
         {
-            address.ThrowIfNull("address");
+            address.ThrowIfNull(nameof(address));
             port.ThrowIfOutOfRange("port", 0, 65535);
             IPEndPoint IpEp = new(address, port);
             var request = new BindingRequest().Serialize();

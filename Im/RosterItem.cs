@@ -70,7 +70,7 @@ namespace Net.Xmpp.Im
         internal RosterItem(Jid jid, string name, SubscriptionState state,
             bool pending, IEnumerable<string> groups)
         {
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             Jid = jid;
             Name = name;
             if (groups != null)

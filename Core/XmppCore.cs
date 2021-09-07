@@ -196,7 +196,7 @@ namespace Net.Xmpp.Core
 
             set
             {
-                value.ThrowIfNull("Password");
+                value.ThrowIfNull(nameof(Password));
                 password = value;
             }
         }
@@ -479,8 +479,8 @@ namespace Net.Xmpp.Core
         public void Authenticate(string username, string password)
         {
             AssertValid();
-            username.ThrowIfNull("username");
-            password.ThrowIfNull("password");
+            username.ThrowIfNull(nameof(username));
+            password.ThrowIfNull(nameof(password));
             if (Authenticated)
                 throw new XmppException("Authentication has already been performed.");
             // Unfortunately, SASL authentication does not follow the standard XMPP
@@ -495,8 +495,8 @@ namespace Net.Xmpp.Core
         public void Reconnect()
         {
             AssertValid();
-            Username.ThrowIfNull("username");
-            Password.ThrowIfNull("password");
+            Username.ThrowIfNull(nameof(username));
+            Password.ThrowIfNull(nameof(password));
             Disconnect();
             Connect(this.resource);
         }
@@ -539,7 +539,7 @@ namespace Net.Xmpp.Core
         public void SendMessage(Message message)
         {
             AssertValid();
-            message.ThrowIfNull("message");
+            message.ThrowIfNull(nameof(message));
             Send(message);
         }
 
@@ -580,7 +580,7 @@ namespace Net.Xmpp.Core
         public void SendPresence(Presence presence)
         {
             AssertValid();
-            presence.ThrowIfNull("presence");
+            presence.ThrowIfNull(nameof(presence));
             Send(presence);
         }
 
@@ -642,7 +642,7 @@ namespace Net.Xmpp.Core
         public Iq IqRequest(Iq request, int millisecondsTimeout = -1)
         {
             AssertValid();
-            request.ThrowIfNull("request");
+            request.ThrowIfNull(nameof(request));
             if (request.Type is not IqType.Set and not IqType.Get)
                 throw new ArgumentException("The IQ type must be either 'set' or 'get'.");
             int timeOut = millisecondsTimeout == -1 ? MillisecondsDefaultTimeout : millisecondsTimeout;
@@ -741,7 +741,7 @@ namespace Net.Xmpp.Core
         public string IqRequest(Iq request, Action<string, Iq> callback = null)
         {
             AssertValid();
-            request.ThrowIfNull("request");
+            request.ThrowIfNull(nameof(request));
             if (request.Type is not IqType.Set and not IqType.Get)
                 throw new ArgumentException("The IQ type must be either 'set' or 'get'.");
             request.Id = GetId();
@@ -795,7 +795,7 @@ namespace Net.Xmpp.Core
         public void IqResponse(Iq response)
         {
             AssertValid();
-            response.ThrowIfNull("response");
+            response.ThrowIfNull(nameof(response));
             if (response.Type is not IqType.Result and not IqType.Error)
                 throw new ArgumentException("The IQ type must be either 'result' or 'error'.");
             Send(response);
@@ -1105,7 +1105,7 @@ namespace Net.Xmpp.Core
         /// to the network.</exception>
         private void Send(XmlElement element)
         {
-            element.ThrowIfNull("element");
+            element.ThrowIfNull(nameof(element));
             Send(element.ToXmlString());
         }
 
@@ -1118,7 +1118,7 @@ namespace Net.Xmpp.Core
         /// the network.</exception>
         private void Send(string xml)
         {
-            xml.ThrowIfNull("xml");
+            xml.ThrowIfNull(nameof(xml));
             // XMPP is guaranteed to be UTF-8.
             byte[] buf = Encoding.UTF8.GetBytes(xml);
             lock (writeLock)
@@ -1153,7 +1153,7 @@ namespace Net.Xmpp.Core
         /// the network.</exception>
         private void Send(Stanza stanza)
         {
-            stanza.ThrowIfNull("stanza");
+            stanza.ThrowIfNull(nameof(stanza));
             Send(stanza.ToString());
         }
 

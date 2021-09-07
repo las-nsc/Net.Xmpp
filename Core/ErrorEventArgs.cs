@@ -24,7 +24,7 @@ namespace Net.Xmpp.Core
         /// <exception cref="ArgumentNullException">The e parameter is null.</exception>
         public ErrorEventArgs(Exception e)
         {
-            e.ThrowIfNull("e");
+            e.ThrowIfNull(nameof(e));
             Exception = e;
         }
     }

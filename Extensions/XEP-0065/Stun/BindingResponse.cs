@@ -72,7 +72,7 @@ namespace Net.Xmpp.Extensions.Stun
         /// contain a valid STUN 'Binding Response' message.</exception>
         public static BindingResponse Deserialize(byte[] buffer)
         {
-            buffer.ThrowIfNull("buffer");
+            buffer.ThrowIfNull(nameof(buffer));
             if (buffer.Length < headerSize)
                 throw new SerializationException("The buffer does not contain a " +
                     "valid STUN message header.");
@@ -129,8 +129,8 @@ namespace Net.Xmpp.Extensions.Stun
         /// address parameter is null.</exception>
         internal BindingResponse(byte[] id, IPAddress address)
         {
-            id.ThrowIfNull("id");
-            address.ThrowIfNull("address");
+            id.ThrowIfNull(nameof(id));
+            address.ThrowIfNull(nameof(address));
             Id = id;
             Address = address;
         }
@@ -149,8 +149,8 @@ namespace Net.Xmpp.Extensions.Stun
         /// input arrays is not equal.</exception>
         private static byte[] Xor(byte[] a, byte[] b)
         {
-            a.ThrowIfNull("a");
-            b.ThrowIfNull("b");
+            a.ThrowIfNull(nameof(a));
+            b.ThrowIfNull(nameof(b));
             if (a.Length != b.Length)
             {
                 throw new ArgumentException("The input arrays must have the same " +

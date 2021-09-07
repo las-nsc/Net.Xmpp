@@ -77,7 +77,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// class is read-only.</exception>
         public void Add(DataField item)
         {
-            item.ThrowIfNull("item");
+            item.ThrowIfNull(nameof(item));
             if (IsReadOnly)
                 throw new NotSupportedException("The list is read-only.");
             if (item.Name != null && Contains(item.Name))
@@ -96,7 +96,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// null.</exception>
         public void Remove(DataField item)
         {
-            item.ThrowIfNull("item");
+            item.ThrowIfNull(nameof(item));
             // FIXME: This won't work for 'fixed' items that don't have names.
             Remove(item.Name);
         }
@@ -144,7 +144,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// null.</exception>
         public bool Contains(string name)
         {
-            name.ThrowIfNull("name");
+            name.ThrowIfNull(nameof(name));
             foreach (var field in GetFields())
             {
                 if (field.Name == name)
@@ -187,7 +187,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// valid XML data-form.</exception>
         public FieldList(XmlElement element, bool readOnly = false)
         {
-            element.ThrowIfNull("element");
+            element.ThrowIfNull(nameof(element));
             this.element = element;
             this.IsReadOnly = readOnly;
             try
@@ -247,7 +247,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// valid data-field.</exception>
         private DataField FieldFromXml(XmlElement element)
         {
-            element.ThrowIfNull("element");
+            element.ThrowIfNull(nameof(element));
             try
             {
                 // If the element does not have a 'type' attribute, we can only
@@ -307,7 +307,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// null.</exception>
         private XmlElement GetFieldElementByName(string name)
         {
-            name.ThrowIfNull("name");
+            name.ThrowIfNull(nameof(name));
             foreach (XmlElement e in GetFieldElements())
             {
                 string s = e.GetAttribute("var");
@@ -331,7 +331,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// the named constants of the DataFieldType enumeration.</exception>
         private DataFieldType AttributeValueToType(string value)
         {
-            value.ThrowIfNull("value");
+            value.ThrowIfNull(nameof(value));
             StringBuilder b = new();
             string s = value;
             for (int i = 0; i < s.Length; i++)

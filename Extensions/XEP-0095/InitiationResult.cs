@@ -39,8 +39,8 @@ namespace Net.Xmpp.Extensions
         public InitiationResult(string sessionId, string method,
             XmlElement data = null)
         {
-            sessionId.ThrowIfNull("sessionId");
-            method.ThrowIfNull("method");
+            sessionId.ThrowIfNull(nameof(sessionId));
+            method.ThrowIfNull(nameof(method));
             SessionId = sessionId;
             Method = method;
             Data = data;

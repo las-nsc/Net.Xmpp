@@ -26,7 +26,7 @@ namespace Net.Xmpp
         /// of type IqType.Error.</exception>
         internal static Exception ExceptionFromError(Iq errorIq, string message = null)
         {
-            errorIq.ThrowIfNull("errorIq");
+            errorIq.ThrowIfNull(nameof(errorIq));
             return errorIq.Type == IqType.Error
                 ? ExceptionFromError(errorIq.Data["error"], message)
                 : throw new ArgumentException("The specified Iq stanza is not of type 'error'.");
@@ -213,7 +213,7 @@ namespace Net.Xmpp
         internal static T ParseEnum<T>(string value, bool ignoreCase = true) where T :
             struct, IComparable, IFormattable, IConvertible
         {
-            value.ThrowIfNull("value");
+            value.ThrowIfNull(nameof(value));
             return typeof(T).IsEnum
                 ? (T)Enum.Parse(typeof(T), value, ignoreCase)
                 : throw new ArgumentException("T must be an enumerated type.");

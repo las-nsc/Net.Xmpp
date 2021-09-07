@@ -124,7 +124,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// a valid 'option' element.</exception>
         private Option OptionFromElement(XmlElement element)
         {
-            element.ThrowIfNull("element");
+            element.ThrowIfNull(nameof(element));
             string label = element.GetAttribute("label");
             if (label?.Length == 0)
                 label = null;

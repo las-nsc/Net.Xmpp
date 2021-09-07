@@ -1,6 +1,4 @@
-﻿using Net.Xmpp.Core;
-using Net.Xmpp.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -9,6 +7,9 @@ using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Xml;
+
+using Net.Xmpp.Core;
+using Net.Xmpp.Extensions;
 
 namespace Net.Xmpp.Im
 {
@@ -174,7 +175,7 @@ namespace Net.Xmpp.Im
         /// The event that is raised when a connection state changed.
         /// </summary>
         public event EventHandler<ConnectEventArgs> OnConnect;
-        
+
         /// <summary>
         /// The event that is raised when an error message is received.
         /// </summary>
@@ -338,8 +339,8 @@ namespace Net.Xmpp.Im
         /// of an XMPP extension failed.</exception>
         public void Autenticate(string username, string password)
         {
-            username.ThrowIfNull("username");
-            password.ThrowIfNull("password");
+            username.ThrowIfNull(nameof(username));
+            password.ThrowIfNull(nameof(password));
             core.Authenticate(username, password);
             // Establish a session (Refer to RFC 3921, Section 3. Session Establishment).
             EstablishSession();
@@ -371,8 +372,8 @@ namespace Net.Xmpp.Im
         /// of an XMPP extension failed.</exception>
         public void SimpleAutenticate(string username, string password)
         {
-            username.ThrowIfNull("username");
-            password.ThrowIfNull("password");
+            username.ThrowIfNull(nameof(username));
+            password.ThrowIfNull(nameof(password));
             core.Authenticate(username, password);
             // Establish a session (Refer to RFC 3921, Section 3. Session Establishment).
             EstablishSession();
@@ -428,7 +429,7 @@ namespace Net.Xmpp.Im
             CultureInfo language = null)
         {
             AssertValid();
-            to.ThrowIfNull("to");
+            to.ThrowIfNull(nameof(to));
             body.ThrowIfNullOrEmpty("body");
             Message m = new(to, body, subject, thread, type, language);
             SendMessage(m);
@@ -463,8 +464,8 @@ namespace Net.Xmpp.Im
             MessageType type = MessageType.Normal, CultureInfo language = null)
         {
             AssertValid();
-            to.ThrowIfNull("to");
-            bodies.ThrowIfNull("bodies");
+            to.ThrowIfNull(nameof(to));
+            bodies.ThrowIfNull(nameof(bodies));
             Message m = new(to, bodies, subjects, thread, type, language);
             SendMessage(m);
         }
@@ -484,7 +485,7 @@ namespace Net.Xmpp.Im
         public void SendMessage(Message message)
         {
             AssertValid();
-            message.ThrowIfNull("message");
+            message.ThrowIfNull(nameof(message));
             // "Stamp" the sender's JID onto the message.
             message.From = Jid;
             // Invoke IOutput<Message> Plugins.
@@ -513,7 +514,7 @@ namespace Net.Xmpp.Im
         public void RequestSubscription(Jid jid)
         {
             AssertValid();
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             Presence p = new(jid, null, PresenceType.Subscribe);
             SendPresence(p);
         }
@@ -533,7 +534,7 @@ namespace Net.Xmpp.Im
         public void Unsubscribe(Jid jid)
         {
             AssertValid();
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             Presence p = new(jid, null, PresenceType.Unsubscribe);
             SendPresence(p);
         }
@@ -554,7 +555,7 @@ namespace Net.Xmpp.Im
         public void ApproveSubscriptionRequest(Jid jid)
         {
             AssertValid();
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             Presence p = new(jid, null, PresenceType.Subscribed);
             SendPresence(p);
         }
@@ -575,7 +576,7 @@ namespace Net.Xmpp.Im
         public void RefuseSubscriptionRequest(Jid jid)
         {
             AssertValid();
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             Presence p = new(jid, null, PresenceType.Unsubscribed);
             SendPresence(p);
         }
@@ -597,7 +598,7 @@ namespace Net.Xmpp.Im
         public void RevokeSubscription(Jid jid)
         {
             AssertValid();
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             Presence p = new(jid, null, PresenceType.Unsubscribed);
             SendPresence(p);
         }
@@ -632,11 +633,11 @@ namespace Net.Xmpp.Im
             if (availability != Availability.Online)
             {
                 var states = new Dictionary<Availability, string>() {
-						{ Availability.Away, "away" },
-						{ Availability.Dnd, "dnd" },
-						{ Availability.Xa, "xa" },
-						{ Availability.Chat, "chat" }
-					};
+                        { Availability.Away, "away" },
+                        { Availability.Dnd, "dnd" },
+                        { Availability.Xa, "xa" },
+                        { Availability.Chat, "chat" }
+                    };
                 elems.Add(Xml.Element("show").Text(states[availability]));
             }
             if (priority != 0)
@@ -678,11 +679,11 @@ namespace Net.Xmpp.Im
             if (availability != Availability.Online)
             {
                 var states = new Dictionary<Availability, string>() {
-						{ Availability.Away, "away" },
-						{ Availability.Dnd, "dnd" },
-						{ Availability.Xa, "xa" },
-						{ Availability.Chat, "chat" }
-					};
+                        { Availability.Away, "away" },
+                        { Availability.Dnd, "dnd" },
+                        { Availability.Xa, "xa" },
+                        { Availability.Chat, "chat" }
+                    };
                 elems.Add(Xml.Element("show").Text(states[availability]));
             }
             if (priority != 0)
@@ -715,7 +716,7 @@ namespace Net.Xmpp.Im
         public void SetStatus(Status status)
         {
             AssertValid();
-            status.ThrowIfNull("status");
+            status.ThrowIfNull(nameof(status));
             SetStatus(status.Availability, status.Messages, status.Priority);
         }
 
@@ -772,7 +773,7 @@ namespace Net.Xmpp.Im
         public void AddToRoster(RosterItem item)
         {
             AssertValid();
-            item.ThrowIfNull("item");
+            item.ThrowIfNull(nameof(item));
             var xml = Xml.Element("item").Attr("jid", item.Jid.ToString());
             if (!string.IsNullOrEmpty(item.Name))
                 xml.Attr("name", item.Name);
@@ -804,7 +805,7 @@ namespace Net.Xmpp.Im
         public void RemoveFromRoster(Jid jid)
         {
             AssertValid();
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             var query = Xml.Element("query", "jabber:iq:roster").Child(
                 Xml.Element("item").Attr("jid", jid.ToString())
                 .Attr("subscription", "remove"));
@@ -833,7 +834,7 @@ namespace Net.Xmpp.Im
         public void RemoveFromRoster(RosterItem item)
         {
             AssertValid();
-            item.ThrowIfNull("item");
+            item.ThrowIfNull(nameof(item));
             RemoveFromRoster(item.Jid);
         }
 
@@ -896,7 +897,7 @@ namespace Net.Xmpp.Im
         public PrivacyList GetPrivacyList(string name)
         {
             AssertValid();
-            name.ThrowIfNull("name");
+            name.ThrowIfNull(nameof(name));
             var query = Xml.Element("query", "jabber:iq:privacy").
                 Child(Xml.Element("list").Attr("name", name));
             Iq iq = IqRequest(IqType.Get, null, Jid, query);
@@ -946,7 +947,7 @@ namespace Net.Xmpp.Im
         public void RemovePrivacyList(string name)
         {
             AssertValid();
-            name.ThrowIfNull("name");
+            name.ThrowIfNull(nameof(name));
             var query = Xml.Element("query", "jabber:iq:privacy").Child(
                 Xml.Element("list").Attr("name", name));
             Iq iq = IqRequest(IqType.Set, null, Jid, query);
@@ -979,7 +980,7 @@ namespace Net.Xmpp.Im
         public void EditPrivacyList(PrivacyList list)
         {
             AssertValid();
-            list.ThrowIfNull("list");
+            list.ThrowIfNull(nameof(list));
             if (list.Count == 0)
             {
                 throw new ArgumentException("The list must contain one or more privacy " +
@@ -1265,7 +1266,7 @@ namespace Net.Xmpp.Im
         /// null.</exception>
         internal XmppExtension GetExtension(Type type)
         {
-            type.ThrowIfNull("type");
+            type.ThrowIfNull(nameof(type));
             foreach (var ext in extensions)
             {
                 if (ext.GetType() == type)
@@ -1285,7 +1286,7 @@ namespace Net.Xmpp.Im
         /// null.</exception>
         internal XmppExtension GetExtension(string @namespace)
         {
-            @namespace.ThrowIfNull("namespace");
+            @namespace.ThrowIfNull(nameof(@namespace));
             foreach (var ext in extensions)
             {
                 if (ext.Namespaces.Contains(@namespace))
@@ -1312,7 +1313,7 @@ namespace Net.Xmpp.Im
         /// disposed.</exception>
         internal void SendPresence(Presence presence)
         {
-            presence.ThrowIfNull("presence");
+            presence.ThrowIfNull(nameof(presence));
             // Invoke IOutput<Presence> Plugins.
             foreach (var ext in extensions)
             {
@@ -1455,7 +1456,7 @@ namespace Net.Xmpp.Im
             string text = null, params XmlElement[] data)
         {
             AssertValid(false);
-            iq.ThrowIfNull("iq");
+            iq.ThrowIfNull(nameof(iq));
             Iq response = new(IqType.Error, iq.Id, iq.From, Jid,
                 new XmppError(type, condition, text, data).Data);
             core.IqResponse(response);
@@ -1479,7 +1480,7 @@ namespace Net.Xmpp.Im
         internal void IqResult(Iq iq, XmlElement data = null)
         {
             AssertValid(false);
-            iq.ThrowIfNull("iq");
+            iq.ThrowIfNull(nameof(iq));
             Iq response = new(IqType.Result, iq.Id, iq.From, Jid, data);
             core.IqResponse(response);
         }
@@ -1738,11 +1739,11 @@ namespace Net.Xmpp.Im
         {
             Roster roster = new();
             var states = new Dictionary<string, SubscriptionState>() {
-				{ "none", SubscriptionState.None },
-				{ "to", SubscriptionState.To },
-				{ "from", SubscriptionState.From },
-				{ "both", SubscriptionState.Both }
-			};
+                { "none", SubscriptionState.None },
+                { "to", SubscriptionState.To },
+                { "from", SubscriptionState.From },
+                { "both", SubscriptionState.Both }
+            };
             foreach (XmlElement item in query.GetElementsByTagName("item"))
             {
                 string jid = item.GetAttribute("jid");
@@ -1772,11 +1773,11 @@ namespace Net.Xmpp.Im
         private void ProcessRosterIq(Iq iq)
         {
             var states = new Dictionary<string, SubscriptionState>() {
-				{ "none", SubscriptionState.None },
-				{ "to", SubscriptionState.To },
-				{ "from", SubscriptionState.From },
-				{ "both", SubscriptionState.Both }
-			};
+                { "none", SubscriptionState.None },
+                { "to", SubscriptionState.To },
+                { "from", SubscriptionState.From },
+                { "both", SubscriptionState.Both }
+            };
             // Ensure roster push is from a trusted source.
             bool trusted = iq.From == null || iq.From == Jid || iq.From
                 == Jid.GetBareJid();
@@ -1821,7 +1822,7 @@ namespace Net.Xmpp.Im
         /// order attribute is greater than 32 bits.</exception>
         private PrivacyRule ParsePrivacyItem(XmlElement item)
         {
-            item.ThrowIfNull("item");
+            item.ThrowIfNull(nameof(item));
             bool allow = item.GetAttribute("action") == "allow";
             uint order = uint.Parse(item.GetAttribute("order"));
             PrivacyGranularity granularity = 0;
@@ -1836,11 +1837,11 @@ namespace Net.Xmpp.Im
             string type = item.GetAttribute("type");
             string value = item.GetAttribute("value");
             var states = new Dictionary<string, SubscriptionState>() {
-				{ "none", SubscriptionState.None },
-				{ "to", SubscriptionState.To },
-				{ "from", SubscriptionState.From },
-				{ "both", SubscriptionState.Both }
-			};
+                { "none", SubscriptionState.None },
+                { "to", SubscriptionState.To },
+                { "from", SubscriptionState.From },
+                { "both", SubscriptionState.Both }
+            };
             if (!string.IsNullOrEmpty(type))
             {
                 if (string.IsNullOrEmpty(value))

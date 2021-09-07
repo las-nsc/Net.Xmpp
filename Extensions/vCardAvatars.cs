@@ -73,7 +73,7 @@ namespace Net.Xmpp.Extensions
         //http://www.xmpp.org/extensions/xep-0153.html
         public void SetAvatar(Stream stream)
         {
-            stream.ThrowIfNull("stream");
+            stream.ThrowIfNull(nameof(stream));
 
             const string mimeType = "image/png";
 
@@ -118,7 +118,7 @@ namespace Net.Xmpp.Extensions
 
         private string Hash(byte[] data)
         {
-            data.ThrowIfNull("data");
+            data.ThrowIfNull(nameof(data));
             using var sha1 = new SHA1Managed();
             return Convert.ToBase64String(sha1.ComputeHash(data));
         }
@@ -140,7 +140,7 @@ namespace Net.Xmpp.Extensions
         /// unspecified XMPP error occurred.</exception>
         public void RequestAvatar(Jid jid, string filepath, Action callback)
         {
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             //Make the request
             var xml = Xml.Element("vCard", "vcard-temp");
 

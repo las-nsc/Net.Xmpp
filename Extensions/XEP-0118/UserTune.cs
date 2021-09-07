@@ -118,7 +118,7 @@ namespace Net.Xmpp.Extensions
         /// is considered a "stop command" to disable publishing).</remarks>
         public void Publish(TuneInformation tune)
         {
-            tune.ThrowIfNull("tune");
+            tune.ThrowIfNull(nameof(tune));
             Publish(tune.Title, tune.Artist, tune.Track, tune.Length,
                 tune.Rating, tune.Source, tune.Uri);
         }

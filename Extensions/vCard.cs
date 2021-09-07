@@ -68,7 +68,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="stream">Avatar stream</param>
         public void SetAvatar(Stream stream)
         {
-            stream.ThrowIfNull("stream");
+            stream.ThrowIfNull(nameof(stream));
 
             string mimeType = "image/png";
 
@@ -101,14 +101,14 @@ namespace Net.Xmpp.Extensions
         /// <returns></returns>
         private string Hash(byte[] data)
         {
-            data.ThrowIfNull("data");
+            data.ThrowIfNull(nameof(data));
             using var sha1 = new SHA1Managed();
             return Convert.ToBase64String(sha1.ComputeHash(data));
         }
 
         public void RequestvCards(Jid jid, Action<VCardsData, Jid> callback)
         {
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             VCardsData vCD = new(); 
 
             //Make the request

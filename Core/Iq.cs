@@ -81,13 +81,13 @@ namespace Net.Xmpp.Core
         /// <exception cref="KeyNotFoundException"></exception>
         private IqType ParseType(string value)
         {
-            value.ThrowIfNull("value");
+            value.ThrowIfNull(nameof(value));
             var dict = new Dictionary<string, IqType>() {
-				{ "set", IqType.Set },
-				{ "get", IqType.Get },
-				{ "result", IqType.Result },
-				{ "error", IqType.Error }
-			};
+                { "set", IqType.Set },
+                { "get", IqType.Get },
+                { "result", IqType.Result },
+                { "error", IqType.Error }
+            };
             return dict[value];
         }
 

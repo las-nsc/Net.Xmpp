@@ -95,7 +95,7 @@ namespace Net.Xmpp.Extensions
 		/// <exception cref="XmppException">The server returned invalid data or another
 		/// unspecified XMPP error occurred.</exception>
 		public void Publish(Stream stream) {
-			stream.ThrowIfNull("stream");
+			stream.ThrowIfNull(nameof(stream));
 			using (Image image = Image.FromStream(stream)) {
 				string mimeType = GetMimeType(image);
 				int width = image.Width;
@@ -212,7 +212,7 @@ namespace Net.Xmpp.Extensions
 		/// <exception cref="ArgumentException">The mime-type of the specified
 		/// image could not be determined.</exception>
 		string GetMimeType(Image image) {
-			image.ThrowIfNull("image");
+			image.ThrowIfNull(nameof(image));
 			foreach(var codec in ImageCodecInfo.GetImageEncoders()) {
 				if (codec.FormatID == image.RawFormat.Guid)
 					return codec.MimeType;
@@ -228,7 +228,7 @@ namespace Net.Xmpp.Extensions
 		/// <exception cref="ArgumentNullException">The data parameter is
 		/// null.</exception>
 		string Hash(byte[] data) {
-			data.ThrowIfNull("data");
+			data.ThrowIfNull(nameof(data));
 			using (var sha1 = new SHA1Managed()) {
 				return Convert.ToBase64String(sha1.ComputeHash(data));
 			}
@@ -250,8 +250,8 @@ namespace Net.Xmpp.Extensions
 		/// <exception cref="XmppException">The server returned invalid data or another
 		/// unspecified XMPP error occurred.</exception>
 		Image RequestImage(Jid jid, string hash) {
-			jid.ThrowIfNull("jid");
-			hash.ThrowIfNull("hash");
+			jid.ThrowIfNull(nameof(jid));
+			hash.ThrowIfNull(nameof(hash));
 			XmlElement item = pep.RetrieveItem(jid, "urn:xmpp:avatar:data", hash);
 			if (item["data"] == null || item["data"].NamespaceURI != "urn:xmpp:avatar:data")
 				throw new XmppException("Erroneous avatar data: " + item);

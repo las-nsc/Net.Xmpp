@@ -100,10 +100,10 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// the empty string.</exception>
         public SaslDigestMd5(string username, string password)
         {
-            username.ThrowIfNull("username");
+            username.ThrowIfNull(nameof(username));
             if (username?.Length == 0)
                 throw new ArgumentException("The username must not be empty.");
-            password.ThrowIfNull("password");
+            password.ThrowIfNull(nameof(password));
 
             Username = username;
             Password = password;
@@ -177,7 +177,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// format of the challenge sent by the server.</remarks>
         private static NameValueCollection ParseDigestChallenge(string challenge)
         {
-            challenge.ThrowIfNull("challenge");
+            challenge.ThrowIfNull(nameof(challenge));
             NameValueCollection coll = new();
             foreach (string p in challenge.Split(','))
             {

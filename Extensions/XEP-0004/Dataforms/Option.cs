@@ -70,7 +70,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// is null.</exception>
         public Option(string value, string label = null)
         {
-            value.ThrowIfNull("value");
+            value.ThrowIfNull(nameof(value));
             element = Xml.Element("option");
             Value = value;
             Label = label;

@@ -48,7 +48,7 @@ namespace Net.Xmpp.Extensions
         /// null.</exception>
         public XmppItem(Jid jid, string node = null, string name = null)
         {
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             Jid = jid;
             Node = node;
             Name = name;
@@ -67,8 +67,8 @@ namespace Net.Xmpp.Extensions
         /// <param name="role">Privilege level within a room.</param>
         public XmppItem(string affiliation, Jid jid, string nickname = null, string role = null)
         {
-            affiliation.ThrowIfNull("affiliation");
-            jid.ThrowIfNull("jid");
+            affiliation.ThrowIfNull(nameof(affiliation));
+            jid.ThrowIfNull(nameof(jid));
             Affiliation = affiliation;
             Jid = jid;
             Nick = nickname;
@@ -89,7 +89,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="affiliation">A long-lived association or connection with a room.</param>
         public XmppItem(Jid jid, string node = null, string name = null, string nickname = null, string role = null, string affiliation = null)
         {
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             Jid = jid;
             Node = node;
             Name = name;

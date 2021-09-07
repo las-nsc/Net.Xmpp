@@ -167,7 +167,7 @@ namespace Net.Xmpp.Im
             MessageType type = MessageType.Normal, CultureInfo language = null)
             : base(to, null, null, null, language)
         {
-            to.ThrowIfNull("to");
+            to.ThrowIfNull(nameof(to));
             AlternateSubjects = new XmlDictionary(element, "subject", "xml:lang");
             AlternateBodies = new XmlDictionary(element, "body", "xml:lang");
             Type = type;
@@ -199,8 +199,8 @@ namespace Net.Xmpp.Im
             MessageType type = MessageType.Normal, CultureInfo language = null)
             : base(to, null, null, null, language)
         {
-            to.ThrowIfNull("to");
-            bodies.ThrowIfNull("bodies");
+            to.ThrowIfNull(nameof(to));
+            bodies.ThrowIfNull(nameof(bodies));
             AlternateSubjects = new XmlDictionary(element, "subject", "xml:lang");
             AlternateBodies = new XmlDictionary(element, "body", "xml:lang");
             Type = type;
@@ -240,7 +240,7 @@ namespace Net.Xmpp.Im
         /// the specified message stanza is invalid.</exception>
         internal Message(XmlElement messageNode, DateTimeOffset timestamp)
         {
-            messageNode.ThrowIfNull("messageNode");
+            messageNode.ThrowIfNull(nameof(messageNode));
             type = ParseType(messageNode.GetAttribute("type"));
             element = messageNode;
             AlternateSubjects = new XmlDictionary(element, "subject", "xml:lang");

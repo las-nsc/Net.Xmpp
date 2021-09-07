@@ -149,11 +149,11 @@ namespace Net.Xmpp.Core
         /// null.</exception>
         protected Stanza(XmlElement element)
         {
-            element.ThrowIfNull("element");
+            element.ThrowIfNull(nameof(element));
             this.element = element;
         }
 
-		/// <summary>
+        /// <summary>
         /// Converts the data XmlElement to an XElement.
         /// </summary>
         /// <returns>The data of the stanza as an XElement.</returns>
@@ -161,7 +161,7 @@ namespace Net.Xmpp.Core
         {
             return XElement.Parse(this.ToString());
         }
-        
+
         /// <summary>
         /// Returns a textual representation of this instance of the Stanza class.
         /// </summary>

@@ -91,7 +91,7 @@ namespace Net.Xmpp.Extensions.Socks5
         /// the reason.</exception>
         public SocksReply Request(SocksRequest request)
         {
-            request.ThrowIfNull("request");
+            request.ThrowIfNull(nameof(request));
             AssertValid();
             try
             {
@@ -160,7 +160,7 @@ namespace Net.Xmpp.Extensions.Socks5
         public Socks5Client(string hostname, int port, string username = null,
             string password = null)
         {
-            hostname.ThrowIfNull("hostname");
+            hostname.ThrowIfNull(nameof(hostname));
             port.ThrowIfOutOfRange("port", 0, 65535);
             Username = username;
             Password = password;
@@ -191,7 +191,7 @@ namespace Net.Xmpp.Extensions.Socks5
         public Socks5Client(IPAddress address, int port, string username = null,
             string password = null)
         {
-            address.ThrowIfNull("address");
+            address.ThrowIfNull(nameof(address));
             port.ThrowIfOutOfRange("port", 0, 65535);
             Username = username;
             Password = password;

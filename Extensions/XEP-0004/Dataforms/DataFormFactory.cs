@@ -22,7 +22,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// valid data-form element.</exception>
         public static DataForm Create(XmlElement element)
         {
-            element.ThrowIfNull("element");
+            element.ThrowIfNull(nameof(element));
             if (element.Name != "x" || element.NamespaceURI != "jabber:x:data")
                 throw new ArgumentException("Invalid root element: " + element.Name);
             string s = element.GetAttribute("type");

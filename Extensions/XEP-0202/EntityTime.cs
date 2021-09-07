@@ -1,7 +1,8 @@
-﻿using Net.Xmpp.Core;
-using Net.Xmpp.Im;
-using System;
+﻿using System;
 using System.Collections.Generic;
+
+using Net.Xmpp.Core;
+using Net.Xmpp.Im;
 
 namespace Net.Xmpp.Extensions
 {
@@ -81,7 +82,7 @@ namespace Net.Xmpp.Extensions
         /// unspecified XMPP error occurred.</exception>
         public DateTime GetTime(Jid jid)
         {
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             if (!ecapa.Supports(jid, Extension.EntityTime))
             {
                 throw new NotSupportedException("The XMPP entity does not support " +

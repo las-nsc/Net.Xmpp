@@ -1,9 +1,10 @@
-﻿using Net.Xmpp.Im;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+
+using Net.Xmpp.Im;
 
 namespace Net.Xmpp.Extensions
 {
@@ -108,7 +109,7 @@ namespace Net.Xmpp.Extensions
         /// information.</exception>
         public IEnumerable<Extension> GetExtensions(Jid jid)
         {
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             if (hashes.ContainsKey(jid))
             {
                 string hash = hashes[jid];
@@ -154,7 +155,7 @@ namespace Net.Xmpp.Extensions
         /// information.</exception>
         public bool Supports<T>(Jid jid) where T : XmppExtension
         {
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             T ext = im.GetExtension<T>();
             return Supports(jid, ext.Xep);
         }
@@ -174,8 +175,8 @@ namespace Net.Xmpp.Extensions
         /// information.</exception>
         public bool Supports(Jid jid, params Extension[] extensions)
         {
-            jid.ThrowIfNull("jid");
-            extensions.ThrowIfNull("extensions");
+            jid.ThrowIfNull(nameof(jid));
+            extensions.ThrowIfNull(nameof(extensions));
             IEnumerable<Extension> supported = GetExtensions(jid);
             foreach (Extension ext in extensions)
             {
@@ -201,9 +202,9 @@ namespace Net.Xmpp.Extensions
         /// information.</exception>
         public bool HasIdentity(Jid jid, string category, string type)
         {
-            jid.ThrowIfNull("jid");
-            category.ThrowIfNull("category");
-            type.ThrowIfNull("type");
+            jid.ThrowIfNull(nameof(jid));
+            category.ThrowIfNull(nameof(category));
+            type.ThrowIfNull(nameof(type));
             foreach (Identity ident in GetIdentities(jid))
             {
                 if (ident.Category == category && ident.Type == type)
@@ -254,7 +255,7 @@ namespace Net.Xmpp.Extensions
         /// algorithm is not supported.</exception>
         private string Hash(string input, HashAlgorithm algorithm)
         {
-            input.ThrowIfNull("input");
+            input.ThrowIfNull(nameof(input));
             byte[] bytes = Encoding.UTF8.GetBytes(input);
             return Convert.ToBase64String(algorithm.ComputeHash(bytes));
         }
@@ -269,15 +270,15 @@ namespace Net.Xmpp.Extensions
         /// is null.</exception>
         private HashAlgorithm ParseHashAlgorithm(string algorithm)
         {
-            algorithm.ThrowIfNull("algorithm");
+            algorithm.ThrowIfNull(nameof(algorithm));
             var dict = new Dictionary<string, Func<HashAlgorithm>>
                 (StringComparer.InvariantCultureIgnoreCase) {
-				{ "sha-1",   () => new SHA1Managed() },
-				{ "sha-256", () => new SHA256Managed() },
-				{ "sha-384", () => new SHA384Managed() },
-				{ "sha-512", () => new SHA512Managed() },
-				{ "md5",     () => new MD5CryptoServiceProvider() },
-			};
+                { "sha-1",   () => new SHA1Managed() },
+                { "sha-256", () => new SHA256Managed() },
+                { "sha-384", () => new SHA384Managed() },
+                { "sha-512", () => new SHA512Managed() },
+                { "md5",     () => new MD5CryptoServiceProvider() },
+            };
             return dict.ContainsKey(algorithm) ? dict[algorithm].Invoke() : null;
         }
     }

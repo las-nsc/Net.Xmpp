@@ -38,7 +38,7 @@ namespace Net.Xmpp.Extensions
         /// not between 0 and 65535.</exception>
         public Streamhost(Jid jid, string host, int port)
         {
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             host.ThrowIfNullOrEmpty("host");
             port.ThrowIfOutOfRange("port", 0, 65535);
             Jid = jid;

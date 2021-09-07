@@ -9,7 +9,7 @@ namespace Net.Xmpp.Extensions.Dataforms
     /// </summary>
     public abstract class DataForm
     {
-		private const string xmlns = "jabber:x:data";
+        private const string xmlns = "jabber:x:data";
 
         /// <summary>
         /// The underlying XML element representing the data-form.
@@ -142,7 +142,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// valid data-form element.</exception>
         internal DataForm(XmlElement element, bool readOnly = false)
         {
-            element.ThrowIfNull("element");
+            element.ThrowIfNull(nameof(element));
             this.element = element;
             try
             {
@@ -191,8 +191,8 @@ namespace Net.Xmpp.Extensions.Dataforms
                     "XML element is invalid.", e);
             }
         }
-		
-		        /// <summary>
+
+        /// <summary>
         /// Add a boolean value to this form
         /// </summary>
         /// <param name="name">The name of the value</param>

@@ -23,7 +23,7 @@ namespace Net.Xmpp.Extensions
         /// <remarks>This is an extension method for the IPAddress class.</remarks>
         private static IPAddress And(this IPAddress address, IPAddress netmask)
         {
-            netmask.ThrowIfNull("netmask");
+            netmask.ThrowIfNull(nameof(netmask));
             if (address.AddressFamily != netmask.AddressFamily)
                 throw new ArgumentException("The address family of the specified netmask " +
                     "is different from the address family of the IP address.");
@@ -53,8 +53,8 @@ namespace Net.Xmpp.Extensions
         public static bool InSameSubnet(this IPAddress address, IPAddress other,
             IPAddress netmask)
         {
-            other.ThrowIfNull("other");
-            netmask.ThrowIfNull("netmask");
+            other.ThrowIfNull(nameof(other));
+            netmask.ThrowIfNull(nameof(netmask));
 
             return address.And(netmask).Equals(other.And(netmask));
         }

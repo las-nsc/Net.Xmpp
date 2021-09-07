@@ -23,7 +23,7 @@ namespace Net.Xmpp.Extensions
         /// null.</exception>
         internal FileTransferAbortedEventArgs(FileTransfer transfer)
         {
-            transfer.ThrowIfNull("transfer");
+            transfer.ThrowIfNull(nameof(transfer));
             Transfer = transfer;
         }
     }

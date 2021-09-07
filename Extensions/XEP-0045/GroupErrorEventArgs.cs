@@ -31,7 +31,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="data">Group Chat Error.</param>
         internal GroupErrorEventArgs(MucError data)
         {
-            data.ThrowIfNull("invite");
+            data.ThrowIfNull(nameof(data));
             Data = data;
         }
     }

@@ -34,7 +34,7 @@ namespace Net.Xmpp.Extensions
         /// null.</exception>
         public TuneEventArgs(Jid jid, TuneInformation information = null)
         {
-            jid.ThrowIfNull("jid");
+            jid.ThrowIfNull(nameof(jid));
             Jid = jid;
             Information = information;
         }

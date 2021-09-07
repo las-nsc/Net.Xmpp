@@ -23,7 +23,7 @@ namespace Net.Xmpp.Extensions
         /// null.</exception>
         internal FileTransferProgressEventArgs(FileTransfer transfer)
         {
-            transfer.ThrowIfNull("transfer");
+            transfer.ThrowIfNull(nameof(transfer));
             Transfer = transfer;
         }
     }
