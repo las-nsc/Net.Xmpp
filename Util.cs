@@ -1,7 +1,8 @@
-﻿using Net.Xmpp.Core;
-using System;
+﻿using System;
 using System.Xml;
 using System.Xml.Linq;
+
+using Net.Xmpp.Core;
 
 namespace Net.Xmpp
 {
@@ -26,12 +27,9 @@ namespace Net.Xmpp
         internal static Exception ExceptionFromError(Iq errorIq, string message = null)
         {
             errorIq.ThrowIfNull("errorIq");
-            if (errorIq.Type != IqType.Error)
-            {
-                throw new ArgumentException("The specified Iq stanza is not of " +
-                    "type 'error'.");
-            }
-            return ExceptionFromError(errorIq.Data["error"], message);
+            return errorIq.Type == IqType.Error
+                ? ExceptionFromError(errorIq.Data["error"], message)
+                : throw new ArgumentException("The specified Iq stanza is not of type 'error'.");
         }
 
         /// <summary>
@@ -52,10 +50,9 @@ namespace Net.Xmpp
             }
             catch
             {
-                if (error == null)
-                    return new XmppException("Unspecified error.");
-                return new XmppException("Invalid XML error-stanza: " +
-                    error.ToXmlString());
+                return error == null
+                    ? new XmppException("Unspecified error.")
+                    : new XmppException($"Invalid XML error-stanza: {error.ToXmlString()}");
             }
         }
 
@@ -167,7 +164,7 @@ namespace Net.Xmpp
         {
             if (s == null)
                 throw new ArgumentNullException();
-            if (s == String.Empty)
+            if (s?.Length == 0)
                 throw new ArgumentException();
         }
 
@@ -182,7 +179,7 @@ namespace Net.Xmpp
         {
             if (s == null)
                 throw new ArgumentNullException(name);
-            if (s == String.Empty)
+            if (s?.Length == 0)
                 throw new ArgumentException(name + " must not be empty.");
         }
 
@@ -217,9 +214,9 @@ namespace Net.Xmpp
             struct, IComparable, IFormattable, IConvertible
         {
             value.ThrowIfNull("value");
-            if (!typeof(T).IsEnum)
-                throw new ArgumentException("T must be an enumerated type.");
-            return (T)Enum.Parse(typeof(T), value, ignoreCase);
+            return typeof(T).IsEnum
+                ? (T)Enum.Parse(typeof(T), value, ignoreCase)
+                : throw new ArgumentException("T must be an enumerated type.");
         }
 
         public static XmlElement ToXmlElement(this XElement source)

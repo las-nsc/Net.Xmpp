@@ -38,11 +38,7 @@ namespace Net.Xmpp.Core.Sasl
         /// A map of mechanism-specific properties which are needed by the
         /// authentication mechanism to compute it's challenge-responses.
         /// </summary>
-        public Dictionary<string, object> Properties
-        {
-            get;
-            private set;
-        }
+        public Dictionary<string, object> Properties { get; }
 
         /// <summary>
         /// Computes the client response to a challenge sent by the server.
@@ -77,7 +73,7 @@ namespace Net.Xmpp.Core.Sasl
         {
             try
             {
-                byte[] data = String.IsNullOrEmpty(challenge) ? new byte[0] :
+                byte[] data = string.IsNullOrEmpty(challenge) ? new byte[0] :
                     Convert.FromBase64String(challenge);
                 byte[] response = ComputeResponse(data);
                 return Convert.ToBase64String(response);

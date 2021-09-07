@@ -21,7 +21,7 @@ namespace Net.Xmpp.Extensions.Dataforms
             get
             {
                 var v = element["value"];
-                return v != null ? v.InnerText : null;
+                return v?.InnerText;
             }
 
             private set

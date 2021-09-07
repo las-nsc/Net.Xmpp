@@ -10,11 +10,7 @@ namespace Net.Xmpp.Im
 
     public class ConnectEventArgs : EventArgs
     {
-        public ConnectionState State
-        {
-            get;
-            private set;
-        }
+        public ConnectionState State { get; }
 
         public ConnectEventArgs(ConnectionState state)
         {

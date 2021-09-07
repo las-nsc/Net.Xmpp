@@ -25,10 +25,7 @@ namespace Net.Xmpp
         /// </summary>
         public ErrorType Type
         {
-            get
-            {
-                return type;
-            }
+            get => type;
 
             set
             {
@@ -42,15 +39,9 @@ namespace Net.Xmpp
         /// </summary>
         public ErrorCondition Condition
         {
-            get
-            {
-                return condition;
-            }
+            get => condition;
 
-            set
-            {
-                SetCondition(value);
-            }
+            set => SetCondition(value);
         }
 
         /// <summary>
@@ -68,33 +59,24 @@ namespace Net.Xmpp
                     else
                         text.InnerText = value;
                 }
-                else
+                else if (value != null)
                 {
-                    if (value != null)
-                    {
-                        Data.Child(Xml.Element("text",
-                            "urn:ietf:params:xml:ns:xmpp-stanzas").Text(value));
-                    }
+                    Data.Child(Xml.Element("text",
+                        "urn:ietf:params:xml:ns:xmpp-stanzas").Text(value));
                 }
             }
 
             get
             {
                 var text = Data["text"];
-                if (text != null)
-                    return String.IsNullOrEmpty(text.InnerText) ? null : text.InnerText;
-                return null;
+                return text != null ? !string.IsNullOrEmpty(text.InnerText) ? text.InnerText : null : null;
             }
         }
 
         /// <summary>
         /// Provides access to the XML of the underlying error stanza.
         /// </summary>
-        public XmlElement Data
-        {
-            get;
-            private set;
-        }
+        public XmlElement Data { get; }
 
         /// <summary>
         /// Returns a textual representation of this Error instance.
@@ -163,8 +145,7 @@ namespace Net.Xmpp
                     condition = (ErrorCondition)v;
             }
             if (!condition.HasValue)
-                throw new ArgumentException("The error XML element does not contain a " +
-                    "valid XMPP error condition element.");
+                throw new ArgumentException("The error XML element does not contain a valid XMPP error condition element.");
             Data = error;
             Type = type;
             Condition = condition.Value;
@@ -201,7 +182,7 @@ namespace Net.Xmpp
         /// <returns>The XML element name of the specified error condition.</returns>
         private string ErrorConditionToTagName(ErrorCondition condition)
         {
-            StringBuilder b = new StringBuilder();
+            StringBuilder b = new();
             string s = condition.ToString();
             for (int i = 0; i < s.Length; i++)
             {
@@ -226,8 +207,7 @@ namespace Net.Xmpp
         private ErrorCondition TagNameToErrorCondition(string tagName)
         {
             tagName.ThrowIfNull("tagName");
-            var values = Enum.GetValues(typeof(ErrorCondition));
-            foreach (var v in values)
+            foreach (var v in Enum.GetValues(typeof(ErrorCondition)))
             {
                 if (ErrorConditionToTagName((ErrorCondition)v) == tagName)
                     return (ErrorCondition)v;

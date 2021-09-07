@@ -1,14 +1,11 @@
-﻿using Sharp.Xmpp.Core;
-using Sharp.Xmpp.Im;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Linq;
 
-namespace Sharp.Xmpp.Extensions
+using Net.Xmpp.Core;
+using Net.Xmpp.Im;
+
+namespace Net.Xmpp.Extensions
 {
     internal class AdHocCommands : XmppExtension
     {
@@ -21,28 +18,15 @@ namespace Sharp.Xmpp.Extensions
         {
         }
 
-        public override IEnumerable<string> Namespaces
-        {
-            get
-            {
-                return new string[0]; // todo:
-            }
-        }
+        public override IEnumerable<string> Namespaces => new string[0]; // todo:
 
-        public override Extension Xep
-        {
-            get
-            {
-                return Extension.AdHocCommands;
-            }
-        }
+        public override Extension Xep => Extension.AdHocCommands;
 
         public List<AdHocCommand> GetAdHocCommands()
         {
             var query = Xml.Element("query", "http://jabber.org/protocol/disco#items").Attr("node", "http://jabber.org/protocol/commands");
             var response = im.IqRequest(IqType.Get, im.Hostname, im.Jid, query);
-            var commands = response.Data["query"].GetElementsByTagName("item").Cast<XmlElement>().Select(e => new AdHocCommand(e)).ToList();
-            return commands;
+            return response.Data["query"].GetElementsByTagName("item").Cast<XmlElement>().Select(e => new AdHocCommand(e)).ToList();
         }
     }
 }

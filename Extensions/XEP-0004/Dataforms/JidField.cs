@@ -19,10 +19,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// is not a valid JID.</exception>
         public Jid Jid
         {
-            get
-            {
-                return GetJid();
-            }
+            get => GetJid();
 
             private set
             {

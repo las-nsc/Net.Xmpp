@@ -11,21 +11,13 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The name of the file.
         /// </summary>
-        public string Name
-        {
-            get;
-            private set;
-        }
+        public string Name { get; }
 
         /// <summary>
         /// A description of the file so the receiver can better understand what
         /// is being sent.
         /// </summary>
-        public string Description
-        {
-            get;
-            private set;
-        }
+        public string Description { get; }
 
         /// <summary>
         /// Initializes a new instance of the FileMetaData class.

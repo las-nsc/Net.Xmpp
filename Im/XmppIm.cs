@@ -31,7 +31,7 @@ namespace Net.Xmpp.Im
         /// <summary>
         /// The set of loaded extensions.
         /// </summary>
-        private ISet<XmppExtension> extensions = new HashSet<XmppExtension>();
+        private readonly ISet<XmppExtension> extensions = new HashSet<XmppExtension>();
 
         /// <summary>
         /// The hostname of the XMPP server to connect to.
@@ -42,15 +42,9 @@ namespace Net.Xmpp.Im
         /// and the value is the empty string.</exception>
         public string Hostname
         {
-            get
-            {
-                return core.Hostname;
-            }
+            get => core.Hostname;
 
-            set
-            {
-                core.Hostname = value;
-            }
+            set => core.Hostname = value;
         }
 
         /// <summary>
@@ -60,15 +54,9 @@ namespace Net.Xmpp.Im
         /// set and the value is not between 0 and 65536.</exception>
         public int Port
         {
-            get
-            {
-                return core.Port;
-            }
+            get => core.Port;
 
-            set
-            {
-                core.Port = value;
-            }
+            set => core.Port = value;
         }
 
         /// <summary>
@@ -81,15 +69,9 @@ namespace Net.Xmpp.Im
         /// and the value is the empty string.</exception>
         public string Username
         {
-            get
-            {
-                return core.Username;
-            }
+            get => core.Username;
 
-            set
-            {
-                core.Username = value;
-            }
+            set => core.Username = value;
         }
 
         /// <summary>
@@ -99,15 +81,9 @@ namespace Net.Xmpp.Im
         /// set and the value is null.</exception>
         public string Password
         {
-            get
-            {
-                return core.Password;
-            }
+            get => core.Password;
 
-            set
-            {
-                core.Password = value;
-            }
+            set => core.Password = value;
         }
 
         /// <summary>
@@ -115,15 +91,9 @@ namespace Net.Xmpp.Im
         /// </summary>
         public bool Tls
         {
-            get
-            {
-                return core.Tls;
-            }
+            get => core.Tls;
 
-            set
-            {
-                core.Tls = value;
-            }
+            set => core.Tls = value;
         }
 
         /// <summary>
@@ -132,53 +102,29 @@ namespace Net.Xmpp.Im
         /// </summary>
         public RemoteCertificateValidationCallback Validate
         {
-            get
-            {
-                return core.Validate;
-            }
+            get => core.Validate;
 
-            set
-            {
-                core.Validate = value;
-            }
+            set => core.Validate = value;
         }
 
         /// <summary>
         /// Determines whether the session with the server is TLS/SSL encrypted.
         /// </summary>
-        public bool IsEncrypted
-        {
-            get
-            {
-                return core.IsEncrypted;
-            }
-        }
+        public bool IsEncrypted => core.IsEncrypted;
 
         /// <summary>
         /// The address of the Xmpp entity.
         /// </summary>
-        public Jid Jid
-        {
-            get
-            {
-                return core.Jid;
-            }
-        }
+        public Jid Jid => core.Jid;
 
         /// <summary>
         /// The address of the Xmpp entity.
         /// </summary>
         public int DefaultTimeOut
         {
-            get
-            {
-                return core.MillisecondsDefaultTimeout;
-            }
+            get => core.MillisecondsDefaultTimeout;
 
-            set
-            {
-                core.MillisecondsDefaultTimeout = value;
-            }
+            set => core.MillisecondsDefaultTimeout = value;
         }
 
         /// <summary>
@@ -186,58 +132,32 @@ namespace Net.Xmpp.Im
         /// </summary>
         public bool DebugStanzas
         {
-            get
-            {
-                return core.DebugStanzas;
-            }
+            get => core.DebugStanzas;
 
-            set
-            {
-                core.DebugStanzas = value;
-            }
+            set => core.DebugStanzas = value;
         }
 
         /// <summary>
         /// Determines whether the instance is connected to the XMPP server.
         /// </summary>
-        public bool Connected
-        {
-            get
-            {
-                return core.Connected;
-            }
-        }
+        public bool Connected => core.Connected;
 
         /// <summary>
         /// Determines whether the instance has been authenticated.
         /// </summary>
-        public bool Authenticated
-        {
-            get
-            {
-                return core.Authenticated;
-            }
-        }
+        public bool Authenticated => core.Authenticated;
 
         /// <summary>
         /// A callback method to invoke when a request for a subscription is received
         /// from another XMPP user.
         /// </summary>
-        public SubscriptionRequest SubscriptionRequest
-        {
-            get;
-            set;
-        }
+        public SubscriptionRequest SubscriptionRequest { get; set; }
 
         /// <summary>
         /// A callback method to invoke when a Custom Iq Request is received
         /// from another XMPP user.
         /// </summary>
-        public CustomIqRequestDelegate CustomIqDelegate
-        {
-            get;
-            set;
-        }
+        public CustomIqRequestDelegate CustomIqDelegate { get; set; }
 
         /// <summary>
         /// The event that is raised when a status notification from a contact has been
@@ -510,7 +430,7 @@ namespace Net.Xmpp.Im
             AssertValid();
             to.ThrowIfNull("to");
             body.ThrowIfNullOrEmpty("body");
-            Message m = new Message(to, body, subject, thread, type, language);
+            Message m = new(to, body, subject, thread, type, language);
             SendMessage(m);
         }
 
@@ -545,7 +465,7 @@ namespace Net.Xmpp.Im
             AssertValid();
             to.ThrowIfNull("to");
             bodies.ThrowIfNull("bodies");
-            Message m = new Message(to, bodies, subjects, thread, type, language);
+            Message m = new(to, bodies, subjects, thread, type, language);
             SendMessage(m);
         }
 
@@ -571,8 +491,7 @@ namespace Net.Xmpp.Im
             foreach (var ext in extensions)
             {
                 var filter = ext as IOutputFilter<Message>;
-                if (filter != null)
-                    filter.Output(message);
+                filter?.Output(message);
             }
             core.SendMessage(message);
         }
@@ -595,7 +514,7 @@ namespace Net.Xmpp.Im
         {
             AssertValid();
             jid.ThrowIfNull("jid");
-            Presence p = new Presence(jid, null, PresenceType.Subscribe);
+            Presence p = new(jid, null, PresenceType.Subscribe);
             SendPresence(p);
         }
 
@@ -615,7 +534,7 @@ namespace Net.Xmpp.Im
         {
             AssertValid();
             jid.ThrowIfNull("jid");
-            Presence p = new Presence(jid, null, PresenceType.Unsubscribe);
+            Presence p = new(jid, null, PresenceType.Unsubscribe);
             SendPresence(p);
         }
 
@@ -636,7 +555,7 @@ namespace Net.Xmpp.Im
         {
             AssertValid();
             jid.ThrowIfNull("jid");
-            Presence p = new Presence(jid, null, PresenceType.Subscribed);
+            Presence p = new(jid, null, PresenceType.Subscribed);
             SendPresence(p);
         }
 
@@ -657,7 +576,7 @@ namespace Net.Xmpp.Im
         {
             AssertValid();
             jid.ThrowIfNull("jid");
-            Presence p = new Presence(jid, null, PresenceType.Unsubscribed);
+            Presence p = new(jid, null, PresenceType.Unsubscribed);
             SendPresence(p);
         }
 
@@ -679,7 +598,7 @@ namespace Net.Xmpp.Im
         {
             AssertValid();
             jid.ThrowIfNull("jid");
-            Presence p = new Presence(jid, null, PresenceType.Unsubscribed);
+            Presence p = new(jid, null, PresenceType.Unsubscribed);
             SendPresence(p);
         }
 
@@ -709,7 +628,7 @@ namespace Net.Xmpp.Im
             AssertValid();
             if (availability == Availability.Offline)
                 throw new ArgumentException("Invalid availability state.");
-            List<XmlElement> elems = new List<XmlElement>();
+            List<XmlElement> elems = new();
             if (availability != Availability.Online)
             {
                 var states = new Dictionary<Availability, string>() {
@@ -724,7 +643,7 @@ namespace Net.Xmpp.Im
                 elems.Add(Xml.Element("priority").Text(priority.ToString()));
             if (message != null)
                 elems.Add(Xml.Element("status").Text(message));
-            Presence p = new Presence(null, null, PresenceType.Available, null,
+            Presence p = new(null, null, PresenceType.Available, null,
                 language, elems.ToArray());
             SendPresence(p);
         }
@@ -755,7 +674,7 @@ namespace Net.Xmpp.Im
             AssertValid();
             if (availability == Availability.Offline)
                 throw new InvalidOperationException("Invalid availability state.");
-            List<XmlElement> elems = new List<XmlElement>();
+            List<XmlElement> elems = new();
             if (availability != Availability.Online)
             {
                 var states = new Dictionary<Availability, string>() {
@@ -774,7 +693,7 @@ namespace Net.Xmpp.Im
                     elems.Add(Xml.Element("status").Attr("xml:lang", pair.Key)
                         .Text(pair.Value));
             }
-            Presence p = new Presence(null, null, PresenceType.Available, null,
+            Presence p = new(null, null, PresenceType.Available, null,
                 null, elems.ToArray());
             SendPresence(p);
         }
@@ -826,9 +745,9 @@ namespace Net.Xmpp.Im
             if (iq.Type == IqType.Error)
                 throw Util.ExceptionFromError(iq, "The roster could not be retrieved.");
             var query = iq.Data["query"];
-            if (query == null || query.NamespaceURI != "jabber:iq:roster")
-                throw new XmppException("Erroneous server response.");
-            return ParseRoster(iq.Data);
+            return query == null || query.NamespaceURI != "jabber:iq:roster"
+                ? throw new XmppException("Erroneous server response.")
+                : ParseRoster(iq.Data);
         }
 
         /// <summary>
@@ -855,7 +774,7 @@ namespace Net.Xmpp.Im
             AssertValid();
             item.ThrowIfNull("item");
             var xml = Xml.Element("item").Attr("jid", item.Jid.ToString());
-            if (!String.IsNullOrEmpty(item.Name))
+            if (!string.IsNullOrEmpty(item.Name))
                 xml.Attr("name", item.Name);
             foreach (string group in item.Groups)
                 xml.Child(Xml.Element("group").Text(group));
@@ -950,7 +869,7 @@ namespace Net.Xmpp.Im
             foreach (XmlElement list in query.GetElementsByTagName("list"))
             {
                 string name = list.GetAttribute("name");
-                if (!String.IsNullOrEmpty(name))
+                if (!string.IsNullOrEmpty(name))
                     lists.Add(GetPrivacyList(name));
             }
             return lists;
@@ -989,7 +908,7 @@ namespace Net.Xmpp.Im
             {
                 throw new XmppException("Erroneous server response: " + iq);
             }
-            PrivacyList list = new PrivacyList(name);
+            PrivacyList list = new(name);
             var listElement = query["list"];
             // Parse the items on the list.
             foreach (XmlElement item in listElement.GetElementsByTagName("item"))
@@ -1141,9 +1060,7 @@ namespace Net.Xmpp.Im
             if (active == null)
                 return null;
             string name = active.GetAttribute("name");
-            if (String.IsNullOrEmpty(name))
-                return null;
-            return name;
+            return string.IsNullOrEmpty(name) ? null : name;
         }
 
         /// <summary>
@@ -1212,9 +1129,7 @@ namespace Net.Xmpp.Im
             if (active == null)
                 return null;
             string name = active.GetAttribute("name");
-            if (String.IsNullOrEmpty(name))
-                return null;
-            return name;
+            return string.IsNullOrEmpty(name) ? null : name;
         }
 
         /// <summary>
@@ -1289,8 +1204,7 @@ namespace Net.Xmpp.Im
                 // Get rid of managed resources.
                 if (disposing)
                 {
-                    if (core != null)
-                        core.Close();
+                    core?.Close();
                     core = null;
                 }
                 // Get rid of unmanaged resources.
@@ -1322,7 +1236,7 @@ namespace Net.Xmpp.Im
         internal bool UnloadExtension<T>() where T : XmppExtension
         {
             XmppExtension ext = GetExtension<T>();
-            return ext != null ? extensions.Remove(ext) : false;
+            return ext != null && extensions.Remove(ext);
         }
 
         /// <summary>
@@ -1383,13 +1297,7 @@ namespace Net.Xmpp.Im
         /// <summary>
         /// Returns an enumerable collection of loaded extensions.
         /// </summary>
-        internal IEnumerable<XmppExtension> Extensions
-        {
-            get
-            {
-                return extensions;
-            }
-        }
+        internal IEnumerable<XmppExtension> Extensions => extensions;
 
         /// <summary>
         /// Sends the specified presence stanza to the server.
@@ -1409,8 +1317,7 @@ namespace Net.Xmpp.Im
             foreach (var ext in extensions)
             {
                 var filter = ext as IOutputFilter<Presence>;
-                if (filter != null)
-                    filter.Output(presence);
+                filter?.Output(presence);
             }
             core.SendPresence(presence);
         }
@@ -1445,13 +1352,12 @@ namespace Net.Xmpp.Im
             XmlElement data = null, CultureInfo language = null,
             int millisecondsTimeout = -1)
         {
-            Iq iq = new Iq(type, null, to, from, data, language);
+            Iq iq = new(type, null, to, from, data, language);
             // Invoke IOutput<Iq> Plugins.
             foreach (var ext in extensions)
             {
                 var filter = ext as IOutputFilter<Iq>;
-                if (filter != null)
-                    filter.Output(iq);
+                filter?.Output(iq);
             }
             return core.IqRequest(iq, millisecondsTimeout);
         }
@@ -1482,15 +1388,14 @@ namespace Net.Xmpp.Im
             XmlElement data = null, CultureInfo language = null,
             Action<string, Iq> callback = null)
         {
-            Iq iq = new Iq(type, null, to, from, data, language);
+            Iq iq = new(type, null, to, from, data, language);
             // Invoke IOutput<Iq> Plugins.
             foreach (var ext in extensions)
             {
                 var filter = ext as IOutputFilter<Iq>;
-                if (filter != null)
-                    filter.Output(iq);
+                filter?.Output(iq);
             }
-            return core.IqRequestAsync(iq, callback);
+            return core.IqRequest(iq, callback);
         }
 
         /// <summary>
@@ -1516,13 +1421,12 @@ namespace Net.Xmpp.Im
             XmlElement data = null, CultureInfo language = null)
         {
             AssertValid(false);
-            Iq iq = new Iq(type, id, to, from, data, language);
+            Iq iq = new(type, id, to, from, data, language);
             // Invoke IOutput<Iq> Plugins.
             foreach (var ext in extensions)
             {
                 var filter = ext as IOutputFilter<Iq>;
-                if (filter != null)
-                    filter.Output(iq);
+                filter?.Output(iq);
             }
             core.IqResponse(iq);
         }
@@ -1552,7 +1456,7 @@ namespace Net.Xmpp.Im
         {
             AssertValid(false);
             iq.ThrowIfNull("iq");
-            Iq response = new Iq(IqType.Error, iq.Id, iq.From, Jid,
+            Iq response = new(IqType.Error, iq.Id, iq.From, Jid,
                 new XmppError(type, condition, text, data).Data);
             core.IqResponse(response);
         }
@@ -1576,7 +1480,7 @@ namespace Net.Xmpp.Im
         {
             AssertValid(false);
             iq.ThrowIfNull("iq");
-            Iq response = new Iq(IqType.Result, iq.Id, iq.From, Jid, data);
+            Iq response = new(IqType.Result, iq.Id, iq.From, Jid, data);
             core.IqResponse(response);
         }
 
@@ -1599,23 +1503,15 @@ namespace Net.Xmpp.Im
         /// </summary>
         private void SetupEventHandlers()
         {
-            core.Iq += (sender, e) => { OnIq(e.Stanza); };
+            core.Iq += (sender, e) => OnIq(e.Stanza);
             core.Presence += (sender, e) =>
-            {
                 // FIXME: Raise Error event if constructor raises exception?
                 OnPresence(new Presence(e.Stanza));
-            };
-            core.Message += (sender, e) =>
-            {
-                OnMessage(new Message(e.Stanza));
-            };
-            core.Error += (sender, e) =>
-            {
-                Error.Raise(sender, new ErrorEventArgs(e.Exception));
-            };
+            core.Message += (sender, e) => OnMessage(new Message(e.Stanza));
+            core.Error += (sender, e) => Error.Raise(sender, new ErrorEventArgs(e.Exception));
             core.OnConnect += (sender, e) =>
             {
-                Im.ConnectionState state = ConnectionState.Disconnected;
+                ConnectionState state = ConnectionState.Disconnected;
                 if (e.State == Core.ConnectionState.Connected)
                 {
                     state = ConnectionState.Connected;
@@ -1658,8 +1554,7 @@ namespace Net.Xmpp.Im
             // Invoke IInput<Iq> Plugins.
             foreach (var ext in extensions)
             {
-                var filter = ext as IInputFilter<Iq>;
-                if (filter != null)
+                if (ext is IInputFilter<Iq> filter)
                 {
                     // Swallow IQ stanza?
                     if (filter.Input(iq))
@@ -1690,8 +1585,7 @@ namespace Net.Xmpp.Im
             // Invoke IInput<Presence> Plugins.
             foreach (var ext in extensions)
             {
-                var filter = ext as IInputFilter<Presence>;
-                if (filter != null)
+                if (ext is IInputFilter<Presence> filter)
                 {
                     // Swallow presence stanza?
                     if (filter.Input(presence))
@@ -1729,8 +1623,7 @@ namespace Net.Xmpp.Im
             // Invoke IInput<Message> Plugins.
             foreach (var ext in extensions)
             {
-                var filter = ext as IInputFilter<Message>;
-                if (filter != null)
+                if (ext is IInputFilter<Message> filter)
                 {
                     // Swallow message?
                     if (filter.Input(message))
@@ -1762,36 +1655,32 @@ namespace Net.Xmpp.Im
                 Availability.Online;
             // If the optional 'show' element has been specified, parse the
             // availability status from it.
-            if (offline == false)
+            if (!offline && e != null && !string.IsNullOrEmpty(e.InnerText))
             {
-                if (e != null && !String.IsNullOrEmpty(e.InnerText))
-                {
-                    string show = e.InnerText.Capitalize();
-                    availability = (Availability)Enum.Parse(
-                        typeof(Availability), show);
-                }
+                string show = e.InnerText.Capitalize();
+                availability = (Availability)Enum.Parse(
+                    typeof(Availability), show);
             }
             sbyte prio = 0;
             // Parse the optional 'priority' element.
             e = presence.Data["priority"];
-            if (e != null && !String.IsNullOrEmpty(e.InnerText))
+            if (e != null && !string.IsNullOrEmpty(e.InnerText))
                 prio = sbyte.Parse(e.InnerText);
             // Parse optional 'status' element(s).
             string lang = presence.Data.GetAttribute("xml:lang");
             var dict = new Dictionary<string, string>();
-            if (String.IsNullOrEmpty(lang))
+            if (string.IsNullOrEmpty(lang))
                 lang = core.Language.Name;
             foreach (XmlNode node in presence.Data.GetElementsByTagName("status"))
             {
-                XmlElement element = node as XmlElement;
-                if (element == null)
+                if (node is not XmlElement element)
                     continue;
                 string l = element.GetAttribute("xml:lang");
-                if (String.IsNullOrEmpty(l))
+                if (string.IsNullOrEmpty(l))
                     l = lang;
                 dict.Add(l, element.InnerText);
             }
-            Status status = new Status(availability, dict, prio);
+            Status status = new(availability, dict, prio);
             // Raise Status event.
             Status.Raise(this, new StatusEventArgs(presence.From, status));
         }
@@ -1805,8 +1694,7 @@ namespace Net.Xmpp.Im
         /// <param name="presence">The presence stanza to process.</param>
         private void ProcessSubscriptionRequest(Presence presence)
         {
-            if (SubscriptionRequest != null)
-                SubscriptionRequest.Invoke(presence.From);
+            SubscriptionRequest?.Invoke(presence.From);
         }
 
         /// <summary>
@@ -1848,23 +1736,22 @@ namespace Net.Xmpp.Im
         /// the parsed roster items.</returns>
         private Roster ParseRoster(XmlElement query)
         {
-            Roster roster = new Roster();
+            Roster roster = new();
             var states = new Dictionary<string, SubscriptionState>() {
 				{ "none", SubscriptionState.None },
 				{ "to", SubscriptionState.To },
 				{ "from", SubscriptionState.From },
 				{ "both", SubscriptionState.Both }
 			};
-            var items = query.GetElementsByTagName("item");
-            foreach (XmlElement item in items)
+            foreach (XmlElement item in query.GetElementsByTagName("item"))
             {
                 string jid = item.GetAttribute("jid");
-                if (String.IsNullOrEmpty(jid))
+                if (string.IsNullOrEmpty(jid))
                     continue;
                 string name = item.GetAttribute("name");
-                if (name == String.Empty)
+                if (name?.Length == 0)
                     name = null;
-                List<string> groups = new List<string>();
+                List<string> groups = new();
                 foreach (XmlElement group in item.GetElementsByTagName("group"))
                     groups.Add(group.InnerText);
                 string s = item.GetAttribute("subscription");
@@ -1899,12 +1786,12 @@ namespace Net.Xmpp.Im
             {
                 XmlElement item = items.Item(0) as XmlElement;
                 string jid = item.GetAttribute("jid");
-                if (!String.IsNullOrEmpty(jid))
+                if (!string.IsNullOrEmpty(jid))
                 {
                     string name = item.GetAttribute("name");
-                    if (name == String.Empty)
+                    if (name?.Length == 0)
                         name = null;
-                    List<string> groups = new List<string>();
+                    List<string> groups = new();
                     foreach (XmlElement group in item.GetElementsByTagName("group"))
                         groups.Add(group.InnerText);
                     string s = item.GetAttribute("subscription");
@@ -1912,7 +1799,7 @@ namespace Net.Xmpp.Im
                     if (states.ContainsKey(s))
                         state = states[s];
                     string ask = item.GetAttribute("ask");
-                    RosterItem ri = new RosterItem(jid, name, state, ask == "subscribe", groups);
+                    RosterItem ri = new(jid, name, state, ask == "subscribe", groups);
                     RosterUpdated.Raise(this, new RosterUpdatedEventArgs(ri, s == "remove"));
                 }
                 // Acknowledge IQ request.
@@ -1936,7 +1823,7 @@ namespace Net.Xmpp.Im
         {
             item.ThrowIfNull("item");
             bool allow = item.GetAttribute("action") == "allow";
-            uint order = UInt32.Parse(item.GetAttribute("order"));
+            uint order = uint.Parse(item.GetAttribute("order"));
             PrivacyGranularity granularity = 0;
             if (item["message"] != null)
                 granularity |= PrivacyGranularity.Message;
@@ -1954,9 +1841,9 @@ namespace Net.Xmpp.Im
 				{ "from", SubscriptionState.From },
 				{ "both", SubscriptionState.Both }
 			};
-            if (!String.IsNullOrEmpty(type))
+            if (!string.IsNullOrEmpty(type))
             {
-                if (String.IsNullOrEmpty(value))
+                if (string.IsNullOrEmpty(value))
                     throw new ArgumentException("Missing value attribute.");
                 switch (type)
                 {

@@ -20,25 +20,13 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <remarks>This is used for compiling the list of supported extensions
         /// advertised by the 'Service Discovery' extension.</remarks>
-        public override IEnumerable<string> Namespaces
-        {
-            get
-            {
-                return new string[] { "urn:xmpp:ping" };
-            }
-        }
+        public override IEnumerable<string> Namespaces => new string[] { "urn:xmpp:ping" };
 
         /// <summary>
         /// The named constant of the Extension enumeration that corresponds to this
         /// extension.
         /// </summary>
-        public override Extension Xep
-        {
-            get
-            {
-                return Extension.Ping;
-            }
-        }
+        public override Extension Xep => Extension.Ping;
 
         /// <summary>
         /// Invoked after all extensions have been loaded.
@@ -93,9 +81,7 @@ namespace Net.Xmpp.Extensions
             DateTime start = DateTime.Now;
             Iq iq = im.IqRequest(IqType.Get, jid, im.Jid,
                 Xml.Element("ping", "urn:xmpp:ping"));
-            if (iq.Type == IqType.Error)
-                throw Util.ExceptionFromError(iq, "Could not ping XMPP entity.");
-            return DateTime.Now.Subtract(start);
+            return iq.Type == IqType.Error ? throw Util.ExceptionFromError(iq, "Could not ping XMPP entity.") : DateTime.Now.Subtract(start);
         }
 
         /// <summary>

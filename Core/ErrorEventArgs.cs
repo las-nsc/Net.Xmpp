@@ -10,22 +10,12 @@ namespace Net.Xmpp.Core
         /// <summary>
         /// The reason why the error event was raised.
         /// </summary>
-        public string Reason
-        {
-            get
-            {
-                return Exception.Message;
-            }
-        }
+        public string Reason => Exception.Message;
 
         /// <summary>
         /// The exception that caused the error event.
         /// </summary>
-        public Exception Exception
-        {
-            get;
-            private set;
-        }
+        public Exception Exception { get; }
 
         /// <summary>
         /// Initializes a new instance of the ErrorEventArgs class.

@@ -11,67 +11,39 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The JID of the XMPP entity that is sending the file.
         /// </summary>
-        public Jid From
-        {
-            get;
-            private set;
-        }
+        public Jid From { get; }
 
         /// <summary>
         /// The JID of the XMPP entity that is receiving the file.
         /// </summary>
-        public Jid To
-        {
-            get;
-            private set;
-        }
+        public Jid To { get; }
 
         /// <summary>
         /// The name of the file being transfered.
         /// </summary>
-        public string Name
-        {
-            get;
-            private set;
-        }
+        public string Name { get; }
 
         /// <summary>
         /// The size of the file being transfered, in bytes.
         /// </summary>
-        public long Size
-        {
-            get;
-            private set;
-        }
+        public long Size { get; }
 
         /// <summary>
         /// The number of bytes transferred.
         /// </summary>
-        public long Transferred
-        {
-            get;
-            private set;
-        }
+        public long Transferred { get; }
 
         /// <summary>
         /// A description of the file provided by the sender so that the receiver
         /// can better understand what is being sent.
         /// </summary>
         /// <remarks>This may be null.</remarks>
-        public string Description
-        {
-            get;
-            private set;
-        }
+        public string Description { get; }
 
         /// <summary>
         /// An opaque identifier uniquely identifying the file-transfer operation.
         /// </summary>
-        public string SessionId
-        {
-            get;
-            private set;
-        }
+        public string SessionId { get; }
 
         /// <summary>
         /// Initializes a new instance of the FileTransfer class.
@@ -96,7 +68,7 @@ namespace Net.Xmpp.Extensions
             from.ThrowIfNull("from");
             to.ThrowIfNull("to");
             name.ThrowIfNull("name");
-            size.ThrowIfOutOfRange("size", 0, Int64.MaxValue);
+            size.ThrowIfOutOfRange("size", 0, long.MaxValue);
             transferred.ThrowIfOutOfRange("transferred", 0, size);
             From = from;
             To = to;

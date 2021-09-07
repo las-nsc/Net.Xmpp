@@ -12,11 +12,7 @@ namespace Net.Xmpp.Extensions
         /// Contains information about the file-transfer on whose behalf the
         /// event has been raised.
         /// </summary>
-        public FileTransfer Transfer
-        {
-            get;
-            private set;
-        }
+        public FileTransfer Transfer { get; }
 
         /// <summary>
         /// Initializes a new instance of the FileTransferProgressEventArgs class.

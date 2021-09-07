@@ -10,22 +10,22 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The full invite object.
         /// </summary>
-        public InviteDeclined Data { get; private set; }
-        
+        public InviteDeclined Data { get; }
+
         /// <summary>
         /// Person who sent the invitation.
         /// </summary>
-        public Jid From { get { return Data.ReceivedFrom; } }
+        public Jid From => Data.ReceivedFrom;
 
         /// <summary>
         /// Chat room specified in the invitation.
         /// </summary>
-        public Jid ChatRoom { get { return Data.From; } }
+        public Jid ChatRoom => Data.From;
 
         /// <summary>
         /// Message contained in the invitation.
         /// </summary>
-        public string Reason { get { return Data.Reason; } }
+        public string Reason => Data.Reason;
 
         /// <summary>
         /// Constructs a GroupInviteEventArgs.

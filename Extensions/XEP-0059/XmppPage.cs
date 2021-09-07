@@ -1,9 +1,7 @@
-﻿using Net.Xmpp.Core;
+﻿
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Net.Xmpp.Extensions
@@ -65,23 +63,13 @@ namespace Net.Xmpp.Extensions
         /// Generate a request to fetch the page that follows this page
         /// </summary>
         public XmppPageRequest NextPageRequest(int fetchCount)
-        {
-            return new XmppPageRequest(fetchCount)
-            {
-                After = Last
-            };
-        }
+            => new(fetchCount) { After = Last };
 
         /// <summary>
         /// Generate a request to fetch the page that precedes this page
         /// </summary>
         public XmppPageRequest PreviousPageRequest(int fetchCount)
-        {
-            return new XmppPageRequest(fetchCount)
-            {
-                Before = First
-            };
-        }
+            => new(fetchCount) { Before = First };
     }
 
     /// <summary>
@@ -92,31 +80,22 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The items in this page
         /// </summary>
-        public IList<T> Items { get; private set; }
+        public IList<T> Items { get; }
 
         /// <summary>
         /// The total number of items in this page
         /// </summary>
-        public int PageCount
-        {
-            get { return Items.Count; }
-        }
+        public int PageCount => Items.Count;
 
         /// <summary>
         /// Enumerator for items in this page
         /// </summary>
-        public IEnumerator<T> GetEnumerator()
-        {
-            return Items.GetEnumerator();
-        }
+        public IEnumerator<T> GetEnumerator() => Items.GetEnumerator();
 
         /// <summary>
         /// Enumerator for items in this page
         /// </summary>
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return Items.GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => Items.GetEnumerator();
 
         /// <summary>
         /// Create an XmppPage from the an xml node containing a set and a function to pick items from the node
@@ -145,17 +124,11 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// Generate a request to fetch the page that follows this page
         /// </summary>
-        public XmppPageRequest NextPageRequest()
-        {
-            return NextPageRequest(PageCount);
-        }
+        public XmppPageRequest NextPageRequest() => NextPageRequest(PageCount);
 
         /// <summary>
         /// Generate a request to fetch the page that precedes this page
         /// </summary>
-        public XmppPageRequest PreviousPageRequest()
-        {
-            return PreviousPageRequest(PageCount);
-        }
+        public XmppPageRequest PreviousPageRequest() => PreviousPageRequest(PageCount);
     }
 }

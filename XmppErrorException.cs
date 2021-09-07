@@ -13,11 +13,7 @@ namespace Net.Xmpp
         /// <summary>
         /// The XMPP error.
         /// </summary>
-        public XmppError Error
-        {
-            get;
-            private set;
-        }
+        public XmppError Error { get; }
 
         /// <summary>
         /// Initializes a new instance of the XmppErrorException class

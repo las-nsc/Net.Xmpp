@@ -20,9 +20,7 @@ namespace Net.Xmpp.Extensions.Dataforms
             get
             {
                 var e = element["reported"];
-                if (e == null)
-                    return new List<DataField>();
-                return new FieldList(e);
+                return e == null ? new List<DataField>() : new FieldList(e);
             }
         }
 

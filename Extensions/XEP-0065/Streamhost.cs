@@ -11,29 +11,17 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The JID of the streamhost.
         /// </summary>
-        public Jid Jid
-        {
-            get;
-            private set;
-        }
+        public Jid Jid { get; }
 
         /// <summary>
         /// The hostname of the streamhost.
         /// </summary>
-        public string Host
-        {
-            get;
-            private set;
-        }
+        public string Host { get; }
 
         /// <summary>
         /// The port on which the streamhost is listening.
         /// </summary>
-        public int Port
-        {
-            get;
-            private set;
-        }
+        public int Port { get; }
 
         /// <summary>
         /// Initializes a new instance of the Streamhost class.

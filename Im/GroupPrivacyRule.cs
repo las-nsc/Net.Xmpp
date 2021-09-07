@@ -10,11 +10,7 @@ namespace Net.Xmpp.Im
         /// <summary>
         /// The name of the group the privacy rule applies to.
         /// </summary>
-        public string Group
-        {
-            get;
-            private set;
-        }
+        public string Group { get; }
 
         /// <summary>
         /// Initializes a new instance of the PrivacyRule class.

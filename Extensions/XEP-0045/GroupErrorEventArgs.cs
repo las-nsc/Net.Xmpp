@@ -8,22 +8,22 @@ namespace Net.Xmpp.Extensions
     public class GroupErrorEventArgs : EventArgs
     {
         /// <summary>The full error object.</summary>
-        internal MucError Data { get; private set; }
+        internal MucError Data { get; }
 
         /// <summary>The error condition.</summary>
-        public ErrorCondition ErrorCondition { get { return Data.ErrorCondition; } }
+        public ErrorCondition ErrorCondition => Data.ErrorCondition;
 
         /// <summary>The type of error.</summary>
-        public ErrorType ErrorType { get { return Data.ErrorType; } }
+        public ErrorType ErrorType => Data.ErrorType;
 
         /// <summary>Jid of the chat room.</summary>
-        public Jid By { get { return Data.By; } }
+        public Jid By => Data.By;
 
         /// <summary>Your group chat jid.</summary>
-        public Jid From { get { return Data.From; } }
+        public Jid From => Data.From;
 
         /// <summary>Your public jid.</summary>
-        public Jid To { get { return Data.To; } }
+        public Jid To => Data.To;
 
         /// <summary>
         /// Constructs a GroupErrorEventArgs.

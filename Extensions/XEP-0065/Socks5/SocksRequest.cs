@@ -21,39 +21,23 @@ namespace Net.Xmpp.Extensions.Socks5
         /// <summary>
         /// The command of the request.
         /// </summary>
-        public SocksCommand Command
-        {
-            get;
-            private set;
-        }
+        public SocksCommand Command { get; }
 
         /// <summary>
         /// The type of address contained within the request.
         /// </summary>
-        public ATyp ATyp
-        {
-            get;
-            private set;
-        }
+        public ATyp ATyp { get; }
 
         /// <summary>
         /// The destination address. The type is either IPAddress or
         /// string, depending on the value of the ATyp field.
         /// </summary>
-        public object Destination
-        {
-            get;
-            private set;
-        }
+        public object Destination { get; }
 
         /// <summary>
         /// The port of the destination host.
         /// </summary>
-        public ushort Port
-        {
-            get;
-            private set;
-        }
+        public ushort Port { get; }
 
         /// <summary>
         /// Serializes the instance into an array of bytes.
@@ -64,7 +48,9 @@ namespace Net.Xmpp.Extensions.Socks5
         {
             byte[] dest;
             if (Destination is IPAddress)
-                dest = (Destination as IPAddress).GetAddressBytes();
+            {
+                dest = (Destination as IPAddress)?.GetAddressBytes();
+            }
             else
             {
                 byte[] domainBytes = Encoding.ASCII.GetBytes((string)Destination);
@@ -96,36 +82,30 @@ namespace Net.Xmpp.Extensions.Socks5
         /// not contain a valid SOCKS5 request message.</exception>
         public static SocksRequest Deserialize(byte[] buffer)
         {
-            using (var ms = new MemoryStream(buffer))
+            using var ms = new MemoryStream(buffer);
+            using BinaryReader r = new(ms);
+            if (r.ReadByte() != version)
+                throw new SerializationException("Invalid SOCKS5 request.");
+            SocksCommand command = (SocksCommand)r.ReadByte();
+            // Skip reserved octet.
+            r.ReadByte();
+            ATyp atyp = (ATyp)r.ReadByte();
+            IPAddress addr = null;
+            string domain = null;
+            switch (atyp)
             {
-                using (BinaryReader r = new BinaryReader(ms))
-                {
-                    if (r.ReadByte() != version)
-                        throw new SerializationException("Invalid SOCKS5 request.");
-                    SocksCommand command = (SocksCommand)r.ReadByte();
-                    // Skip reserved octet.
-                    r.ReadByte();
-                    ATyp atyp = (ATyp)r.ReadByte();
-                    IPAddress addr = null;
-                    string domain = null;
-                    switch (atyp)
-                    {
-                        case ATyp.IPv4:
-                        case ATyp.IPv6:
-                            addr = new IPAddress(r.ReadBytes(atyp == ATyp.IPv4 ? 4 : 16));
-                            break;
+                case ATyp.IPv4:
+                case ATyp.IPv6:
+                    addr = new IPAddress(r.ReadBytes(atyp == ATyp.IPv4 ? 4 : 16));
+                    break;
 
-                        case ATyp.Domain:
-                            byte len = r.ReadByte();
-                            domain = Encoding.ASCII.GetString(r.ReadBytes(len));
-                            break;
-                    }
-                    ushort port = r.ReadUInt16(true);
-                    if (atyp == ATyp.Domain)
-                        return new SocksRequest(command, domain, port);
-                    return new SocksRequest(command, addr, port);
-                }
+                case ATyp.Domain:
+                    byte len = r.ReadByte();
+                    domain = Encoding.ASCII.GetString(r.ReadBytes(len));
+                    break;
             }
+            ushort port = r.ReadUInt16(true);
+            return atyp == ATyp.Domain ? new SocksRequest(command, domain, port) : new SocksRequest(command, addr, port);
         }
 
         /// <summary>

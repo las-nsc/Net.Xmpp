@@ -16,7 +16,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// <summary>
         /// The client nonce value used during authentication.
         /// </summary>
-        private string Cnonce = GenerateCnonce();
+        private readonly string Cnonce = GenerateCnonce();
 
         /// <summary>
         /// Cram-Md5 involves several steps.
@@ -27,52 +27,28 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// True if the authentication exchange between client and server
         /// has been completed.
         /// </summary>
-        public override bool IsCompleted
-        {
-            get
-            {
-                return Completed;
-            }
-        }
+        public override bool IsCompleted => Completed;
 
         /// <summary>
         /// The server sends the first message in the authentication exchange.
         /// </summary>
-        public override bool HasInitial
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override bool HasInitial => false;
 
         /// <summary>
         /// The IANA name for the Digest-Md5 authentication mechanism as described
         /// in RFC 2195.
         /// </summary>
-        public override string Name
-        {
-            get
-            {
-                return "DIGEST-MD5";
-            }
-        }
+        public override string Name => "DIGEST-MD5";
 
         /// <summary>
         /// The username to authenticate with.
         /// </summary>
         private string Username
         {
-            get
-            {
-                return Properties.ContainsKey("Username") ?
+            get => Properties.ContainsKey("Username") ?
                     Properties["Username"] as string : null;
-            }
 
-            set
-            {
-                Properties["Username"] = value;
-            }
+            set => Properties["Username"] = value;
         }
 
         /// <summary>
@@ -80,16 +56,10 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// </summary>
         private string Password
         {
-            get
-            {
-                return Properties.ContainsKey("Password") ?
+            get => Properties.ContainsKey("Password") ?
                     Properties["Password"] as string : null;
-            }
 
-            set
-            {
-                Properties["Password"] = value;
-            }
+            set => Properties["Password"] = value;
         }
 
         /// <summary>
@@ -131,7 +101,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         public SaslDigestMd5(string username, string password)
         {
             username.ThrowIfNull("username");
-            if (username == String.Empty)
+            if (username?.Length == 0)
                 throw new ArgumentException("The username must not be empty.");
             password.ThrowIfNull("password");
 
@@ -155,7 +125,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
             // with a CRLF.
             byte[] ret = Step == 0 ? ComputeDigestResponse(challenge) :
                 new byte[0];
-            Step = Step + 1;
+            Step++;
             return ret;
         }
 
@@ -163,7 +133,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         {
             // Precondition: Ensure username and password are not null and
             // username is not empty.
-            if (String.IsNullOrEmpty(Username) || Password == null)
+            if (string.IsNullOrEmpty(Username) || Password == null)
             {
                 throw new SaslException("The username must not be null or empty and " +
                     "the password must not be null.");
@@ -177,18 +147,18 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
 
             // Create the challenge-response string.
             string[] directives = new string[] {
-				// We don't use UTF-8 in the current implementation.
-				//"charset=utf-8",
-				"username=" + UsernameBackslashEscapeXep106(Dquote(Username)),
-				"realm=" + Dquote(fields["realm"]),
-				"nonce="+ Dquote(fields["nonce"]),
-				"nc=00000001",
-				"cnonce=" + Dquote(Cnonce),
-				"digest-uri=" + Dquote(digestUri),
-				"response=" + responseValue,
-				"qop=" + fields["qop"]
-			};
-            string challengeResponse = String.Join(",", directives);
+                // We don't use UTF-8 in the current implementation.
+                //"charset=utf-8",
+                "username=" + UsernameBackslashEscapeXep106(Dquote(Username)),
+                "realm=" + Dquote(fields["realm"]),
+                "nonce="+ Dquote(fields["nonce"]),
+                "nc=00000001",
+                "cnonce=" + Dquote(Cnonce),
+                "digest-uri=" + Dquote(digestUri),
+                "response=" + responseValue,
+                "qop=" + fields["qop"]
+            };
+            string challengeResponse = string.Join(",", directives);
             // Finally, return the response as a byte array.
             return Encoding.ASCII.GetBytes(challengeResponse);
         }
@@ -208,9 +178,8 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         private static NameValueCollection ParseDigestChallenge(string challenge)
         {
             challenge.ThrowIfNull("challenge");
-            NameValueCollection coll = new NameValueCollection();
-            string[] parts = challenge.Split(',');
-            foreach (string p in parts)
+            NameValueCollection coll = new();
+            foreach (string p in challenge.Split(','))
             {
                 string[] kv = p.Split(new char[] { '=' }, 2);
                 if (kv.Length == 2)
@@ -245,20 +214,18 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
             Encoding enc = Encoding.GetEncoding("ISO-8859-1");
             string ncValue = "00000001", realm = challenge["realm"];
             // Construct A1.
-            using (var md5p = new MD5CryptoServiceProvider())
-            {
-                byte[] data = enc.GetBytes(username + ":" + realm + ":" + password);
-                data = md5p.ComputeHash(data);
-                string A1 = enc.GetString(data) + ":" + challenge["nonce"] + ":" +
-                    cnonce;
-                // Construct A2.
-                string A2 = "AUTHENTICATE:" + digestUri;
-                if (!"auth".Equals(challenge["qop"]))
-                    A2 = A2 + ":00000000000000000000000000000000";
-                string ret = MD5(A1, enc) + ":" + challenge["nonce"] + ":" + ncValue +
-                    ":" + cnonce + ":" + challenge["qop"] + ":" + MD5(A2, enc);
-                return MD5(ret, enc);
-            }
+            using var md5p = new MD5CryptoServiceProvider();
+            byte[] data = enc.GetBytes(username + ":" + realm + ":" + password);
+            data = md5p.ComputeHash(data);
+            string A1 = enc.GetString(data) + ":" + challenge["nonce"] + ":" +
+                cnonce;
+            // Construct A2.
+            string A2 = "AUTHENTICATE:" + digestUri;
+            if (!"auth".Equals(challenge["qop"]))
+                A2 += ":00000000000000000000000000000000";
+            string ret = MD5(A1, enc) + ":" + challenge["nonce"] + ":" + ncValue +
+                ":" + cnonce + ":" + challenge["qop"] + ":" + MD5(A2, enc);
+            return MD5(ret, enc);
         }
 
         /// <summary>
@@ -278,8 +245,8 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
             if (encoding == null)
                 encoding = Encoding.UTF8;
             byte[] data = encoding.GetBytes(s);
-            byte[] hash = (new MD5CryptoServiceProvider()).ComputeHash(data);
-            StringBuilder builder = new StringBuilder();
+            byte[] hash = new MD5CryptoServiceProvider().ComputeHash(data);
+            StringBuilder builder = new();
             foreach (byte h in hash)
                 builder.Append(h.ToString("x2"));
             return builder.ToString();

@@ -21,40 +21,22 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <remarks>This is used for compiling the list of supported extensions
         /// advertised by the 'Service Discovery' extension.</remarks>
-        public override IEnumerable<string> Namespaces
-        {
-            get
-            {
-                return new string[] {
-					"http://jabber.org/protocol/activity",
-					"http://jabber.org/protocol/activity+notify"
-				};
-            }
-        }
+        public override IEnumerable<string> Namespaces => new string[] {
+                    "http://jabber.org/protocol/activity",
+                    "http://jabber.org/protocol/activity+notify"
+                };
 
         /// <summary>
         /// The named constant of the Extension enumeration that corresponds to this
         /// extension.
         /// </summary>
-        public override Extension Xep
-        {
-            get
-            {
-                return Extension.UserActivity;
-            }
-        }
+        public override Extension Xep => Extension.UserActivity;
 
         /// <summary>
         /// Determines whether our server supports personal eventing and thusly
         /// the user activity extension.
         /// </summary>
-        public bool Supported
-        {
-            get
-            {
-                return pep.Supported;
-            }
-        }
+        public bool Supported => pep.Supported;
 
         /// <summary>
         /// The event that is raised when another XMPP entity has published activity
@@ -145,8 +127,7 @@ namespace Net.Xmpp.Extensions
                         specific = (SpecificActivity)v;
                 }
             }
-            string text = activityElement["text"] != null ?
-                activityElement["text"].InnerText : null;
+            string text = activityElement["text"]?.InnerText;
             // Raise the 'ActivityChanged' event.
             if (activity.HasValue)
             {
@@ -163,7 +144,7 @@ namespace Net.Xmpp.Extensions
         /// <returns>The XML element name of the specified activity value.</returns>
         private string GeneralActivityToTagName(GeneralActivity activity)
         {
-            StringBuilder b = new StringBuilder();
+            StringBuilder b = new();
             string s = activity.ToString();
             for (int i = 0; i < s.Length; i++)
             {
@@ -182,7 +163,7 @@ namespace Net.Xmpp.Extensions
         /// <returns>The XML element name of the specified activity value.</returns>
         private string SpecificActivityToTagName(SpecificActivity activity)
         {
-            StringBuilder b = new StringBuilder();
+            StringBuilder b = new();
             string s = activity.ToString();
             for (int i = 0; i < s.Length; i++)
             {

@@ -13,55 +13,31 @@ namespace Net.Xmpp
         /// <summary>
         /// The domain identifier of the JID.
         /// </summary>
-        public string Domain
-        {
-            get;
-            private set;
-        }
+        public string Domain { get; }
 
         /// <summary>
         /// The node identifier of the JID. This may be null or empty.
         /// </summary>
-        public string Node
-        {
-            get;
-            private set;
-        }
+        public string Node { get; }
 
         /// <summary>
         /// The resource identifier of the JID. This may be null or empty.
         /// </summary>
-        public string Resource
-        {
-            get;
-            private set;
-        }
+        public string Resource { get; }
 
         /// <summary>
         /// Determines whether the JID is a 'bare JID', i.e. a JID without resource
         /// identifier.
         /// </summary>
-        public bool IsBareJid
-        {
-            get
-            {
-                return !String.IsNullOrEmpty(Node) &&
-                    !String.IsNullOrEmpty(Domain) && String.IsNullOrEmpty(Resource);
-            }
-        }
+        public bool IsBareJid => !string.IsNullOrEmpty(Node) &&
+                    !string.IsNullOrEmpty(Domain) && string.IsNullOrEmpty(Resource);
 
         /// <summary>
         /// Determines whether the JID is a 'full JID', i.e. a JID with both a node
         /// and a resource identifier.
         /// </summary>
-        public bool IsFullJid
-        {
-            get
-            {
-                return !String.IsNullOrEmpty(Node) &&
-                    !String.IsNullOrEmpty(Domain) && !String.IsNullOrEmpty(Resource);
-            }
-        }
+        public bool IsFullJid => !string.IsNullOrEmpty(Node) &&
+                    !string.IsNullOrEmpty(Domain) && !string.IsNullOrEmpty(Resource);
 
         /// <summary>
         /// Initializes a new instance of the JID class.
@@ -80,10 +56,10 @@ namespace Net.Xmpp
                 throw new ArgumentException("The argument is not a valid JID.");
             Domain = m.Groups["domain"].Value;
             Node = m.Groups["node"].Value;
-            if (Node == String.Empty)
+            if (Node?.Length == 0)
                 Node = null;
             Resource = m.Groups["resource"].Value;
-            if (Resource == String.Empty)
+            if (Resource?.Length == 0)
                 Resource = null;
         }
 
@@ -131,12 +107,12 @@ namespace Net.Xmpp
         /// <returns>A textual representation of this JID instance.</returns>
         public override string ToString()
         {
-            StringBuilder b = new StringBuilder();
-            if (!String.IsNullOrEmpty(Node))
-                b.Append(Node + "@");
+            StringBuilder b = new();
+            if (!string.IsNullOrEmpty(Node))
+                b.Append($"{Node}@");
             b.Append(Domain);
-            if (!String.IsNullOrEmpty(Resource))
-                b.Append("/" + Resource);
+            if (!string.IsNullOrEmpty(Resource))
+                b.Append($"/{Resource}");
             return b.ToString();
         }
 
@@ -149,13 +125,10 @@ namespace Net.Xmpp
         /// Jid instance; Otherwise false.</returns>
         public override bool Equals(object obj)
         {
-            if (obj == null)
-                return false;
-            Jid other = obj as Jid;
-            if (other == null)
-                return false;
-            return Node == other.Node && Domain == other.Domain &&
-                Resource == other.Resource;
+            return obj is Jid other
+                && Node == other.Node
+                && Domain == other.Domain
+                && Resource == other.Resource;
         }
 
         /// <summary>
@@ -182,12 +155,12 @@ namespace Net.Xmpp
         /// Otherwise false.</returns>
         public static bool operator ==(Jid a, Jid b)
         {
-            if (System.Object.ReferenceEquals(a, b))
-                return true;
-            if (((object)a == null) || ((object)b == null))
-                return false;
-            return a.Node == b.Node && a.Domain == b.Domain &&
-                a.Resource == b.Resource;
+            return ReferenceEquals(a, b)
+                || (a is object
+                && b is object
+                && a.Node == b.Node
+                && a.Domain == b.Domain
+                && a.Resource == b.Resource);
         }
 
         /// <summary>

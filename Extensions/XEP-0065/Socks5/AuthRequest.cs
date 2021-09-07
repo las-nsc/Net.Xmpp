@@ -17,20 +17,12 @@ namespace Net.Xmpp.Extensions.Socks5
         /// <summary>
         /// The username to authenticate with.
         /// </summary>
-        public string Username
-        {
-            get;
-            private set;
-        }
+        public string Username { get; }
 
         /// <summary>
         /// The password to authenticate with.
         /// </summary>
-        public string Password
-        {
-            get;
-            private set;
-        }
+        public string Password { get; }
 
         /// <summary>
         /// Serializes the instance into an array of bytes.

@@ -32,20 +32,12 @@ namespace Net.Xmpp.Extensions.Socks5
         /// <summary>
         /// The username to authenticate with.
         /// </summary>
-        public string Username
-        {
-            get;
-            set;
-        }
+        public string Username { get; set; }
 
         /// <summary>
         /// The password to authenticate with.
         /// </summary>
-        public string Password
-        {
-            get;
-            set;
-        }
+        public string Password { get; set; }
 
         /// <summary>
         /// Performs the specified SOCKS5 request.
@@ -105,7 +97,7 @@ namespace Net.Xmpp.Extensions.Socks5
             {
                 byte[] bytes = request.Serialize();
                 stream.Write(bytes, 0, bytes.Length);
-                ByteBuilder b = new ByteBuilder();
+                ByteBuilder b = new();
                 using (var r = new BinaryReader(stream, Encoding.UTF8, true))
                 {
                     bytes = r.ReadBytes(4);
@@ -240,11 +232,9 @@ namespace Net.Xmpp.Extensions.Socks5
                 // Get rid of managed resources.
                 if (disposing)
                 {
-                    if (stream != null)
-                        stream.Dispose();
+                    stream?.Dispose();
                     stream = null;
-                    if (client != null)
-                        client.Close();
+                    client?.Close();
                     client = null;
                 }
                 // Get rid of unmanaged resources.
@@ -285,7 +275,7 @@ namespace Net.Xmpp.Extensions.Socks5
         private ServerGreeting PerformGreeting()
         {
             var methods = new HashSet<AuthMethod>() { AuthMethod.None };
-            if (!String.IsNullOrEmpty(Username))
+            if (!string.IsNullOrEmpty(Username))
                 methods.Add(AuthMethod.Username);
             byte[] bytes = new ClientGreeting(methods).Serialize();
 

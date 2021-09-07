@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using Net.Xmpp.Extensions.Dataforms;
 
 namespace Net.Xmpp.Extensions
@@ -13,26 +12,11 @@ namespace Net.Xmpp.Extensions
     /// </summary>
     public class RoomInfoExtended : RoomInfoBasic
     {
-        private string description;
-        private string subject;
-        private string ldapGroup;
-        private string logUrl;
         private string pubSubNode;
-        private int occupantsCount;
-        private int maxHistoryFetch;
         private bool canChangeSubject;
-        private DateTime? creationDate;
-        private CultureInfo language;
 
-        private IList<Jid> contactAddresses;
-        private ISet<Jid> occupants;
-
-        private RoomVisibility visibility;
-        private RoomPersistence persistence;
-        private RoomProtection protection;
-        private RoomPrivacy privacy;
-        private RoomModeration moderation;
-        private RoomAnonymity anonymity;
+        private readonly IList<Jid> contactAddresses;
+        private readonly ISet<Jid> occupants;
 
         internal RoomInfoExtended(Jid jid, string name, string description, string subject)
             : base(jid, name)
@@ -84,144 +68,82 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The visibility of the room.
         /// </summary>
-        public RoomVisibility Visibility
-        {
-            get { return visibility; }
-            protected set { visibility = value; }
-        }
+        public RoomVisibility Visibility { get; protected set; }
 
         /// <summary>
         /// The persistence level of the room.
         /// </summary>
-        public RoomPersistence Persistence
-        {
-            get { return persistence; }
-            protected set { persistence = value; }
-        }
+        public RoomPersistence Persistence { get; protected set; }
 
         /// <summary>
         /// The protection level of the room.
         /// </summary>
-        public RoomProtection Protection
-        {
-            get { return protection; }
-            protected set { protection = value; }
-        }
+        public RoomProtection Protection { get; protected set; }
 
         /// <summary>
         /// The privacy level of the room.
         /// </summary>
-        public RoomPrivacy Privacy
-        {
-            get { return privacy; }
-            protected set { privacy = value; }
-        }
+        public RoomPrivacy Privacy { get; protected set; }
 
         /// <summary>
         /// The moderation level of the room.
         /// </summary>
-        public RoomModeration Moderation
-        {
-            get { return moderation; }
-            protected set { moderation = value; }
-        }
+        public RoomModeration Moderation { get; protected set; }
 
         /// <summary>
         /// The anonymity level of the room.
         /// </summary>
-        public RoomAnonymity Anonymity
-        {
-            get { return anonymity; }
-            protected set { anonymity = value; }
-        }
+        public RoomAnonymity Anonymity { get; protected set; }
 
         /// <summary>
         /// The description of the room.
         /// </summary>
-        public string Description
-        {
-            get { return description; }
-            protected set { description = value; }
-        }
+        public string Description { get; protected set; }
 
         /// <summary>
         /// The subject of the room.
         /// </summary>
-        public string Subject
-        {
-            get { return subject; }
-            protected set { subject = value; }
-        }
+        public string Subject { get; protected set; }
 
         /// <summary>
         /// The number of occupants in the room.
         /// </summary>
-        public int NumberOfOccupants
-        {
-            get { return occupantsCount; }
-            protected set { occupantsCount = value; }
-        }
+        public int NumberOfOccupants { get; protected set; }
 
         /// <summary>
         /// Datetime the room was created.
         /// </summary>
-        public DateTime? CreationDate
-        {
-            get { return creationDate; }
-            protected set { creationDate = value; }
-        }
+        public DateTime? CreationDate { get; protected set; }
 
         /// <summary>
         /// The owner or owners of the room.
         /// </summary>
-        public IEnumerable<Jid> ContactAddresses
-        {
-            get { return contactAddresses; }
-        }
+        public IEnumerable<Jid> ContactAddresses => contactAddresses;
 
         /// <summary>
         /// The participants in the room.
         /// </summary>
-        public IEnumerable<Jid> Occupants
-        {
-            get { return occupants; }
-        }
+        public IEnumerable<Jid> Occupants => occupants;
 
         /// <summary>
         /// An associated LDAP group that defines room membership.
         /// </summary>
-        public string LDAPGroup
-        {
-            get { return ldapGroup; }
-            protected set { ldapGroup = value; }
-        }
+        public string LDAPGroup { get; protected set; }
 
         /// <summary>
         /// The language of the room.
         /// </summary>
-        public CultureInfo Language
-        {
-            get { return language; }
-            protected set { language = value; }
-        }
+        public CultureInfo Language { get; protected set; }
 
         /// <summary>
         /// The language of the room.
         /// </summary>
-        public string LogUrl
-        {
-            get { return logUrl; }
-            protected set { logUrl = value; }
-        }
+        public string LogUrl { get; protected set; }
 
         /// <summary>
         /// The maximum number historic of messages a room will display.
         /// </summary>
-        public int MaxHistoryFetch
-        {
-            get { return maxHistoryFetch; }
-            protected set { maxHistoryFetch = value; }
-        }
+        public int MaxHistoryFetch { get; protected set; }
 
         private void InvalidateOccupantsCount(bool shouldInvalidate = true)
         {
@@ -326,7 +248,7 @@ namespace Net.Xmpp.Extensions
                         pubSubNode = f.Values.FirstOrDefault();
                         break;
                     case MucNs.MaxHistoryFetch:
-                        maxHistoryFetch = ConvertToInteger(f.Values.FirstOrDefault());
+                        MaxHistoryFetch = ConvertToInteger(f.Values.FirstOrDefault());
                         break;
                     default:
                         break;
@@ -337,14 +259,7 @@ namespace Net.Xmpp.Extensions
 
         private bool ConvertToBoolean(string value)
         {
-            bool tmp;
-
-            if (bool.TryParse(value, out tmp))
-            {
-                return tmp;
-            }
-
-            return false;
+            return bool.TryParse(value, out bool tmp) && tmp;
         }
 
         private CultureInfo ConvertToCultureInfo(string value)
@@ -365,26 +280,12 @@ namespace Net.Xmpp.Extensions
 
         private DateTime? ConvertToDateTime(string value)
         {
-            DateTime tmp;
-
-            if (DateTime.TryParse(value, out tmp))
-            {
-                return tmp;
-            }
-
-            return null;
+            return DateTime.TryParse(value, out DateTime tmp) ? (DateTime?)tmp : null;
         }
 
         private int ConvertToInteger(string value)
         {
-            int tmp;
-
-            if (int.TryParse(value, out tmp))
-            {
-                return tmp;
-            }
-
-            return 0;
+            return int.TryParse(value, out int tmp) ? tmp : 0;
         }
     }
 }

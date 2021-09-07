@@ -30,9 +30,8 @@ namespace Net.Xmpp.Extensions.Socks5
             timeout.ThrowIfOutOfRange("timeout", 0, int.MaxValue);
             IAsyncResult ar = listener.BeginAcceptTcpClient(null, null);
             bool signalled = ar.AsyncWaitHandle.WaitOne(TimeSpan.FromMilliseconds(timeout));
-            if (signalled)
-                return listener.EndAcceptTcpClient(ar);
-            throw new TimeoutException("The operation timed out.");
+            return signalled ? listener.EndAcceptTcpClient(ar)
+                : throw new TimeoutException("The operation timed out.");
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Net.Xmpp.Extensions
 {
@@ -12,29 +11,17 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The category the XMPP entity belongs to (i.e. 'client', 'server').
         /// </summary>
-        public string Category
-        {
-            get;
-            private set;
-        }
+        public string Category { get; }
 
         /// <summary>
         /// The type of the XMPP entity (i.e. 'pc', 'mobile', etc.).
         /// </summary>
-        public string Type
-        {
-            get;
-            private set;
-        }
+        public string Type { get; }
 
         /// <summary>
         /// The name of the XMPP entity.
         /// </summary>
-        public string Name
-        {
-            get;
-            private set;
-        }
+        public string Name { get; }
 
         /// <summary>
         /// Initializes a new instance of the Identity class.

@@ -10,11 +10,7 @@ namespace Net.Xmpp.Core
         /// <summary>
         /// The Message stanza.
         /// </summary>
-        public Message Stanza
-        {
-            get;
-            private set;
-        }
+        public Message Stanza { get; }
 
         /// <summary>
         /// Initializes a new instance of the MessageEventArgs class.

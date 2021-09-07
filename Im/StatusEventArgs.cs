@@ -10,20 +10,12 @@ namespace Net.Xmpp.Im
         /// <summary>
         /// The JID of the user or resource whose status has changed.
         /// </summary>
-        public Jid Jid
-        {
-            get;
-            private set;
-        }
+        public Jid Jid { get; }
 
         /// <summary>
         /// The status of the user.
         /// </summary>
-        public Status Status
-        {
-            get;
-            private set;
-        }
+        public Status Status { get; }
 
         /// <summary>
         /// Initializes a new instance of the StatusEventArgs class.

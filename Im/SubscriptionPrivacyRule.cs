@@ -8,11 +8,7 @@
         /// <summary>
         /// The subscription state the privacy rule applies to.
         /// </summary>
-        public SubscriptionState SubscriptionState
-        {
-            get;
-            private set;
-        }
+        public SubscriptionState SubscriptionState { get; }
 
         /// <summary>
         /// Initializes a new instance of the PrivacyRule class.

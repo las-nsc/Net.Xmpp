@@ -1,5 +1,4 @@
-﻿using System;
-using System.Xml;
+﻿using System.Xml;
 
 namespace Net.Xmpp.Extensions
 {
@@ -10,17 +9,17 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// File name
         /// </summary>
-        public string FileName { get; private set; }
+        public string FileName { get; }
 
         /// <summary>
         /// File size in bytes
         /// </summary>
-        public long Size { get; private set; }
+        public long Size { get; }
 
         /// <summary>
         /// MIME Filet type
         /// </summary>
-        public string ContentType { get; private set; }
+        public string ContentType { get; }
 
         /// <summary>
         /// Create a Slot Request
@@ -29,14 +28,7 @@ namespace Net.Xmpp.Extensions
         {
             FileName = file;
             Size = size;
-            if (String.IsNullOrWhiteSpace(contentType))
-            {
-                ContentType = System.Net.Mime.MediaTypeNames.Application.Octet;
-            }
-            else
-            {
-                ContentType = contentType;
-            }
+            ContentType = string.IsNullOrWhiteSpace(contentType) ? System.Net.Mime.MediaTypeNames.Application.Octet : contentType;
         }
 
         /// <summary>
@@ -45,9 +37,9 @@ namespace Net.Xmpp.Extensions
         public XmlElement ToXmlElement()
         {
             var requestNode = Xml.Element("request", xmlns);
-            var fileAttr = Xml.Attr(requestNode, "filename", FileName);
-            var sizeAttr = Xml.Attr(requestNode, "size", Size.ToString());
-            var contentTypeAttr = Xml.Attr(requestNode, "content-type", ContentType);
+            var fileAttr = requestNode.Attr("filename", FileName);
+            var sizeAttr = requestNode.Attr("size", Size.ToString());
+            var contentTypeAttr = requestNode.Attr("content-type", ContentType);
 
             return requestNode;
         }

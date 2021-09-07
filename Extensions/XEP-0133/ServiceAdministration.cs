@@ -1,14 +1,11 @@
-﻿using Sharp.Xmpp.Core;
-using Sharp.Xmpp.Im;
+﻿using Net.Xmpp.Core;
+using Net.Xmpp.Im;
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 using System.Xml.Linq;
 
-namespace Sharp.Xmpp.Extensions
+namespace Net.Xmpp.Extensions
 {
     internal class ServiceAdministration : XmppExtension
     {
@@ -21,21 +18,9 @@ namespace Sharp.Xmpp.Extensions
         {
         }
 
-        public override IEnumerable<string> Namespaces
-        {
-            get
-            {
-                return new string[0];
-            }
-        }
+        public override IEnumerable<string> Namespaces => new string[0];
 
-        public override Extension Xep
-        {
-            get
-            {
-                return Extension.ServiceAdministration;
-            }
-        }
+        public override Extension Xep => Extension.ServiceAdministration;
 
         public void AddUser(Jid userId, string password, string verifiedPassword, string email, string firstName, string lastName)
         {

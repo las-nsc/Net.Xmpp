@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Net.Xmpp.Extensions
 {
@@ -24,13 +20,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The participants nickname.
         /// </summary>
-        public string Nickname
-        {
-            get
-            {
-                return GroupJid == null ? null : GroupJid.Resource;
-            }
-        }
+        public string Nickname => GroupJid?.Resource;
 
         /// <summary>
         /// Member level of the participant.

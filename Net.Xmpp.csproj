@@ -3,6 +3,7 @@
     <RootNamespace>Net.Xmpp</RootNamespace>
     <AssemblyName>Net.Xmpp</AssemblyName>
     <TargetFramework>net45</TargetFramework>
+    <LangVersion>9.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Client\Examples.xml">
@@ -21,6 +22,6 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ARSoft.Tools.Net" Version="2.2.9"/>
+    <PackageReference Include="ARSoft.Tools.Net" Version="2.2.9" />
   </ItemGroup>
 </Project>

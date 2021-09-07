@@ -13,39 +13,27 @@ namespace Net.Xmpp.Client
         /// <summary>
         /// A reference to the Socks5Bytestreams extension.
         /// </summary>
-        private Socks5Bytestreams socks5;
+        private readonly Socks5Bytestreams socks5;
 
         /// <summary>
         /// A reference to the SIFileTransfer extension.
         /// </summary>
-        private SIFileTransfer siFileTransfer;
+        private readonly SIFileTransfer siFileTransfer;
 
         /// <summary>
         /// Determines whether usage of a SOCKS5 proxy server is allowed.
         /// </summary>
         public bool ProxyAllowed
         {
-            get
-            {
-                return socks5.ProxyAllowed;
-            }
+            get => socks5.ProxyAllowed;
 
-            set
-            {
-                socks5.ProxyAllowed = value;
-            }
+            set => socks5.ProxyAllowed = value;
         }
 
         /// <summary>
         /// A collection of user-defined SOCKS5 proxy servers.
         /// </summary>
-        public ICollection<Streamhost> Proxies
-        {
-            get
-            {
-                return socks5.Proxies;
-            }
-        }
+        public ICollection<Streamhost> Proxies => socks5.Proxies;
 
         /// <summary>
         /// Defines, along with the Socks5ServerPortTo property, a range of ports
@@ -56,15 +44,9 @@ namespace Net.Xmpp.Client
         /// Socks5ServerPortTo property.</exception>
         public int Socks5ServerPortFrom
         {
-            get
-            {
-                return socks5.ServerPortFrom;
-            }
+            get => socks5.ServerPortFrom;
 
-            set
-            {
-                socks5.ServerPortFrom = value;
-            }
+            set => socks5.ServerPortFrom = value;
         }
 
         /// <summary>
@@ -77,15 +59,9 @@ namespace Net.Xmpp.Client
         /// 65535.</exception>
         public int Socks5ServerPortTo
         {
-            get
-            {
-                return socks5.ServerPortTo;
-            }
+            get => socks5.ServerPortTo;
 
-            set
-            {
-                socks5.ServerPortTo = value;
-            }
+            set => socks5.ServerPortTo = value;
         }
 
         /// <summary>
@@ -93,15 +69,9 @@ namespace Net.Xmpp.Client
         /// </summary>
         public bool UseUPnP
         {
-            get
-            {
-                return socks5.UseUPnP;
-            }
+            get => socks5.UseUPnP;
 
-            set
-            {
-                socks5.UseUPnP = value;
-            }
+            set => socks5.UseUPnP = value;
         }
 
         /// <summary>
@@ -113,15 +83,9 @@ namespace Net.Xmpp.Client
         /// </remarks>
         public DnsEndPoint StunServer
         {
-            get
-            {
-                return socks5.StunServer;
-            }
+            get => socks5.StunServer;
 
-            set
-            {
-                socks5.StunServer = value;
-            }
+            set => socks5.StunServer = value;
         }
 
         /// <summary>
@@ -130,15 +94,9 @@ namespace Net.Xmpp.Client
         /// </summary>
         public bool ForceInBandBytestreams
         {
-            get
-            {
-                return siFileTransfer.ForceInBandBytestreams;
-            }
+            get => siFileTransfer.ForceInBandBytestreams;
 
-            set
-            {
-                siFileTransfer.ForceInBandBytestreams = value;
-            }
+            set => siFileTransfer.ForceInBandBytestreams = value;
         }
 
         /// <summary>

@@ -16,9 +16,7 @@ namespace Net.Xmpp.Extensions.Dataforms
             get
             {
                 var v = element["value"];
-                if (v == null)
-                    return null;
-                return ParseValue(v.InnerText);
+                return v == null ? null : ParseValue(v.InnerText);
             }
 
             private set
@@ -100,7 +98,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         private bool ParseValue(string value)
         {
             value.ThrowIfNull("value");
-            if (value == "0" || value == "false")
+            if (value is "0" or "false")
                 return false;
             // Be lenient.
             return true;

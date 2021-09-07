@@ -14,34 +14,17 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// <summary>
         /// The underlying XML element of the data-form.
         /// </summary>
-        private XmlElement element;
-
-        /// <summary>
-        /// Determines whether the collection of data-fields is read-only.
-        /// </summary>
-        private bool readOnly;
+        private readonly XmlElement element;
 
         /// <summary>
         /// Gets the number of elements contained in the list of data-fields.
         /// </summary>
-        public int Count
-        {
-            get
-            {
-                return GetFieldElements().Count;
-            }
-        }
+        public int Count => GetFieldElements().Count;
 
         /// <summary>
         /// Determines whether the FieldList is read-only.
         /// </summary>
-        public bool IsReadOnly
-        {
-            get
-            {
-                return readOnly;
-            }
-        }
+        public bool IsReadOnly { get; }
 
         /// <summary>
         /// Returns the data-field at the specified index.
@@ -206,7 +189,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         {
             element.ThrowIfNull("element");
             this.element = element;
-            this.readOnly = readOnly;
+            this.IsReadOnly = readOnly;
             try
             {
                 // Call GetFields to verify all fields are valid.
@@ -270,7 +253,7 @@ namespace Net.Xmpp.Extensions.Dataforms
                 // If the element does not have a 'type' attribute, we can only
                 // return a weakly-typed data-field.
                 DataFieldType? type = GetDataFieldType(element);
-                if (type.HasValue == false)
+                if (!type.HasValue)
                     return new DataField(element);
                 switch (type.Value)
                 {
@@ -327,7 +310,7 @@ namespace Net.Xmpp.Extensions.Dataforms
             name.ThrowIfNull("name");
             foreach (XmlElement e in GetFieldElements())
             {
-                String s = e.GetAttribute("var");
+                string s = e.GetAttribute("var");
                 if (s == name)
                     return e;
             }
@@ -349,12 +332,12 @@ namespace Net.Xmpp.Extensions.Dataforms
         private DataFieldType AttributeValueToType(string value)
         {
             value.ThrowIfNull("value");
-            StringBuilder b = new StringBuilder();
+            StringBuilder b = new();
             string s = value;
             for (int i = 0; i < s.Length; i++)
             {
                 if (s[i] == '-')
-                    b.Append(Char.ToUpper(s[++i]));
+                    b.Append(char.ToUpper(s[++i]));
                 else
                     b.Append(s[i]);
             }
@@ -375,9 +358,7 @@ namespace Net.Xmpp.Extensions.Dataforms
             try
             {
                 string t = element.GetAttribute("type");
-                if (String.IsNullOrEmpty(t))
-                    return null;
-                return AttributeValueToType(t);
+                return string.IsNullOrEmpty(t) ? null : (DataFieldType?)AttributeValueToType(t);
             }
             catch (Exception e)
             {

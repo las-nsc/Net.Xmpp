@@ -12,18 +12,12 @@ namespace Net.Xmpp.Im
         /// <summary>
         /// The set of items that form the roster.
         /// </summary>
-        private ISet<RosterItem> items = new HashSet<RosterItem>();
+        private readonly ISet<RosterItem> items = new HashSet<RosterItem>();
 
         /// <summary>
         /// The number of items on the roster.
         /// </summary>
-        public int Count
-        {
-            get
-            {
-                return items.Count;
-            }
-        }
+        public int Count => items.Count;
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection of

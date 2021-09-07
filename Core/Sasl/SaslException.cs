@@ -40,7 +40,7 @@ namespace Net.Xmpp.Core.Sasl
         /// being thrown. </param>
         /// <param name="context">An object that contains contextual information about the source
         /// or destination. </param>
-        protected SaslException(System.Runtime.Serialization.SerializationInfo info, StreamingContext context)
+        protected SaslException(SerializationInfo info, StreamingContext context)
             : base(info, context) { }
     }
 }

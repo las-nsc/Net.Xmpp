@@ -92,52 +92,38 @@ namespace Net.Xmpp.Core
         /// <summary>
         /// Write lock for the network stream.
         /// </summary>
-        private readonly object writeLock = new object();
-
-        /// <summary>
-        /// The default Time Out for IQ Requests
-        /// </summary>
-        private int millisecondsDefaultTimeout = -1;
-
-        /// <summary>
-        /// The default value for debugging stanzas is false
-        /// </summary>
-        private bool debugStanzas = true;
+        private readonly object writeLock = new();
 
         /// <summary>
         /// A thread-safe dictionary of wait handles for pending IQ requests.
         /// </summary>
-        private ConcurrentDictionary<string, AutoResetEvent> waitHandles =
-            new ConcurrentDictionary<string, AutoResetEvent>();
+        private readonly ConcurrentDictionary<string, AutoResetEvent> waitHandles = new();
 
         /// <summary>
         /// A thread-safe dictionary of IQ responses for pending IQ requests.
         /// </summary>
-        private ConcurrentDictionary<string, Iq> iqResponses =
-         new ConcurrentDictionary<string, Iq>();
+        private readonly ConcurrentDictionary<string, Iq> iqResponses = new();
 
         /// <summary>
         /// A thread-safe dictionary of callback methods for asynchronous IQ requests.
         /// </summary>
-        private ConcurrentDictionary<string, Action<string, Iq>> iqCallbacks =
-         new ConcurrentDictionary<string, Action<string, Iq>>();
+        private readonly ConcurrentDictionary<string, Action<string, Iq>> iqCallbacks = new();
 
         /// <summary>
         /// A cancellation token source that is set when the listener threads shuts
         /// down due to an exception.
         /// </summary>
-        private CancellationTokenSource cancelIq = new CancellationTokenSource();
+        private CancellationTokenSource cancelIq = new();
 
         /// <summary>
         /// A FIFO of stanzas waiting to be processed.
         /// </summary>
-        private BlockingCollection<Stanza> stanzaQueue = new BlockingCollection<Stanza>();
+        private readonly BlockingCollection<Stanza> stanzaQueue = new();
 
         /// <summary>
         /// A cancellation token source for cancelling the dispatcher, if neccessary.
         /// </summary>
-        private CancellationTokenSource cancelDispatch = new CancellationTokenSource();
-
+        private CancellationTokenSource cancelDispatch = new();
 
         internal event EventHandler<ConnectEventArgs> OnConnect;
 
@@ -150,10 +136,7 @@ namespace Net.Xmpp.Core
         /// and the value is the empty string.</exception>
         public string Hostname
         {
-            get
-            {
-                return hostname;
-            }
+            get => hostname;
 
             set
             {
@@ -165,12 +148,7 @@ namespace Net.Xmpp.Core
         /// <summary>
         /// The server adress of the XMPP server to connect to.
         /// </summary>
-        public string ServerAdress
-        {
-            get;
-
-            set;
-        }
+        public string ServerAdress { get; set; }
 
         /// <summary>
         /// The port number of the XMPP service of the server.
@@ -179,10 +157,7 @@ namespace Net.Xmpp.Core
         /// set and the value is not between 0 and 65536.</exception>
         public int Port
         {
-            get
-            {
-                return port;
-            }
+            get => port;
 
             set
             {
@@ -201,10 +176,7 @@ namespace Net.Xmpp.Core
         /// and the value is the empty string.</exception>
         public string Username
         {
-            get
-            {
-                return username;
-            }
+            get => username;
 
             set
             {
@@ -220,10 +192,7 @@ namespace Net.Xmpp.Core
         /// set and the value is null.</exception>
         public string Password
         {
-            get
-            {
-                return password;
-            }
+            get => password;
 
             set
             {
@@ -235,92 +204,47 @@ namespace Net.Xmpp.Core
         /// <summary>
         /// The Default IQ Set /Request message timeout
         /// </summary>
-        public int MillisecondsDefaultTimeout
-        {
-            get { return millisecondsDefaultTimeout; }
-            set { millisecondsDefaultTimeout = value; }
-        }
+        public int MillisecondsDefaultTimeout { get; set; } = -1;
 
         /// <summary>
         /// Print XML stanzas for debugging purposes
         /// </summary>
-        public bool DebugStanzas
-        {
-            get { return debugStanzas; }
-            set { debugStanzas = value; }
-        }
+        public bool DebugStanzas { get; set; } = true;
 
         /// <summary>
         /// If true the session will be TLS/SSL-encrypted if the server supports it.
         /// </summary>
-        public bool Tls
-        {
-            get;
-            set;
-        }
+        public bool Tls { get; set; }
 
         /// <summary>
         /// A delegate used for verifying the remote Secure Sockets Layer (SSL)
         /// certificate which is used for authentication.
         /// </summary>
-        public RemoteCertificateValidationCallback Validate
-        {
-            get;
-            set;
-        }
+        public RemoteCertificateValidationCallback Validate { get; set; }
 
         /// <summary>
         /// Determines whether the session with the server is TLS/SSL encrypted.
         /// </summary>
-        public bool IsEncrypted
-        {
-            get;
-            private set;
-        }
+        public bool IsEncrypted { get; private set; }
 
         /// <summary>
         /// The address of the Xmpp entity.
         /// </summary>
-        public Jid Jid
-        {
-            get;
-            private set;
-        }
+        public Jid Jid { get; private set; }
 
         /// <summary>
         /// The default language of the XML stream.
         /// </summary>
-        public CultureInfo Language
-        {
-            get;
-            private set;
-        }
-
-        private bool connected;
+        public CultureInfo Language { get; private set; }
         /// <summary>
         /// Determines whether the instance is connected to the XMPP server.
         /// </summary>
-        public bool Connected
-        {
-            get
-            {
-                return connected;
-            }
-
-            private set
-            {
-                this.connected = value;
-            }
-        }
+        public bool Connected { get; private set; }
 
         /// <summary>
         /// Determines whether the instance has been authenticated.
         /// </summary>
-        public bool Authenticated
-        {
-            get;
-            private set;
-        }
+        public bool Authenticated { get; private set; }
 
         /// <summary>
         /// The event that is raised when an unrecoverable error condition occurs.
@@ -366,7 +290,7 @@ namespace Net.Xmpp.Core
             int port = 5222, bool tls = true, RemoteCertificateValidationCallback validate = null,
             string serverAdress = "")
         {
-            if (serverAdress == "")
+            if (serverAdress?.Length == 0)
             {
                 serverAdress = hostname;
             }
@@ -411,7 +335,7 @@ namespace Net.Xmpp.Core
             RemoteCertificateValidationCallback validate = null,
             string serverAdress = "")
         {
-            if (serverAdress == "")
+            if (serverAdress?.Length == 0)
             {
                 serverAdress = hostname;
             }
@@ -450,10 +374,10 @@ namespace Net.Xmpp.Core
                 if (dnsRecordList != null && dnsCurrent != null) dnsRecordList.Remove(dnsCurrent);
                 dnsCurrent = dnsRecordList.FirstOrDefault();
                 return dnsCurrent;
-            };
+            }
             dnsIsInit = true;
 
-            var domainName = ARSoft.Tools.Net.DomainName.Parse(("_xmpp-client._tcp." + domain));
+            var domainName = ARSoft.Tools.Net.DomainName.Parse("_xmpp-client._tcp." + domain);
             DnsMessage dnsMessage = DnsClient.Default.Resolve(domainName, RecordType.Srv);
             if ((dnsMessage == null) || ((dnsMessage.ReturnCode != ReturnCode.NoError) && (dnsMessage.ReturnCode != ReturnCode.NxDomain)))
             {
@@ -469,8 +393,7 @@ namespace Net.Xmpp.Core
 
                 foreach (DnsRecordBase dnsRecord in dnsMessage.AnswerRecords)
                 {
-                    SrvRecord srvRecord = dnsRecord as SrvRecord;
-                    if (srvRecord != null)
+                    if (dnsRecord is SrvRecord srvRecord)
                     {
                         tempList.Add(srvRecord);
                         Console.WriteLine(srvRecord.ToString());
@@ -514,8 +437,7 @@ namespace Net.Xmpp.Core
             this.resource = resource;
             try
             {
-                client = new TcpClient(ServerAdress, Port);
-                client.NoDelay = true;
+                client = new TcpClient(ServerAdress, Port) { NoDelay = true };
                 stream = client.GetStream();
                 // Sets up the connection which includes TLS and possibly SASL negotiation.
                 SetupConnection(this.resource);
@@ -627,10 +549,9 @@ namespace Net.Xmpp.Core
         /// </summary>
         /// <param name="to">The JID of the intended recipient for the stanza.</param>
         /// <param name="from">The JID of the sender.</param>
-        /// <param name="data">he content of the stanza.</param>
         /// <param name="id">The ID of the stanza.</param>
-        /// <param name="language">The language of the XML character data of
-        /// the stanza.</param>
+        /// <param name="language">The language of the XML character data of the stanza.</param>
+        /// <param name="data">he content of the stanza.</param>
         /// <exception cref="ObjectDisposedException">The XmppCore object has been
         /// disposed.</exception>
         /// <exception cref="InvalidOperationException">The XmppCore instance is not
@@ -720,19 +641,14 @@ namespace Net.Xmpp.Core
         /// expired.</exception>
         public Iq IqRequest(Iq request, int millisecondsTimeout = -1)
         {
-            int timeOut = -1;
             AssertValid();
             request.ThrowIfNull("request");
-            if (request.Type != IqType.Set && request.Type != IqType.Get)
+            if (request.Type is not IqType.Set and not IqType.Get)
                 throw new ArgumentException("The IQ type must be either 'set' or 'get'.");
-            if (millisecondsTimeout == -1)
-            {
-                timeOut = millisecondsDefaultTimeout;
-            }
-            else timeOut = millisecondsTimeout;
+            int timeOut = millisecondsTimeout == -1 ? MillisecondsDefaultTimeout : millisecondsTimeout;
             // Generate a unique ID for the IQ request.
             request.Id = GetId();
-            AutoResetEvent ev = new AutoResetEvent(false);
+            AutoResetEvent ev = new(false);
             Send(request);
             // Wait for event to be signaled by task that processes the incoming
             // XML stream.
@@ -749,7 +665,7 @@ namespace Net.Xmpp.Core
                 //Make sure that its a request towards the server and not towards any client
                 var ping = request.Data["ping"];
 
-                if (request.To != null && request.To.Domain == Jid.Domain && (request.To.Node == null || request.To.Node == "") && (ping != null && ping.NamespaceURI == "urn:xmpp:ping"))
+                if (request.To?.Domain == Jid.Domain && string.IsNullOrEmpty(request.To.Node) && (ping?.NamespaceURI == "urn:xmpp:ping"))
                 {
                     if (Connected)
                     {
@@ -768,8 +684,7 @@ namespace Net.Xmpp.Core
             if (index == 1)
                 throw new IOException("The incoming XML stream could not read.");
             // Fetch response stanza.
-            Iq response;
-            if (iqResponses.TryRemove(request.Id, out response))
+            if (iqResponses.TryRemove(request.Id, out Iq response))
                 return response;
             // Shouldn't happen.
 
@@ -798,12 +713,12 @@ namespace Net.Xmpp.Core
         /// connected to a remote host.</exception>
         /// <exception cref="IOException">There was a failure while writing to the
         /// network.</exception>
-        public string IqRequestAsync(IqType type, Jid to = null, Jid from = null,
+        public string IqRequest(IqType type, Jid to = null, Jid from = null,
             XmlElement data = null, CultureInfo language = null,
             Action<string, Iq> callback = null)
         {
             AssertValid();
-            return IqRequestAsync(new Iq(type, null, to, from, data, language), callback);
+            return IqRequest(new Iq(type, null, to, from, data, language), callback);
         }
 
         /// <summary>
@@ -823,11 +738,11 @@ namespace Net.Xmpp.Core
         /// connected to a remote host.</exception>
         /// <exception cref="IOException">There was a failure while writing to the
         /// network.</exception>
-        public string IqRequestAsync(Iq request, Action<string, Iq> callback = null)
+        public string IqRequest(Iq request, Action<string, Iq> callback = null)
         {
             AssertValid();
             request.ThrowIfNull("request");
-            if (request.Type != IqType.Set && request.Type != IqType.Get)
+            if (request.Type is not IqType.Set and not IqType.Get)
                 throw new ArgumentException("The IQ type must be either 'set' or 'get'.");
             request.Id = GetId();
             // Register the callback.
@@ -881,7 +796,7 @@ namespace Net.Xmpp.Core
         {
             AssertValid();
             response.ThrowIfNull("response");
-            if (response.Type != IqType.Result && response.Type != IqType.Error)
+            if (response.Type is not IqType.Result and not IqType.Error)
                 throw new ArgumentException("The IQ type must be either 'result' or 'error'.");
             Send(response);
         }
@@ -974,7 +889,7 @@ namespace Net.Xmpp.Core
             if (feats["starttls"] != null)
             {
                 // TLS is mandatory and user opted out of it.
-                if (feats["starttls"]["required"] != null && Tls == false)
+                if (feats["starttls"]["required"] != null && !Tls)
                     throw new AuthenticationException("The server requires TLS/SSL.");
                 if (Tls)
                     feats = StartTls(Hostname, Validate);
@@ -984,7 +899,7 @@ namespace Net.Xmpp.Core
                 return;
             // Construct a list of SASL mechanisms supported by the server.
             var m = feats["mechanisms"];
-            if (m == null || !m.HasChildNodes)
+            if (m?.HasChildNodes != true)
                 throw new AuthenticationException("No SASL mechanisms advertised.");
             var mech = m.FirstChild;
             var list = new HashSet<string>();
@@ -1030,8 +945,7 @@ namespace Net.Xmpp.Core
                 .Attr("xml:lang", CultureInfo.CurrentCulture.Name);
             Send(xml.ToXmlString(xmlDeclaration: true, leaveOpen: true));
             // Create a new parser instance.
-            if (parser != null)
-                parser.Close();
+            parser?.Close();
             parser = new StreamParser(stream, true);
             // Remember the default language of the stream. The server is required to
             // include this, but we make sure nonetheless.
@@ -1065,7 +979,7 @@ namespace Net.Xmpp.Core
             SendAndReceive(Xml.Element("starttls",
                 "urn:ietf:params:xml:ns:xmpp-tls"), "proceed");
             // Complete TLS negotiation and switch to secure stream.
-            SslStream sslStream = new SslStream(stream, false, validate ??
+            SslStream sslStream = new(stream, false, validate ??
                 ((sender, cert, chain, err) => true));
             sslStream.AuthenticateAsClient(hostname);
             stream = sslStream;
@@ -1101,7 +1015,7 @@ namespace Net.Xmpp.Core
             m.Properties.Add("Password", password);
             var xml = Xml.Element("auth", "urn:ietf:params:xml:ns:xmpp-sasl")
                 .Attr("mechanism", name)
-                .Text(m.HasInitial ? m.GetResponse(String.Empty) : String.Empty);
+                .Text(m.HasInitial ? m.GetResponse(string.Empty) : string.Empty);
             Send(xml);
             while (true)
             {
@@ -1117,7 +1031,7 @@ namespace Net.Xmpp.Core
                 // verified.
                 if (ret.Name == "success")
                 {
-                    if (response == String.Empty)
+                    if (response?.Length == 0)
                         break;
                     throw new SaslException("Could not verify server's signature.");
                 }
@@ -1176,9 +1090,9 @@ namespace Net.Xmpp.Core
                 bind.Child(Xml.Element("resource").Text(resourceName));
             xml.Child(bind);
             XmlElement res = SendAndReceive(xml, "iq");
-            if (res["bind"] == null || res["bind"]["jid"] == null)
-                throw new XmppException("Erroneous server response.");
-            return new Jid(res["bind"]["jid"].InnerText);
+            return res["bind"]?["jid"] is { } node
+                ? new Jid(node.InnerText)
+                : throw new XmppException("Erroneous server response.");
         }
 
         /// <summary>
@@ -1215,7 +1129,7 @@ namespace Net.Xmpp.Core
                 {
                     stream.Write(buf, 0, buf.Length);
                     stream.Flush();
-                    if (debugStanzas) System.Diagnostics.Debug.WriteLine(xml);
+                    if (DebugStanzas) System.Diagnostics.Debug.WriteLine(xml);
                 }
                 catch (IOException e)
                 {
@@ -1292,7 +1206,7 @@ namespace Net.Xmpp.Core
                     switch (elem.Name)
                     {
                         case "iq":
-                            Iq iq = new Iq(elem);
+                            Iq iq = new(elem);
                             if (iq.IsResponse)
                             {
                                 if (!HandleIqResponseBlocking(iq))
@@ -1327,15 +1241,14 @@ namespace Net.Xmpp.Core
                 cancelIq.Cancel();
                 cancelIq = new CancellationTokenSource();
                 //Add the failed connection
-                if ((e is IOException) || (e is XmppDisconnectionException))
+                if (e is IOException or XmppDisconnectionException)
                 {
                     if (Connected)
                     {
                         Connected = false;
                         OnConnect?.Raise(this, new ConnectEventArgs(ConnectionState.Lost));
                     }
-                    var ex = new XmppDisconnectionException(e.ToString());
-                    e = ex;
+                    e = new XmppDisconnectionException(e.ToString());
                 }
                 // Raise the error event.
                 if (!disposed)
@@ -1356,18 +1269,19 @@ namespace Net.Xmpp.Core
                 try
                 {
                     Stanza stanza = stanzaQueue.Take(cancelDispatch.Token);
-                    if (debugStanzas) System.Diagnostics.Debug.WriteLine(stanza.ToString());
-                    if (stanza is Iq)
+                    if (DebugStanzas) System.Diagnostics.Debug.WriteLine(stanza.ToString());
+                    switch (stanza)
                     {
-                        if (!((stanza as Iq).IsResponse && HandleIqResponseAsync(stanza as Iq)))
-                            Iq.Raise(this, new IqEventArgs(stanza as Iq));
+                        case Iq iq when !(iq.IsResponse && HandleIqResponse(iq)):
+                            Iq.Raise(this, new IqEventArgs(iq));
+                            break;
+                        case Message message:
+                            Message.Raise(this, new MessageEventArgs(message));
+                            break;
+                        case Presence presence:
+                            Presence.Raise(this, new PresenceEventArgs(presence));
+                            break;
                     }
-                    else if (stanza is Message)
-                    {
-                        Message.Raise(this, new MessageEventArgs(stanza as Message));
-                    }
-                    else if (stanza is Presence)
-                        Presence.Raise(this, new PresenceEventArgs(stanza as Presence));
                 }
                 catch (OperationCanceledException)
                 {
@@ -1390,10 +1304,9 @@ namespace Net.Xmpp.Core
         /// <param name="iq">The received IQ response stanza.</param>
         private bool HandleIqResponseBlocking(Iq iq)
         {
-            AutoResetEvent ev;
             string id = iq.Id;
             // Signal the event if it's a blocking call.
-            if (waitHandles.TryRemove(id, out ev))
+            if (waitHandles.TryRemove(id, out var ev))
             {
                 iqResponses[id] = iq;
                 ev.Set();
@@ -1402,11 +1315,10 @@ namespace Net.Xmpp.Core
             return false;
         }
 
-        private bool HandleIqResponseAsync(Iq iq)
+        private bool HandleIqResponse(Iq iq)
         {
             string id = iq.Id;
-            Action<string, Iq> cb;
-            if (iqCallbacks.TryRemove(id, out cb))
+            if (iqCallbacks.TryRemove(id, out var cb))
             {
                 cb(id, iq);
                 return true;

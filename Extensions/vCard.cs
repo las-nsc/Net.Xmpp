@@ -1,18 +1,16 @@
 ﻿using Net.Xmpp.Core;
 using Net.Xmpp.Im;
+
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Xml;
 using System.Xml.Linq;
 
 namespace Net.Xmpp.Extensions
 {
- 
     internal class VCards : XmppExtension, IInputFilter<Iq>
     {
         /// <summary>
@@ -25,28 +23,16 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <remarks>This is used for compiling the list of supported extensions
         /// advertised by the 'Service Discovery' extension.</remarks>
-        public override IEnumerable<string> Namespaces
-        {
-            get
-            {
-                return new string[] {
+        public override IEnumerable<string> Namespaces => new string[] {
                      "vcard-temp:x:update" ,
                      "vcard-temp"
                 };
-            }
-        }
 
         /// <summary>
         /// The named constant of the Extension enumeration that corresponds to this
         /// extension.
         /// </summary>
-        public override Extension Xep
-        {
-            get
-            {
-                return Extension.vCards;
-            }
-        }
+        public override Extension Xep => Extension.vCards;
 
         /// <summary>
         /// Invoked after all extensions have been loaded.
@@ -86,8 +72,8 @@ namespace Net.Xmpp.Extensions
 
             string mimeType = "image/png";
 
-            string hash = String.Empty, base64Data = String.Empty;
-            MemoryStream ms = new MemoryStream();
+            string hash = string.Empty, base64Data = string.Empty;
+            MemoryStream ms = new();
             stream.CopyTo(ms);
             using (ms)
             {
@@ -103,7 +89,7 @@ namespace Net.Xmpp.Extensions
                 if (iq.Type == IqType.Result)
                 {
                     // Result must contain a 'feature' element.
-                    im.SendPresence(new Net.Xmpp.Im.Presence(null, null, PresenceType.Available, null, null, Xml.Element("x", "vcard-temp:x:update").Child(Xml.Element("photo").Text(hash))));
+                    im.SendPresence(new Im.Presence(null, null, PresenceType.Available, null, null, Xml.Element("x", "vcard-temp:x:update").Child(Xml.Element("photo").Text(hash))));
                 }
             });
         }
@@ -116,16 +102,14 @@ namespace Net.Xmpp.Extensions
         private string Hash(byte[] data)
         {
             data.ThrowIfNull("data");
-            using (var sha1 = new SHA1Managed())
-            {
-                return Convert.ToBase64String(sha1.ComputeHash(data));
-            }
+            using var sha1 = new SHA1Managed();
+            return Convert.ToBase64String(sha1.ComputeHash(data));
         }
 
         public void RequestvCards(Jid jid, Action<VCardsData, Jid> callback)
         {
             jid.ThrowIfNull("jid");
-            VCardsData vCD = new VCardsData(); 
+            VCardsData vCD = new(); 
 
             //Make the request
             var xml = Xml.Element("vCard", "vcard-temp");
@@ -138,16 +122,16 @@ namespace Net.Xmpp.Extensions
                 {
                     XElement root = XElement.Parse(iq.Data.OuterXml); 
                     XNamespace aw = "vcard-temp"; //SOS the correct namespace
-                    IEnumerable<string> b64collection = (from el in root.Descendants(aw + "BINVAL") select (string)el);
-                    IEnumerable<string> nicknamecollection = (from el in root.Descendants(aw + "NICKNAME") select (string)el);
-                    IEnumerable<string> fullnamecollection = (from el in root.Descendants(aw + "FN") select (string)el);
-                    IEnumerable<string> familynamecollection = (from el in root.Descendants(aw + "FAMILY") select (string)el);
-                    IEnumerable<string> firstnamecollection = (from el in root.Descendants(aw + "GIVEN") select (string)el);
-                    IEnumerable<string> urlcollection = (from el in root.Descendants(aw + "URL") select (string)el);
-                    IEnumerable<string> birthdaycollection = (from el in root.Descendants(aw + "BDAY") select (string)el);
-                    IEnumerable<string> orgnamecollection = (from el in root.Descendants(aw + "ORGNAME") select (string)el);
-                    IEnumerable<string> titlecollection = (from el in root.Descendants(aw + "TITLE") select (string)el);
-                    IEnumerable<string> rolecollection = (from el in root.Descendants(aw + "ROLE") select (string)el);
+                    IEnumerable<string> b64collection = from el in root.Descendants(aw + "BINVAL") select (string)el;
+                    IEnumerable<string> nicknamecollection = from el in root.Descendants(aw + "NICKNAME") select (string)el;
+                    IEnumerable<string> fullnamecollection = from el in root.Descendants(aw + "FN") select (string)el;
+                    IEnumerable<string> familynamecollection = from el in root.Descendants(aw + "FAMILY") select (string)el;
+                    IEnumerable<string> firstnamecollection = from el in root.Descendants(aw + "GIVEN") select (string)el;
+                    IEnumerable<string> urlcollection = from el in root.Descendants(aw + "URL") select (string)el;
+                    IEnumerable<string> birthdaycollection = from el in root.Descendants(aw + "BDAY") select (string)el;
+                    IEnumerable<string> orgnamecollection = from el in root.Descendants(aw + "ORGNAME") select (string)el;
+                    IEnumerable<string> titlecollection = from el in root.Descendants(aw + "TITLE") select (string)el;
+                    IEnumerable<string> rolecollection = from el in root.Descendants(aw + "ROLE") select (string)el;
 
                     vCD.NickName = nicknamecollection.FirstOrDefault();
                     vCD.FullName = fullnamecollection.FirstOrDefault();
@@ -204,98 +188,55 @@ namespace Net.Xmpp.Extensions
     [Serializable]
     public sealed class VCardsData
     {
-
         /// <summary>
         /// The FN from vCard.
         /// </summary>
-        public string FullName
-        {
-            get;
-            set;
-        }
+        public string FullName { get; set; }
 
         /// <summary>
         /// The FAMILY from vCard.
         /// </summary>
-        public string FamilyName
-        {
-            get;
-            set;
-        }
+        public string FamilyName { get; set; }
 
         /// <summary>
         /// The GIVEN from vCard.
         /// </summary>
-        public string FirstName
-        {
-            get;
-            set;
-        }
+        public string FirstName { get; set; }
 
         /// <summary>
         /// The nickname from vCard.
         /// </summary>
-        public string NickName
-        {
-            get;
-            set;
-        }
+        public string NickName { get; set; }
 
         /// <summary>
         /// The URL from vCard.
         /// </summary>
-        public string URL
-        {
-            get;
-            set;
-        }
+        public string URL { get; set; }
 
         /// <summary>
         /// The avatar from vCard.
         /// </summary>
-        public byte[] Avatar
-        {
-            get;
-            set;
-        }
+        public byte[] Avatar { get; set; }
 
         /// <summary>
         /// The BDAY from vCard.
         /// </summary>
-        public string Birthday
-        {
-            get;
-            set;
-        }
+        public string Birthday { get; set; }
 
         /// <summary>
         /// The ORGNAME from vCard.
         /// </summary>
-        public string OrgName
-        {
-            get;
-            set;
-        }
+        public string OrgName { get; set; }
 
         /// <summary>
         /// The TITLE from vCard.
         /// </summary>
-        public string Title
-        {
-            get;
-            set;
-        }
+        public string Title { get; set; }
 
         /// <summary>
         /// The ROLE from vCard.
         /// </summary>
-        public string Role
-        {
-            get;
-            set;
-        }
-
-
+        public string Role { get; set; }
 
 
 

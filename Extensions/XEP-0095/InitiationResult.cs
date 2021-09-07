@@ -12,30 +12,18 @@ namespace Net.Xmpp.Extensions
         /// The session identifier which must be used when talking to the XMPP entity
         /// with which the session has been negotiated.
         /// </summary>
-        public string SessionId
-        {
-            get;
-            private set;
-        }
+        public string SessionId { get; }
 
         /// <summary>
         /// The negotiated stream-method.
         /// </summary>
-        public string Method
-        {
-            get;
-            private set;
-        }
+        public string Method { get; }
 
         /// <summary>
         /// The 'si' data element with any additional data which may be required by
         /// an SI profile.
         /// </summary>
-        public XmlElement Data
-        {
-            get;
-            private set;
-        }
+        public XmlElement Data { get; }
 
         /// <summary>
         /// Initializes a new instance of the InitiationResult class.

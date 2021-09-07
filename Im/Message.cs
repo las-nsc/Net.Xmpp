@@ -1,10 +1,11 @@
-﻿using Net.Xmpp.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Security;
 using System.Xml;
+
+using Net.Xmpp.Extensions;
 
 namespace Net.Xmpp.Im
 {
@@ -23,10 +24,7 @@ namespace Net.Xmpp.Im
         /// </summary>
         public MessageType Type
         {
-            get
-            {
-                return type;
-            }
+            get => type;
 
             set
             {
@@ -56,12 +54,7 @@ namespace Net.Xmpp.Im
         /// </summary>
         public string Thread
         {
-            get
-            {
-                if (element["thread"] != null)
-                    return element["thread"].InnerText;
-                return null;
-            }
+            get => element["thread"]?.InnerText;
 
             set
             {
@@ -149,21 +142,13 @@ namespace Net.Xmpp.Im
         /// A dictionary of alternate forms of the message subjects. The keys of the
         /// dictionary denote ISO 2 language codes.
         /// </summary>
-        public IDictionary<string, string> AlternateSubjects
-        {
-            get;
-            private set;
-        }
+        public IDictionary<string, string> AlternateSubjects { get; }
 
         /// <summary>
         /// A dictionary of alternate forms of the message bodies. The keys of the
         /// dictionary denote ISO 2 language codes.
         /// </summary>
-        public IDictionary<string, string> AlternateBodies
-        {
-            get;
-            private set;
-        }
+        public IDictionary<string, string> AlternateBodies { get; }
 
         /// <summary>
         /// Initializes a new instance of the Message class.
@@ -262,12 +247,10 @@ namespace Net.Xmpp.Im
             AlternateBodies = new XmlDictionary(element, "body", "xml:lang");
             Timestamp = timestamp;
 
-            var carbonNode = element["sent"];
-            if (carbonNode != null && carbonNode.NamespaceURI == "urn:xmpp:carbons:2")
+            if (element["sent"] is { } carbonNode && carbonNode.NamespaceURI == "urn:xmpp:carbons:2")
             {
                 CarbonMessage = true;
-                var forwardedMessageNode = carbonNode["forwarded"];
-                if (forwardedMessageNode != null && forwardedMessageNode.NamespaceURI == "urn:xmpp:forward:0")
+                if (carbonNode["forwarded"] is { } forwardedMessageNode && forwardedMessageNode.NamespaceURI == "urn:xmpp:forward:0")
                 {
                     var forwardedTimestamp = DelayedDelivery.GetDelayedTimestampOrNow(forwardedMessageNode);
                     ForwardedMessage = new Message(forwardedMessageNode["message"], forwardedTimestamp);
@@ -275,8 +258,7 @@ namespace Net.Xmpp.Im
             }
             else
             {
-                var forwardedMessageNode = element["forwarded"];
-                if (forwardedMessageNode != null && forwardedMessageNode.NamespaceURI == "urn:xmpp:forward:0")
+                if (element["forwarded"] is { } forwardedMessageNode && forwardedMessageNode.NamespaceURI == "urn:xmpp:forward:0")
                 {
                     var forwardedTimestamp = DelayedDelivery.GetDelayedTimestampOrNow(forwardedMessageNode);
                     ForwardedMessage = new Message(forwardedMessageNode["message"], forwardedTimestamp);
@@ -295,9 +277,9 @@ namespace Net.Xmpp.Im
         {
             // The 'type' attribute of message-stanzas is optional and if absent
             // a type of 'normal' is assumed.
-            if (string.IsNullOrEmpty(value))
-                return MessageType.Normal;
-            return (MessageType)Enum.Parse(typeof(MessageType),
+            return string.IsNullOrEmpty(value)
+                ? MessageType.Normal
+                : (MessageType)Enum.Parse(typeof(MessageType),
                 value.Capitalize());
         }
 

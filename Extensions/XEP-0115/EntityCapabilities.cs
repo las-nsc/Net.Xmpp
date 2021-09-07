@@ -21,51 +21,34 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// A dictionary for caching the 'ver' hash of each JID.
         /// </summary>
-        private IDictionary<Jid, string> hashes = new Dictionary<Jid, string>();
+        private readonly IDictionary<Jid, string> hashes = new Dictionary<Jid, string>();
 
         /// <summary>
         /// A dictionary of cached features.
         /// </summary>
-        private IDictionary<string, IEnumerable<Extension>> cachedFeatures =
+        private readonly IDictionary<string, IEnumerable<Extension>> cachedFeatures =
             new Dictionary<string, IEnumerable<Extension>>();
 
         /// <summary>
         /// The value of the 'node' attribute of the 'e' element, which should
         /// be an URI according to specification.
         /// </summary>
-        private string nodeUri
-        {
-            get
-            {
+        private string nodeUri =>
                 // FIXME: Move this to a resource file or to assembly metadata?
-                return "Net.Xmpp";
-            }
-        }
+                "Net.Xmpp";
 
         /// <summary>
         /// An enumerable collection of XMPP namespaces the extension implements.
         /// </summary>
         /// <remarks>This is used for compiling the list of supported extensions
         /// advertised by the 'Service Discovery' extension.</remarks>
-        public override IEnumerable<string> Namespaces
-        {
-            get
-            {
-                return new string[] { "http://jabber.org/protocol/caps" };
-            }
-        }
+        public override IEnumerable<string> Namespaces => new string[] { "http://jabber.org/protocol/caps" };
 
         /// <summary>
         /// The named constant of the Extension enumeration that corresponds to this
         /// extension.
         /// </summary>
-        public override Extension Xep
-        {
-            get
-            {
-                return Extension.EntityCapabilities;
-            }
-        }
+        public override Extension Xep => Extension.EntityCapabilities;
 
         /// <summary>
         /// Invoked after all extensions have been loaded.
@@ -89,7 +72,7 @@ namespace Net.Xmpp.Extensions
                 return false;
             string hash = c.GetAttribute("hash"), ver = c.GetAttribute("ver"),
                 node = c.GetAttribute("node");
-            if (String.IsNullOrEmpty(hash) || String.IsNullOrWhiteSpace(ver))
+            if (string.IsNullOrEmpty(hash) || string.IsNullOrWhiteSpace(ver))
                 return false;
             hashes[stanza.From] = ver;
             // Don't swallow the presence stanza.
@@ -247,15 +230,15 @@ namespace Net.Xmpp.Extensions
         private string GenerateVerificationString()
         {
             Identity ident = sdisco.Identity;
-            StringBuilder s = new StringBuilder(ident.Category + "/" +
+            StringBuilder s = new(ident.Category + "/" +
                 ident.Type + "//" + ident.Name + "<");
-            List<string> list = new List<string>(sdisco.Features);
+            List<string> list = new(sdisco.Features);
             list.Sort();
             foreach (string xmlns in list)
                 s.Append(xmlns + "<");
             byte[] bytes = Encoding.UTF8.GetBytes(s.ToString());
-            using (var sha1 = new SHA1Managed())
-                return Convert.ToBase64String(sha1.ComputeHash(bytes));
+            using var sha1 = new SHA1Managed();
+            return Convert.ToBase64String(sha1.ComputeHash(bytes));
         }
 
         /// <summary>

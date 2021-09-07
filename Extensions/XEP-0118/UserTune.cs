@@ -20,40 +20,22 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <remarks>This is used for compiling the list of supported extensions
         /// advertised by the 'Service Discovery' extension.</remarks>
-        public override IEnumerable<string> Namespaces
-        {
-            get
-            {
-                return new string[] {
-					"http://jabber.org/protocol/tune",
-					"http://jabber.org/protocol/tune+notify"
-				};
-            }
-        }
+        public override IEnumerable<string> Namespaces => new string[] {
+                    "http://jabber.org/protocol/tune",
+                    "http://jabber.org/protocol/tune+notify"
+                };
 
         /// <summary>
         /// The named constant of the Extension enumeration that corresponds to this
         /// extension.
         /// </summary>
-        public override Extension Xep
-        {
-            get
-            {
-                return Extension.UserTune;
-            }
-        }
+        public override Extension Xep => Extension.UserTune;
 
         /// <summary>
         /// Determines whether our server supports personal eventing and thusly
         /// the user tune extension.
         /// </summary>
-        public bool Supported
-        {
-            get
-            {
-                return pep.Supported;
-            }
-        }
+        public bool Supported => pep.Supported;
 
         /// <summary>
         /// The event that is raised when another XMPP entity has published tune
@@ -98,22 +80,22 @@ namespace Net.Xmpp.Extensions
         public void Publish(string title = null, string artist = null, string track = null,
             int length = 0, int rating = 0, string source = null, string uri = null)
         {
-            length.ThrowIfOutOfRange(0, Int16.MaxValue);
+            length.ThrowIfOutOfRange(0, short.MaxValue);
             rating.ThrowIfOutOfRange(0, 10);
             var tune = Xml.Element("tune", "http://jabber.org/protocol/tune");
-            if (!String.IsNullOrEmpty(title))
+            if (!string.IsNullOrEmpty(title))
                 tune.Child(Xml.Element("title").Text(title));
-            if (!String.IsNullOrEmpty(artist))
+            if (!string.IsNullOrEmpty(artist))
                 tune.Child(Xml.Element("artist").Text(artist));
-            if (!String.IsNullOrEmpty(track))
+            if (!string.IsNullOrEmpty(track))
                 tune.Child(Xml.Element("track").Text(track));
             if (length > 0)
                 tune.Child(Xml.Element("length").Text(length.ToString()));
             if (rating > 0)
                 tune.Child(Xml.Element("rating").Text(rating.ToString()));
-            if (!String.IsNullOrEmpty(source))
+            if (!string.IsNullOrEmpty(source))
                 tune.Child(Xml.Element("source").Text(source));
-            if (!String.IsNullOrEmpty(uri))
+            if (!string.IsNullOrEmpty(uri))
                 tune.Child(Xml.Element("uri").Text(uri));
             pep.Publish("http://jabber.org/protocol/tune", null, tune);
         }
@@ -176,7 +158,7 @@ namespace Net.Xmpp.Extensions
             int rating = 0;
             if (tune["rating"] != null)
                 rating = int.Parse(tune["rating"].InnerText);
-            TuneInformation info = new TuneInformation(
+            TuneInformation info = new(
                 GetField(tune, "title"), GetField(tune, "artist"), GetField(tune, "track"),
                 length, rating, GetField(tune, "source"), GetField(tune, "uri"));
             // Raise the 'Tune' event.
@@ -192,7 +174,7 @@ namespace Net.Xmpp.Extensions
         /// <returns>The inner text of the specified element or null.</returns>
         private string GetField(XmlElement tune, string name)
         {
-            return tune[name] != null ? tune[name].InnerText : null;
+            return tune[name]?.InnerText;
         }
     }
 }

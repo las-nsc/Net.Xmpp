@@ -11,15 +11,9 @@ namespace Net.Xmpp.Extensions
         private static readonly string[] _namespaces = { "urn:xmpp:carbons:2" };
         private EntityCapabilities ecapa;
 
-        public override IEnumerable<string> Namespaces
-        {
-            get { return _namespaces; }
-        }
+        public override IEnumerable<string> Namespaces => _namespaces;
 
-        public override Extension Xep
-        {
-            get { return Extension.MessageCarbons; }
-        }
+        public override Extension Xep => Extension.MessageCarbons;
 
         public override void Initialize()
         {
@@ -55,7 +49,6 @@ namespace Net.Xmpp.Extensions
         public MessageCarbons(XmppIm im) :
             base(im)
         {
-            ;
         }
     }
 }

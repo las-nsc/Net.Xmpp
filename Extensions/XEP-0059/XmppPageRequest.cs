@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
+﻿using System.Xml;
 
 namespace Net.Xmpp.Extensions
 {
@@ -27,7 +22,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The maximum number of items to return
         /// </summary>
-        public int FetchCount { get; private set; }
+        public int FetchCount { get; }
 
         /// <summary>
         /// Create a page request

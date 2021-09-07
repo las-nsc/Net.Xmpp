@@ -17,18 +17,12 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// <summary>
         /// The values of the field.
         /// </summary>
-        private XmlCollection<string> values;
+        private readonly XmlCollection<string> values;
 
         /// <summary>
         /// Gets an enumerable collection of values set on the field.
         /// </summary>
-        public new ICollection<string> Values
-        {
-            get
-            {
-                return values;
-            }
-        }
+        public new ICollection<string> Values => values;
 
         /// <summary>
         /// Initializes a new instance of the HiddenField class for use in a

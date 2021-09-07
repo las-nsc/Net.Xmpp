@@ -29,7 +29,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// A dictionary of callback methods registered for specific events.
         /// </summary>
-        private IDictionary<string, Action<Jid, XmlElement>> callbacks =
+        private readonly IDictionary<string, Action<Jid, XmlElement>> callbacks =
             new Dictionary<string, Action<Jid, XmlElement>>();
 
         /// <summary>
@@ -37,38 +37,18 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <remarks>This is used for compiling the list of supported extensions
         /// advertised by the 'Service Discovery' extension.</remarks>
-        public override IEnumerable<string> Namespaces
-        {
-            get
-            {
-                return new string[] { "http://jabber.org/protocol/pubsub" };
-            }
-        }
+        public override IEnumerable<string> Namespaces => new string[] { "http://jabber.org/protocol/pubsub" };
 
         /// <summary>
         /// The named constant of the Extension enumeration that corresponds to this
         /// extension.
         /// </summary>
-        public override Extension Xep
-        {
-            get
-            {
-                return Extension.PersonalEventingProcotol;
-            }
-        }
+        public override Extension Xep => Extension.PersonalEventingProcotol;
 
         /// <summary>
         /// Determines whether our server supports the personal eventing protocol.
         /// </summary>
-        public bool Supported
-        {
-            get
-            {
-                if (!initialized)
-                    return QueryServer();
-                return supported;
-            }
-        }
+        public bool Supported => !initialized ? QueryServer() : supported;
 
         /// <summary>
         /// Invoked after all extensions have been loaded.
@@ -93,7 +73,7 @@ namespace Net.Xmpp.Extensions
             if (items == null)
                 return false;
             string nodeId = items.GetAttribute("node");
-            if (String.IsNullOrEmpty(nodeId))
+            if (string.IsNullOrEmpty(nodeId))
                 return false;
             // FIXME: Should we let the callback decide whether the message stanza
             // should be swallowed or passed on?
@@ -249,9 +229,9 @@ namespace Net.Xmpp.Extensions
             var items = pubsub["items"];
             if (items == null || items.GetAttribute("node") != node)
                 throw new XmppException("Expected 'items' element: " + iq);
-            if (items["item"] == null || items["item"].GetAttribute("id") != itemId)
-                throw new XmppException("Expected 'item' element: " + items.ToXmlString());
-            return items["item"];
+            return items["item"] == null || items["item"].GetAttribute("id") != itemId
+                ? throw new XmppException("Expected 'item' element: " + items.ToXmlString())
+                : items["item"];
         }
 
         /// <summary>

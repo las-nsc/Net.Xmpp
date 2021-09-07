@@ -19,25 +19,13 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <remarks>This is used for compiling the list of supported extensions
         /// advertised by the 'Service Discovery' extension.</remarks>
-        public override IEnumerable<string> Namespaces
-        {
-            get
-            {
-                return new string[] { "urn:xmpp:attention:0" };
-            }
-        }
+        public override IEnumerable<string> Namespaces => new string[] { "urn:xmpp:attention:0" };
 
         /// <summary>
         /// The named constant of the Extension enumeration that corresponds to this
         /// extension.
         /// </summary>
-        public override Extension Xep
-        {
-            get
-            {
-                return Extension.Attention;
-            }
-        }
+        public override Extension Xep => Extension.Attention;
 
         /// <summary>
         /// Invoked after all extensions have been loaded.
@@ -75,7 +63,7 @@ namespace Net.Xmpp.Extensions
                 throw new NotSupportedException("The XMPP entity does not support the " +
                     "'Attention' extension.");
             }
-            Im.Message m = new Im.Message(jid, message);
+            Message m = new(jid, message);
             // Add the 'attention' element to the message.
             m.Data.Child(Xml.Element("attention", "urn:xmpp:attention:0"));
             im.SendMessage(m);

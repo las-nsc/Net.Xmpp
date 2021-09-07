@@ -11,31 +11,17 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The JID of the XMPP entity that published the tune information.
         /// </summary>
-        public Jid Jid
-        {
-            get;
-            private set;
-        }
+        public Jid Jid { get; }
 
         /// <summary>
         /// Determines whether the XMPP entity stopped play back.
         /// </summary>
-        public bool Stop
-        {
-            get
-            {
-                return Information == null;
-            }
-        }
+        public bool Stop => Information == null;
 
         /// <summary>
         /// Contains information about the music to which a user is listening.
         /// </summary>
-        public TuneInformation Information
-        {
-            get;
-            private set;
-        }
+        public TuneInformation Information { get; }
 
         /// <summary>
         /// Initializes a new instance of the TuneEventArgs class.

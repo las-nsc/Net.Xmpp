@@ -50,10 +50,7 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         public int? MaxChars
         {
-            get
-            {
-                return GetValueAsInteger(maxCharsAttribute);
-            }
+            get => GetValueAsInteger(maxCharsAttribute);
 
             set
             {
@@ -67,10 +64,7 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         public int? MaxStanzas
         {
-            get
-            {
-                return GetValueAsInteger(maxStanzasAttribute);
-            }
+            get => GetValueAsInteger(maxStanzasAttribute);
 
             set
             {
@@ -84,10 +78,7 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         public int? Seconds
         {
-            get
-            {
-                return GetValueAsInteger(secondsAttribute);
-            }
+            get => GetValueAsInteger(secondsAttribute);
 
             set
             {
@@ -101,16 +92,13 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         public DateTime? Since
         {
-            get
-            {
-                return GetValueAsDateTime(sinceAttribute);
-            }
+            get => GetValueAsDateTime(sinceAttribute);
 
             set
             {
                 string safeValue = null;
 
-                if(value.HasValue)
+                if (value.HasValue)
                     safeValue = value.Value
                         .ToUniversalTime()
                         .ToString("yyyy-MM-ddTHH:mm:ssZ");
@@ -122,11 +110,11 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The tag name of the stanza's root element
         /// </summary>
-        protected override string RootElementName { get { return rootTag; } }
+        protected override string RootElementName => rootTag;
 
-        private XmlElement XElement { get { return element[xTag]; } }
+        private XmlElement XElement => element[xTag];
 
-        private XmlElement HistoryElement { get { return GetNode(xTag, historyTag); } }
+        private XmlElement HistoryElement => GetNode(xTag, historyTag);
 
         /// <summary>
         /// Prevents the user from entering numbers less than zero.
@@ -139,13 +127,7 @@ namespace Net.Xmpp.Extensions
 
             if (number != null)
             {
-                int? safeNumber = null;
-
-                if (number < 0)
-                    safeNumber = 0;
-                else
-                    safeNumber = number;
-
+                int? safeNumber = number < 0 ? 0 : number;
                 result = safeNumber.ToString();
             }
 
@@ -155,7 +137,7 @@ namespace Net.Xmpp.Extensions
         private int? GetValueAsInteger(string attributeName)
         {
             XmlElement node = HistoryElement;
-            string v = node == null ? null : node.GetAttribute(attributeName);
+            string v = node?.GetAttribute(attributeName);
 
             int? result = null;
             if (!string.IsNullOrEmpty(v))
@@ -167,7 +149,7 @@ namespace Net.Xmpp.Extensions
         private DateTime? GetValueAsDateTime(string attributeName)
         {
             XmlElement node = HistoryElement;
-            string v = node == null ? null : node.GetAttribute(attributeName);
+            string v = node?.GetAttribute(attributeName);
 
             DateTime? result = null;
             if (!string.IsNullOrEmpty(v))

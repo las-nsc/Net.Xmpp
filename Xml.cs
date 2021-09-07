@@ -84,8 +84,8 @@ namespace Net.Xmpp
             // Can't use e.OuterXml because it "messes up" namespaces for elements with
             // a prefix, i.e. stream:stream (What it does is probably correct, but just
             // not what we need for XMPP).
-            StringBuilder b = new StringBuilder("<" + e.Name);
-            if (!String.IsNullOrEmpty(e.NamespaceURI))
+            StringBuilder b = new("<" + e.Name);
+            if (!string.IsNullOrEmpty(e.NamespaceURI))
                 b.Append(" xmlns='" + e.NamespaceURI + "'");
             foreach (XmlAttribute a in e.Attributes)
             {
@@ -112,9 +112,7 @@ namespace Net.Xmpp
             string xml = b.ToString();
             if (xmlDeclaration)
                 xml = "<?xml version='1.0' encoding='UTF-8'?>" + xml;
-            if (leaveOpen)
-                return Regex.Replace(xml, "/>$", ">");
-            return xml;
+            return leaveOpen ? Regex.Replace(xml, "/>$", ">") : xml;
         }
     }
 }

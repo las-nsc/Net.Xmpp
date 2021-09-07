@@ -15,28 +15,24 @@ namespace Net.Xmpp.Core
         /// <summary>
         /// The reader that provides the fast-forward access to the XML stream.
         /// </summary>
-        private XmlReader reader;
+        private readonly XmlReader reader;
 
         /// <summary>
         /// If true, the stream is not closed when the StreamParser instance is
         /// disposed of.
         /// </summary>
-        private bool leaveOpen;
+        private readonly bool leaveOpen;
 
         /// <summary>
         /// The stream on which the reader operates.
         /// </summary>
-        private Stream stream;
+        private readonly Stream stream;
 
         /// <summary>
         /// The default language of any human-readable XML character send over
         /// that stream.
         /// </summary>
-        public CultureInfo Language
-        {
-            get;
-            private set;
-        }
+        public CultureInfo Language { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the StreamParser class for the specified
@@ -95,28 +91,24 @@ namespace Net.Xmpp.Core
             // We can't use the ReadOuterXml method of reader directly as it places
             // the cursor on the next element which may result in a blocking read
             // on the underlying network stream.
-            using (XmlReader inner = reader.ReadSubtree())
+            using XmlReader inner = reader.ReadSubtree();
+            inner.Read();
+            string xml = inner.ReadOuterXml();
+            XmlDocument doc = new();
+            using (var sr = new StringReader(xml))
+            using (var xtr = new XmlTextReader(sr))
+                doc.Load(xtr);
+            XmlElement elem = (XmlElement)doc.FirstChild;
+            // Handle unrecoverable stream errors.
+            if (elem.Name == "stream:error")
             {
-                inner.Read();
-                string xml = inner.ReadOuterXml();
-                XmlDocument doc = new XmlDocument();
-                using (var sr = new StringReader(xml))
-                using (var xtr = new XmlTextReader(sr))
-                    doc.Load(xtr);
-                XmlElement elem = (XmlElement)doc.FirstChild;
-                // Handle unrecoverable stream errors.
-                if (elem.Name == "stream:error")
-                {
-                    string condition = elem.FirstChild != null ?
-                        elem.FirstChild.Name : "undefined";
-                    //throw new IOException("Unrecoverable stream error: " + condition);
-                    //This indicates a disconnection event
-                    throw new XmppDisconnectionException("Unrecoverable stream error: " + condition);
-                }
-                if (expected.Length > 0 && !expected.Contains(elem.Name))
-                    throw new XmlException("Unexpected XML element: " + elem.Name);
-                return elem;
+                string condition = elem.FirstChild != null ?
+                    elem.FirstChild.Name : "undefined";
+                //throw new IOException("Unrecoverable stream error: " + condition);
+                //This indicates a disconnection event
+                throw new XmppDisconnectionException("Unrecoverable stream error: " + condition);
             }
+            return expected.Length > 0 && !expected.Contains(elem.Name) ? throw new XmlException("Unexpected XML element: " + elem.Name) : elem;
         }
 
         /// <summary>
@@ -159,7 +151,7 @@ namespace Net.Xmpp.Core
                         {
                             // Remember the default language communicated by the server.
                             string lang = reader.GetAttribute("xml:lang");
-                            if (!String.IsNullOrEmpty(lang))
+                            if (!string.IsNullOrEmpty(lang))
                                 Language = new CultureInfo(lang);
                             return;
                         }

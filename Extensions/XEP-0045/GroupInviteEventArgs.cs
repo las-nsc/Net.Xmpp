@@ -7,26 +7,25 @@ namespace Net.Xmpp.Extensions
     /// </summary>
     public class GroupInviteEventArgs : EventArgs
     {
-        
         /// <summary>
         /// Person who sent the invitation.
         /// </summary>
-        public Jid From { get; private set; }
+        public Jid From { get; }
 
         /// <summary>
         /// Chat room specified in the invitation.
         /// </summary>
-        public Jid ChatRoom { get; private set; }
+        public Jid ChatRoom { get; }
 
         /// <summary>
         /// Message contained in the invitation.
         /// </summary>
-        public string Reason { get; private set; }
+        public string Reason { get; }
 
         /// <summary>
         /// Password (if any).
         /// </summary>
-        public string Password { get; private set; }
+        public string Password { get; }
 
         /// <summary>
         /// Constructs a GroupInviteEventArgs.

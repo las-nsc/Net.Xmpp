@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Xml;
 
 namespace Net.Xmpp.Extensions
@@ -26,7 +24,7 @@ namespace Net.Xmpp.Extensions
             get
             {
                 XmlNode node = ErrorNode;
-                string v = node == null ? null : node.Attributes?[byAttribute]?.Value;
+                string v = node?.Attributes?[byAttribute]?.Value;
                 return string.IsNullOrEmpty(v) ? null : new Jid(v);
             }
         }
@@ -41,11 +39,10 @@ namespace Net.Xmpp.Extensions
                 // It's possible for the error tag to be either inside or outside the x tag.
                 string errorTypeString = ErrorNode?.Attributes?[typeAttribute]?.Value;
 
-                ErrorType error;
                 const bool ignoreCase = true;
 
                 // It should always parse, otherwise the message doesn't meet the protocol.
-                if (!string.IsNullOrEmpty(errorTypeString) || !Enum.TryParse(errorTypeString, ignoreCase, out error))
+                if (!string.IsNullOrEmpty(errorTypeString) || !Enum.TryParse(errorTypeString, ignoreCase, out ErrorType error))
                     error = ErrorType.Cancel;
 
                 return error;
@@ -64,25 +61,19 @@ namespace Net.Xmpp.Extensions
                 // It's possible for the error tag to be either inside or outside the x tag.
                 string nodeName = ErrorNode?.FirstChild?.Name?.Replace(allDashses, string.Empty);
 
-                ErrorCondition reason;
                 const bool ignoreCase = true;
 
                 // It should always parse, otherwise the message doesn't meet the protocol.
-                if (string.IsNullOrEmpty(nodeName) || !Enum.TryParse(nodeName, ignoreCase, out reason))
+                if (string.IsNullOrEmpty(nodeName) || !Enum.TryParse(nodeName, ignoreCase, out ErrorCondition reason))
                     reason = ErrorCondition.BadRequest;
 
                 return reason;
             }
         }
 
-        private XmlNode ErrorNode
-        {
-            get
-            {
+        private XmlNode ErrorNode =>
                 // It's possible for the error tag to be either inside or outside the x tag.
-                return element.GetElementsByTagName(errorTag)?.Item(0);
-            }
-        }
+                element.GetElementsByTagName(errorTag)?.Item(0);
 
         /// <summary>
         /// Determines whether the stanza contains an error.
@@ -92,7 +83,7 @@ namespace Net.Xmpp.Extensions
         public static bool IsError(Core.Stanza stanza)
         {
             // Not every response has a namespace in it
-            return (new MucError(stanza)).ErrorNode != null;
+            return new MucError(stanza).ErrorNode != null;
         }        
     }
 }

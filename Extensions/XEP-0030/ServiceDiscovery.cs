@@ -1,10 +1,11 @@
-﻿using Net.Xmpp.Core;
-using Net.Xmpp.Im;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
+
+using Net.Xmpp.Core;
+using Net.Xmpp.Im;
 
 namespace Net.Xmpp.Extensions
 {
@@ -16,7 +17,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// A dictionary for caching supported services of XMPP entities.
         /// </summary>
-        private IDictionary<Jid, IEnumerable<Extension>> cache =
+        private readonly IDictionary<Jid, IEnumerable<Extension>> cache =
             new Dictionary<Jid, IEnumerable<Extension>>();
 
         /// <summary>
@@ -24,49 +25,27 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <remarks>This is used for compiling the list of supported extensions
         /// advertised by the 'Service Discovery' extension.</remarks>
-        public override IEnumerable<string> Namespaces
-        {
-            get
-            {
-                return new string[] {
-					"http://jabber.org/protocol/disco#info",
-					"http://jabber.org/protocol/disco#items"
-				};
-            }
-        }
+        public override IEnumerable<string> Namespaces => new string[] {
+                    "http://jabber.org/protocol/disco#info",
+                    "http://jabber.org/protocol/disco#items"
+                };
 
         /// <summary>
         /// The named constant of the Extension enumeration that corresponds to this
         /// extension.
         /// </summary>
-        public override Extension Xep
-        {
-            get
-            {
-                return Extension.ServiceDiscovery;
-            }
-        }
+        public override Extension Xep => Extension.ServiceDiscovery;
 
         /// <summary>
         /// Returns an enumerable collection of xmlns extension namespaces supported by
         /// this XMPP implementation.
         /// </summary>
-        public IEnumerable<string> Features
-        {
-            get
-            {
-                return CompileFeatureSet();
-            }
-        }
+        public IEnumerable<string> Features => CompileFeatureSet();
 
         /// <summary>
         /// The identity of this XMPP entity.
         /// </summary>
-        public Identity Identity
-        {
-            get;
-            private set;
-        }
+        public Identity Identity { get; }
 
         /// <summary>
         /// Invoked when an IQ stanza is being received.
@@ -294,11 +273,11 @@ namespace Net.Xmpp.Extensions
             {
                 string cat = e.GetAttribute("category"), type = e.GetAttribute("type"),
                     name = e.GetAttribute("name");
-                if (String.IsNullOrEmpty(cat) || String.IsNullOrEmpty(type))
+                if (string.IsNullOrEmpty(cat) || string.IsNullOrEmpty(type))
                     continue;
 
                 idents.Add(new Identity(cat, type,
-                    String.IsNullOrEmpty(name) ? null : name));
+                    string.IsNullOrEmpty(name) ? null : name));
             }
 
             return idents;
@@ -330,13 +309,13 @@ namespace Net.Xmpp.Extensions
             {
                 string _jid = e.GetAttribute("jid"), node = e.GetAttribute("node"),
                     name = e.GetAttribute("name");
-                if (String.IsNullOrEmpty(_jid))
+                if (string.IsNullOrEmpty(_jid))
                     continue;
                 try
                 {
-                    Jid itemJid = new Jid(_jid);
-                    items.Add(new XmppItem(itemJid, String.IsNullOrEmpty(node) ? null : node,
-                        String.IsNullOrEmpty(name) ? null : name));
+                    Jid itemJid = new(_jid);
+                    items.Add(new XmppItem(itemJid, string.IsNullOrEmpty(node) ? null : node,
+                        string.IsNullOrEmpty(name) ? null : name));
                 }
                 catch (ArgumentException)
                 {

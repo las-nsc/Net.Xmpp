@@ -17,18 +17,12 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// <summary>
         /// The values of the field.
         /// </summary>
-        private XmlCollection<Jid> values;
+        private readonly XmlCollection<Jid> values;
 
         /// <summary>
         /// Gets an enumerable collection of values set on the field.
         /// </summary>
-        public new ICollection<Jid> Values
-        {
-            get
-            {
-                return values;
-            }
-        }
+        public new ICollection<Jid> Values => values;
 
         /// <summary>
         /// Initializes a new instance of the JidMultiField class for use in a

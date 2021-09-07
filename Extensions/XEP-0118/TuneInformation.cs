@@ -11,69 +11,41 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The artist or performer of the song or piece.
         /// </summary>
-        public string Artist
-        {
-            get;
-            private set;
-        }
+        public string Artist { get; }
 
         /// <summary>
         /// The duration of the song or piece in seconds.
         /// </summary>
-        public int Length
-        {
-            get;
-            private set;
-        }
+        public int Length { get; }
 
         /// <summary>
         /// The user's rating of the song or piece, from 1 (lowest) to
         /// 10 (highest).
         /// </summary>
-        public int Rating
-        {
-            get;
-            private set;
-        }
+        public int Rating { get; }
 
         /// <summary>
         /// The collection (e.g., album) or other source (e.g., a band website
         /// that hosts streams or audio files).
         /// </summary>
-        public string Source
-        {
-            get;
-            private set;
-        }
+        public string Source { get; }
 
         /// <summary>
         /// The title of the song or piece.
         /// </summary>
-        public string Title
-        {
-            get;
-            private set;
-        }
+        public string Title { get; }
 
         /// <summary>
         /// A unique identifier for the tune; e.g., the track number within
         /// a collection.
         /// </summary>
-        public string Track
-        {
-            get;
-            private set;
-        }
+        public string Track { get; }
 
         /// <summary>
         /// A URI or URL pointing to information about the song, collection,
         /// or artist.
         /// </summary>
-        public string Uri
-        {
-            get;
-            private set;
-        }
+        public string Uri { get; }
 
         /// <summary>
         /// Initializes a new instance of the TuneInformation class.
@@ -94,7 +66,7 @@ namespace Net.Xmpp.Extensions
             string track = null, int length = 0, int rating = 0,
             string source = null, string uri = null)
         {
-            length.ThrowIfOutOfRange(0, Int16.MaxValue);
+            length.ThrowIfOutOfRange(0, short.MaxValue);
             rating.ThrowIfOutOfRange(0, 10);
             Title = title;
             Artist = artist;

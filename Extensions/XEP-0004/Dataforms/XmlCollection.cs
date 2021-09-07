@@ -18,39 +18,27 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// <summary>
         /// The underlying XML element used for implementing the collection.
         /// </summary>
-        private XmlElement element;
+        private readonly XmlElement element;
 
         /// <summary>
         /// The tag name of a single collection item.
         /// </summary>
-        private string tag;
+        private readonly string tag;
 
         /// <summary>
         /// A callback for converting an XML element into the specified type.
         /// </summary>
-        private Func<XmlElement, T> conversion;
+        private readonly Func<XmlElement, T> conversion;
 
         /// <summary>
         /// Gets the number of elements in the collection.
         /// </summary>
-        public int Count
-        {
-            get
-            {
-                return GetElements().Count;
-            }
-        }
+        public int Count => GetElements().Count;
 
         /// <summary>
         /// Determines whether the collection is read-only.
         /// </summary>
-        public bool IsReadOnly
-        {
-            get
-            {
-                return element.IsReadOnly;
-            }
-        }
+        public bool IsReadOnly => element.IsReadOnly;
 
         /// <summary>
         /// Adds the specified item to the collection.

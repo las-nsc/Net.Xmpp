@@ -16,15 +16,9 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         private ServiceDiscovery sdisco;
 
-        public override IEnumerable<string> Namespaces
-        {
-            get { return new string[] { xmlns }; }
-        }
+        public override IEnumerable<string> Namespaces => new string[] { xmlns };
 
-        public override Extension Xep
-        {
-            get { return Extension.HTTPUpload; }
-        }
+        public override Extension Xep => Extension.HTTPUpload;
 
         public HTTPFileUpload(XmppIm im)
             : base(im)
@@ -57,7 +51,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="error">
         /// Callback in case of fail
         /// </param>
-        public void RequestSlot(string fileName, long size, string contentType, Action<Slot> upload, Action<String> error)
+        public void RequestSlot(string fileName, long size, string contentType, Action<Slot> upload, Action<string> error)
         {
             Jid uploadDomain = null;
             foreach (var item in sdisco.GetItems(im.Jid.Domain))
@@ -77,7 +71,7 @@ namespace Net.Xmpp.Extensions
                 throw new Exception("Service Unavaible");
             }
             string id = Guid.NewGuid().ToString("N");
-            SlotRequest request = new SlotRequest(fileName, size, contentType);
+            SlotRequest request = new(fileName, size, contentType);
             im.IqRequestAsync(Core.IqType.Get, uploadDomain, null, request.ToXmlElement(), null,
                 (string result, Core.Iq response) =>
                 {

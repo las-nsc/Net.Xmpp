@@ -1,12 +1,13 @@
-﻿using Net.Xmpp.Core;
-using Net.Xmpp.Extensions.Dataforms;
-using Net.Xmpp.Im;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
+
+using Net.Xmpp.Core;
+using Net.Xmpp.Extensions.Dataforms;
+using Net.Xmpp.Im;
 
 namespace Net.Xmpp.Extensions
 {
@@ -28,14 +29,14 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// A dictionary of negotiated sessions for file-transfers.
         /// </summary>
-        private ConcurrentDictionary<string, SISession> siSessions =
-            new ConcurrentDictionary<string, SISession>();
+        private readonly ConcurrentDictionary<string, SISession> siSessions =
+            new();
 
         /// <summary>
         /// A dictionary of file meta-data.
         /// </summary>
-        private ConcurrentDictionary<string, FileMetaData> metaData =
-            new ConcurrentDictionary<string, FileMetaData>();
+        private readonly ConcurrentDictionary<string, FileMetaData> metaData =
+            new();
 
         /// <summary>
         /// There is no easy way to determine the mime-type of a file
@@ -57,47 +58,27 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <remarks>This is used for compiling the list of supported extensions
         /// advertised by the 'Service Discovery' extension.</remarks>
-        public override IEnumerable<string> Namespaces
-        {
-            get
-            {
-                return new string[] {
+        public override IEnumerable<string> Namespaces => new string[] {
                     "http://jabber.org/protocol/si/profile/file-transfer"
                 };
-            }
-        }
 
         /// <summary>
         /// The named constant of the Extension enumeration that corresponds to this
         /// extension.
         /// </summary>
-        public override Extension Xep
-        {
-            get
-            {
-                return Extension.SIFileTransfer;
-            }
-        }
+        public override Extension Xep => Extension.SIFileTransfer;
 
         /// <summary>
         /// A callback method to invoke when a request for a file-transfer is received
         /// from another XMPP entity.
         /// </summary>
-        public FileTransferRequest TransferRequest
-        {
-            get;
-            set;
-        }
+        public FileTransferRequest TransferRequest { get; set; }
 
         /// <summary>
         /// Determines whether the in-band bytestreams method should be used, even if
         /// the preferred SOCKS5 method is available.
         /// </summary>
-        public bool ForceInBandBytestreams
-        {
-            get;
-            set;
-        }
+        public bool ForceInBandBytestreams { get; set; }
 
         /// <summary>
         /// The event that is raised periodically for every file-transfer to
@@ -128,7 +109,7 @@ namespace Net.Xmpp.Extensions
             foreach (var type in supportedMethods)
             {
                 var ext = im.GetExtension(type);
-                if (ext == null || !(ext is IDataStream))
+                if (ext is null or not IDataStream)
                     throw new XmppException("Invalid data-stream type: " + type);
                 IDataStream dataStream = ext as IDataStream;
                 dataStream.BytesTransferred += OnBytesTransferred;
@@ -152,12 +133,9 @@ namespace Net.Xmpp.Extensions
             sid.ThrowIfNull("sid");
             from.ThrowIfNull("from");
             to.ThrowIfNull("to");
-            SISession value;
-            if (!siSessions.TryGetValue(sid, out value))
-                return null;
-            if (value.From != from || value.To != to)
-                return null;
-            return value;
+            return siSessions.TryGetValue(sid, out var value)
+                ? value.From == from && value.To == to ? value
+                : null : null;
         }
 
         /// <summary>
@@ -169,11 +147,9 @@ namespace Net.Xmpp.Extensions
         public void InvalidateSession(string sid)
         {
             sid.ThrowIfNull("sid");
-            SISession value;
-            if (siSessions.TryRemove(sid, out value))
+            if (siSessions.TryRemove(sid, out var value))
             {
-                if (value.Stream != null)
-                    value.Stream.Dispose();
+                value.Stream?.Dispose();
             }
         }
 
@@ -216,7 +192,7 @@ namespace Net.Xmpp.Extensions
         {
             to.ThrowIfNull("to");
             path.ThrowIfNull("path");
-            FileInfo info = new FileInfo(path);
+            FileInfo info = new(path);
             return InitiateFileTransfer(to, File.OpenRead(path), info.Name, info.Length,
                 description, cb);
         }
@@ -255,7 +231,7 @@ namespace Net.Xmpp.Extensions
             to.ThrowIfNull("to");
             stream.ThrowIfNull("stream");
             name.ThrowIfNull("name");
-            size.ThrowIfOutOfRange(0, Int64.MaxValue);
+            size.ThrowIfOutOfRange(0, long.MaxValue);
             //FIXME FIXME
             //if (!ecapa.Supports(to, Extension.SIFileTransfer)) {
             //    throw new NotSupportedException("The XMPP entity does not support the " +
@@ -264,10 +240,8 @@ namespace Net.Xmpp.Extensions
             //FIXME FIXME
             // Perform stream-initiation asynchronously so that the caller is not
             // blocked until the other site has either accepted or rejected our offer.
-            return InitiateStreamAsync(to, name, size, description, (result, iq) =>
-            {
-                OnInitiationResult(result, to, name, stream, size, description, cb);
-            });
+            return InitiateStream(to, name, size, description,
+                (result, iq) => OnInitiationResult(result, to, name, stream, size, description, cb));
         }
 
         /// <summary>
@@ -289,8 +263,9 @@ namespace Net.Xmpp.Extensions
                 to);
             if (session == null)
             {
-                throw new ArgumentException(String.Format("The specified transfer instance does not " +
-                    "represent an active data-transfer operation.:sid {0}, file {1}, from {2}, to {3}", session.Sid, session.Stream.ToString(), session.From, session.To));
+                throw new ArgumentException(string.Format("The specified transfer instance does not " +
+                    "represent an active data-transfer operation.:sid {0}, file {1}, from {2}, to {3}",
+                    session.Sid, session.Stream.ToString(), session.From, session.To));
             }
 
             session.Extension.CancelTransfer(session);
@@ -343,14 +318,14 @@ namespace Net.Xmpp.Extensions
                 string method = SelectStreamMethod(si["feature"]);
                 // If the session-id is already in use, we cannot process the request.
                 string sid = si.GetAttribute("id");
-                if (String.IsNullOrEmpty(sid) || siSessions.ContainsKey(sid))
+                if (string.IsNullOrEmpty(sid) || siSessions.ContainsKey(sid))
                     result(new XmppError(ErrorType.Cancel, ErrorCondition.Conflict).Data);
                 // Extract file information and hand to user.
                 var file = si["file"];
-                string desc = file["desc"] != null ? file["desc"].InnerText : null,
+                string desc = file["desc"]?.InnerText,
                     name = file.GetAttribute("name");
                 int size = int.Parse(file.GetAttribute("size"));
-                FileTransfer transfer = new FileTransfer(from, im.Jid, name, size,
+                FileTransfer transfer = new(from, im.Jid, name, size,
                     sid, desc);
                 TransferRequest.Invoke(transfer, (string savePath) =>
                 {
@@ -364,7 +339,7 @@ namespace Net.Xmpp.Extensions
                         else
                         {
                             // Create an SI session instance.
-                            SISession session = new SISession(sid, File.OpenWrite(savePath),
+                            SISession session = new(sid, File.OpenWrite(savePath),
                                 size, true, from, im.Jid, im.GetExtension(method) as IDataStream);
                             siSessions.TryAdd(sid, session);
                             // Store the file's meta data.
@@ -381,7 +356,6 @@ namespace Net.Xmpp.Extensions
                         result(new XmppError(ErrorType.Cancel, ErrorCondition.BadRequest).Data);
                     }
                 });
-
             }
             catch (Exception e)
             {
@@ -432,9 +406,9 @@ namespace Net.Xmpp.Extensions
             };
             for (int i = 0; i < methods.Length; i++)
             {
-                if (ForceInBandBytestreams &&
-                    methods[i] != "http://jabber.org/protocol/ibb")
+                if (ForceInBandBytestreams && methods[i] != "http://jabber.org/protocol/ibb")
                     continue;
+
                 if (field.Values.Contains(methods[i]))
                     return methods[i];
             }
@@ -488,7 +462,7 @@ namespace Net.Xmpp.Extensions
         /// XmppErrorException to obtain the specific error condition.</exception>
         /// <exception cref="XmppException">The server returned invalid data or another
         /// unspecified XMPP error occurred.</exception>
-        private string InitiateStreamAsync(Jid to, string name, long size,
+        private string InitiateStream(Jid to, string name, long size,
             string description = null, Action<InitiationResult, Iq> cb = null)
         {
             // Construct the 'file' element which is mandatory for the SI file-transfer
@@ -527,20 +501,19 @@ namespace Net.Xmpp.Extensions
         {
             try
             {
-                FileTransfer transfer = new FileTransfer(im.Jid, to, name, size, result.SessionId,
+                FileTransfer transfer = new(im.Jid, to, name, size, result.SessionId,
                     description);
                 // Get the instance of the data-stream extension that the other site has
                 // selected.
                 IDataStream ext = im.GetExtension(result.Method) as IDataStream;
                 // Register the session.
-                SISession session = new SISession(result.SessionId, stream, size, false,
+                SISession session = new(result.SessionId, stream, size, false,
                     im.Jid, to, ext);
                 siSessions.TryAdd(result.SessionId, session);
                 // Store the file's meta data.
                 metaData.TryAdd(result.SessionId, new FileMetaData(name, description));
                 // Invoke user-provided callback.
-                if (cb != null)
-                    cb.Invoke(true, transfer);
+                cb?.Invoke(true, transfer);
                 // Perform the actual data-transfer.
                 try
                 {
@@ -554,12 +527,11 @@ namespace Net.Xmpp.Extensions
             }
             catch
             {
-                FileTransfer transfer = new FileTransfer(im.Jid, to, name, size, null,
+                FileTransfer transfer = new(im.Jid, to, name, size, null,
                     description);
                 // Something went wrong. Invoke user-provided callback to let them know
                 // the file-transfer can't be performed.
-                if (cb != null)
-                    cb.Invoke(false, transfer);
+                cb?.Invoke(false, transfer);
             }
         }
 
@@ -572,8 +544,7 @@ namespace Net.Xmpp.Extensions
         private void OnBytesTransferred(object sender, BytesTransferredEventArgs e)
         {
             // Get the Metadata of the file.
-            FileMetaData meta;
-            if (metaData.TryGetValue(e.Session.Sid, out meta))
+            if (metaData.TryGetValue(e.Session.Sid, out FileMetaData meta))
             {
                 // Raise the 'FileTransferProgress' event.
                 FileTransferProgress.Raise(this, new FileTransferProgressEventArgs(
@@ -590,8 +561,7 @@ namespace Net.Xmpp.Extensions
         private void OnTransferAborted(object sender, TransferAbortedEventArgs e)
         {
             // Get the Metadata of the file.
-            FileMetaData meta;
-            if (metaData.TryGetValue(e.Session.Sid, out meta))
+            if (metaData.TryGetValue(e.Session.Sid, out FileMetaData meta))
             {
                 // Raise the 'FileTransferAborted' event.
                 FileTransferAborted.Raise(this, new FileTransferAbortedEventArgs(

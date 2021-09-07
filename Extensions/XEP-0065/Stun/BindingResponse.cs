@@ -46,25 +46,17 @@ namespace Net.Xmpp.Extensions.Stun
         /// <summary>
         /// The 'Magic Cookie' value as defined in RFC 5389.
         /// </summary>
-        private static byte[] magicCookie = new byte[] { 0x21, 0x12, 0xA4, 0x42 };
+        private static readonly byte[] magicCookie = new byte[] { 0x21, 0x12, 0xA4, 0x42 };
 
         /// <summary>
         /// The transaction id of the binding response.
         /// </summary>
-        public byte[] Id
-        {
-            get;
-            private set;
-        }
+        public byte[] Id { get; }
 
         /// <summary>
         /// The IP address contained in the 'Binding Response' message.
         /// </summary>
-        public IPAddress Address
-        {
-            get;
-            private set;
-        }
+        public IPAddress Address { get; }
 
         /// <summary>
         /// Deserializes a BindingResponse instance from the specified byte
@@ -84,51 +76,47 @@ namespace Net.Xmpp.Extensions.Stun
             if (buffer.Length < headerSize)
                 throw new SerializationException("The buffer does not contain a " +
                     "valid STUN message header.");
-            using (var ms = new MemoryStream(buffer))
+            using var ms = new MemoryStream(buffer);
+            using var r = new BinaryReader(ms);
+            if (r.ReadInt16() != stunMessageType)
+                throw new SerializationException("Unexpected STUN message type.");
+            int length = r.ReadInt16(bigEndian: true);
+            if (!r.ReadBytes(4).SequenceEqual(magicCookie))
+                throw new SerializationException("Invalid 'Magic Cookie' value.");
+            byte[] id = r.ReadBytes(12);
+            // Read the attributes.
+            try
             {
-                using (var r = new BinaryReader(ms))
+                while (length > 0)
                 {
-                    if (r.ReadInt16() != stunMessageType)
-                        throw new SerializationException("Unexpected STUN message type.");
-                    int length = r.ReadInt16(bigEndian: true);
-                    if (!r.ReadBytes(4).SequenceEqual(magicCookie))
-                        throw new SerializationException("Invalid 'Magic Cookie' value.");
-                    byte[] id = r.ReadBytes(12);
-                    // Read the attributes.
-                    try
+                    short type = r.ReadInt16(), size = r.ReadInt16(bigEndian: true);
+                    if (type is mappedAddress or xorMappedAddress)
                     {
-                        while (length > 0)
+                        r.ReadByte();
+                        byte family = r.ReadByte();
+                        if (family is not IPv4 and not IPv6)
+                            throw new SerializationException("Invalid address-family.");
+                        short port = r.ReadInt16();
+                        byte[] address = r.ReadBytes(family == IPv4 ? 4 : 16);
+                        if (type == xorMappedAddress)
                         {
-                            short type = r.ReadInt16(), size = r.ReadInt16(bigEndian: true);
-                            if (type == mappedAddress || type == xorMappedAddress)
-                            {
-                                r.ReadByte();
-                                byte family = r.ReadByte();
-                                if (family != IPv4 && family != IPv6)
-                                    throw new SerializationException("Invalid address-family.");
-                                short port = r.ReadInt16();
-                                byte[] address = r.ReadBytes(family == IPv4 ? 4 : 16);
-                                if (type == xorMappedAddress)
-                                {
-                                    address = Xor(address, family == IPv4 ? magicCookie :
-                                        new ByteBuilder().Append(magicCookie).Append(id).ToArray());
-                                }
-                                return new BindingResponse(id, new IPAddress(address));
-                            }
-                            // If it's any other attribute, skip it.
-                            r.ReadBytes(size);
-                            length = length - 4 - size;
+                            address = Xor(address, family == IPv4 ? magicCookie :
+                                new ByteBuilder().Append(magicCookie).Append(id).ToArray());
                         }
+                        return new BindingResponse(id, new IPAddress(address));
                     }
-                    catch (Exception e)
-                    {
-                        throw new SerializationException("The format of the STUN binding " +
-                            "response is invalid.", e);
-                    }
-                    throw new SerializationException("+The binding response does not contain " +
-                        " a MAPPED-ADDRESS attribute.");
+                    // If it's any other attribute, skip it.
+                    r.ReadBytes(size);
+                    length = length - 4 - size;
                 }
             }
+            catch (Exception e)
+            {
+                throw new SerializationException("The format of the STUN binding " +
+                    "response is invalid.", e);
+            }
+            throw new SerializationException("+The binding response does not contain " +
+                " a MAPPED-ADDRESS attribute.");
         }
 
         /// <summary>

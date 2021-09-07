@@ -17,7 +17,7 @@ namespace Net.Xmpp.Extensions.Socks5
         /// <summary>
         /// The underlying TCP listener.
         /// </summary>
-        private TcpListener listener;
+        private readonly TcpListener listener;
 
         /// <summary>
         /// The client connection.
@@ -42,11 +42,7 @@ namespace Net.Xmpp.Extensions.Socks5
         /// <summary>
         /// The port to which the SOCKS5 server is bound.
         /// </summary>
-        public int Port
-        {
-            get;
-            private set;
-        }
+        public int Port { get; }
 
         /// <summary>
         /// Accepts a pending connection request and subsequently blocks
@@ -186,11 +182,9 @@ namespace Net.Xmpp.Extensions.Socks5
                 // Get rid of managed resources.
                 if (disposing)
                 {
-                    if (stream != null)
-                        stream.Dispose();
+                    stream?.Dispose();
                     stream = null;
-                    if (client != null)
-                        client.Close();
+                    client?.Close();
                     client = null;
                 }
                 // Get rid of unmanaged resources.
@@ -220,7 +214,7 @@ namespace Net.Xmpp.Extensions.Socks5
         /// operation timed out.</exception>
         private void PerformGreeting()
         {
-            ByteBuilder b = new ByteBuilder();
+            ByteBuilder b = new();
             using (var r = new BinaryReader(stream, Encoding.UTF8, true))
             {
                 byte[] bytes = r.ReadBytes(2);
@@ -248,7 +242,7 @@ namespace Net.Xmpp.Extensions.Socks5
         /// is not a valid SOCKS5 request.</exception>
         private SocksRequest WaitForRequest()
         {
-            ByteBuilder b = new ByteBuilder();
+            ByteBuilder b = new();
             using (var r = new BinaryReader(stream, Encoding.UTF8, true))
             {
                 byte[] bytes = r.ReadBytes(4);

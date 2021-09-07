@@ -21,36 +21,18 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <remarks>This is used for compiling the list of supported extensions
         /// advertised by the 'Service Discovery' extension.</remarks>
-        public override IEnumerable<string> Namespaces
-        {
-            get
-            {
-                return new string[] { "urn:xmpp:blocking" };
-            }
-        }
+        public override IEnumerable<string> Namespaces => new string[] { "urn:xmpp:blocking" };
 
         /// <summary>
         /// The named constant of the Extension enumeration that corresponds to this
         /// extension.
         /// </summary>
-        public override Extension Xep
-        {
-            get
-            {
-                return Extension.BlockingCommand;
-            }
-        }
+        public override Extension Xep => Extension.BlockingCommand;
 
         /// <summary>
         /// Determines whether our server supports the 'Blocking Command' extension.
         /// </summary>
-        public bool Supported
-        {
-            get
-            {
-                return ecapa.Supports(im.Jid.Domain, Extension.BlockingCommand);
-            }
-        }
+        public bool Supported => ecapa.Supports(im.Jid.Domain, Extension.BlockingCommand);
 
         /// <summary>
         /// Invoked after all extensions have been loaded.

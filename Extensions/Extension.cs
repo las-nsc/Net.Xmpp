@@ -63,13 +63,13 @@
         UserAvatar,
 
         /// <summary>
-        /// An extension for for communicating information about user moods, such
+        /// An extension for communicating information about user moods, such
         /// as whether a person is currently happy, sad, angy, or annoyed.
         /// </summary>
         UserMood,
 
         /// <summary>
-        /// An extension extension for data forms that can be used in workflows
+        /// An extension for data forms that can be used in workflows
         /// such as service configuration as well as for application-specific
         /// data description and reporting.
         /// </summary>
@@ -175,7 +175,12 @@
         /// (many-to-many chat)
         /// </summary>
         MultiUserChat,
-        
+
+        /// <summary>
+        /// An extension that enables an entity to initiate a command session where there is no preferred namespace
+        /// </summary>
+        AdHocCommands,
+
         /// <summary>
         /// An extension for JabberSearch
         /// </summary>

@@ -21,40 +21,22 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <remarks>This is used for compiling the list of supported extensions
         /// advertised by the 'Service Discovery' extension.</remarks>
-        public override IEnumerable<string> Namespaces
-        {
-            get
-            {
-                return new string[] {
-					"http://jabber.org/protocol/mood",
-					"http://jabber.org/protocol/mood+notify"
-				};
-            }
-        }
+        public override IEnumerable<string> Namespaces => new string[] {
+                    "http://jabber.org/protocol/mood",
+                    "http://jabber.org/protocol/mood+notify"
+                };
 
         /// <summary>
         /// The named constant of the Extension enumeration that corresponds to this
         /// extension.
         /// </summary>
-        public override Extension Xep
-        {
-            get
-            {
-                return Extension.UserMood;
-            }
-        }
+        public override Extension Xep => Extension.UserMood;
 
         /// <summary>
         /// Determines whether our server supports personal eventing and thusly
         /// the user mood extension.
         /// </summary>
-        public bool Supported
-        {
-            get
-            {
-                return pep.Supported;
-            }
-        }
+        public bool Supported => pep.Supported;
 
         /// <summary>
         /// The event that is raised when another XMPP entity has published mood
@@ -124,8 +106,7 @@ namespace Net.Xmpp.Extensions
                         mood = (Mood)v;
                 }
             }
-            string text = moodElement["text"] != null ?
-                moodElement["text"].InnerText : null;
+            string text = moodElement["text"]?.InnerText;
             // Raise the 'MoodChanged' event.
             if (mood.HasValue)
                 MoodChanged.Raise(this, new MoodChangedEventArgs(jid, mood.Value, text));
@@ -139,7 +120,7 @@ namespace Net.Xmpp.Extensions
         /// <returns>The XML element name of the specified mood value.</returns>
         private string MoodToTagName(Mood mood)
         {
-            StringBuilder b = new StringBuilder();
+            StringBuilder b = new();
             string s = mood.ToString();
             for (int i = 0; i < s.Length; i++)
             {

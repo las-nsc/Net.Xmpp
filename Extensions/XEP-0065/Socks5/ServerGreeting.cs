@@ -18,11 +18,7 @@ namespace Net.Xmpp.Extensions.Socks5
         /// <summary>
         /// The authentication method selected by the server.
         /// </summary>
-        public AuthMethod Method
-        {
-            get;
-            private set;
-        }
+        public AuthMethod Method { get; }
 
         /// <summary>
         /// Serializes the instance into an array of bytes.
@@ -51,16 +47,12 @@ namespace Net.Xmpp.Extensions.Socks5
         public static ServerGreeting Deserialize(byte[] buffer)
         {
             buffer.ThrowIfNull("buffer");
-            using (var ms = new MemoryStream(buffer))
-            {
-                using (BinaryReader r = new BinaryReader(ms))
-                {
-                    if (r.ReadByte() != version)
-                        throw new SerializationException("Invalid SOCKS5 greeting.");
-                    AuthMethod method = (AuthMethod)r.ReadByte();
-                    return new ServerGreeting(method);
-                }
-            }
+            using var ms = new MemoryStream(buffer);
+            using BinaryReader r = new(ms);
+            if (r.ReadByte() != version)
+                throw new SerializationException("Invalid SOCKS5 greeting.");
+            AuthMethod method = (AuthMethod)r.ReadByte();
+            return new ServerGreeting(method);
         }
 
         /// <summary>

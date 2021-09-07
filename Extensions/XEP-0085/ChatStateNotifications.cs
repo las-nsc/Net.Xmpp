@@ -14,25 +14,13 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <remarks>This is used for compiling the list of supported extensions
         /// advertised by the 'Service Discovery' extension.</remarks>
-        public override IEnumerable<string> Namespaces
-        {
-            get
-            {
-                return new string[] { "http://jabber.org/protocol/chatstates" };
-            }
-        }
+        public override IEnumerable<string> Namespaces => new string[] { "http://jabber.org/protocol/chatstates" };
 
         /// <summary>
         /// The named constant of the Extension enumeration that corresponds to this
         /// extension.
         /// </summary>
-        public override Extension Xep
-        {
-            get
-            {
-                return Extension.ChatStateNotifications;
-            }
-        }
+        public override Extension Xep => Extension.ChatStateNotifications;
 
         /// <summary>
         /// The event that is raised when the chat-state of an XMPP entity has
@@ -52,7 +40,7 @@ namespace Net.Xmpp.Extensions
             foreach (ChatState state in Enum.GetValues(typeof(ChatState)))
             {
                 string name = state.ToString().ToLowerInvariant();
-                if (stanza.Data[name] != null && stanza.Data[name].NamespaceURI ==
+                if (stanza.Data[name]?.NamespaceURI ==
                     "http://jabber.org/protocol/chatstates")
                 {
                     ChatStateChanged.Raise(this,
@@ -75,7 +63,7 @@ namespace Net.Xmpp.Extensions
         public void SetChatState(Jid jid, ChatState state)
         {
             jid.ThrowIfNull("jid");
-            Message m = new Message(jid);
+            Message m = new(jid);
             m.Type = MessageType.Chat;
             m.Data.Child(Xml.Element(state.ToString().ToLowerInvariant(),
                 "http://jabber.org/protocol/chatstates"));

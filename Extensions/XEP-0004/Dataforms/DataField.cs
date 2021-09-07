@@ -29,7 +29,7 @@ namespace Net.Xmpp.Extensions.Dataforms
             get
             {
                 var v = element.GetAttribute("label");
-                return String.IsNullOrEmpty(v) ? null : v;
+                return string.IsNullOrEmpty(v) ? null : v;
             }
 
             private set
@@ -47,12 +47,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// </summary>
         public string Description
         {
-            get
-            {
-                if (element["desc"] != null)
-                    return element["desc"].InnerText;
-                return null;
-            }
+            get => element["desc"]?.InnerText;
 
             private set
             {
@@ -77,14 +72,11 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// </summary>
         public bool Required
         {
-            get
-            {
-                return element["required"] != null;
-            }
+            get => element["required"] != null;
 
             private set
             {
-                if (value == false)
+                if (!value)
                 {
                     if (element["required"] != null)
                         element.RemoveChild(element["required"]);
@@ -105,7 +97,7 @@ namespace Net.Xmpp.Extensions.Dataforms
             get
             {
                 var v = element.GetAttribute("var");
-                return String.IsNullOrEmpty(v) ? null : v;
+                return string.IsNullOrEmpty(v) ? null : v;
             }
 
             private set
@@ -124,15 +116,9 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// XML element is invalid.</exception>
         public DataFieldType? Type
         {
-            get
-            {
-                return GetDataFieldType();
-            }
+            get => GetDataFieldType();
 
-            private set
-            {
-                SetType(value);
-            }
+            private set => SetType(value);
         }
 
         /// <summary>
@@ -255,13 +241,13 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// <returns>A string representing the specified value.</returns>
         private string TypeToAttributeValue(DataFieldType type)
         {
-            StringBuilder b = new StringBuilder();
+            StringBuilder b = new();
             string s = type.ToString();
             for (int i = 0; i < s.Length; i++)
             {
-                if (Char.IsUpper(s, i) && i > 0)
+                if (char.IsUpper(s, i) && i > 0)
                     b.Append('-');
-                b.Append(Char.ToLower(s[i]));
+                b.Append(char.ToLower(s[i]));
             }
             return b.ToString();
         }
@@ -281,12 +267,12 @@ namespace Net.Xmpp.Extensions.Dataforms
         private DataFieldType AttributeValueToType(string value)
         {
             value.ThrowIfNull("value");
-            StringBuilder b = new StringBuilder();
+            StringBuilder b = new();
             string s = value;
             for (int i = 0; i < s.Length; i++)
             {
                 if (s[i] == '-')
-                    b.Append(Char.ToUpper(s[++i]));
+                    b.Append(char.ToUpper(s[++i]));
                 else
                     b.Append(s[i]);
             }
@@ -306,9 +292,7 @@ namespace Net.Xmpp.Extensions.Dataforms
             try
             {
                 string t = element.GetAttribute("type");
-                if (String.IsNullOrEmpty(t))
-                    return null;
-                return AttributeValueToType(t);
+                return string.IsNullOrEmpty(t) ? null : (DataFieldType?)AttributeValueToType(t);
             }
             catch (Exception e)
             {

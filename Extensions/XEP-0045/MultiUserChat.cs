@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
+
 using Net.Xmpp.Core;
 using Net.Xmpp.Extensions.Dataforms;
 using Net.Xmpp.Im;
@@ -21,27 +20,15 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <remarks>This is used for compiling the list of supported extensions
         /// advertised by the 'MultiUserChat' extension.</remarks>
-        public override IEnumerable<string> Namespaces
-        {
-            get
-            {
-                return new string[] {
+        public override IEnumerable<string> Namespaces => new string[] {
                     MucNs.NsMain
                 };
-            }
-        }
 
         /// <summary>
         /// The named constant of the Extension enumeration that corresponds to this
         /// extension.
         /// </summary>
-        public override Extension Xep
-        {
-            get
-            {
-                return Extension.MultiUserChat;
-            }
-        }
+        public override Extension Xep => Extension.MultiUserChat;
 
         public event EventHandler<Im.MessageEventArgs> SubjectChanged;
 
@@ -86,7 +73,6 @@ namespace Net.Xmpp.Extensions
                 return true;
             }
 
-
             if (InviteDeclined.IsElement(stanza))
             {
                 // Chat room invite was declined
@@ -106,7 +92,7 @@ namespace Net.Xmpp.Extensions
             // Receive Registration Request
             // Receive Voice Request
             XmlElement xElement = stanza.Data["x"];
-            if (xElement != null && xElement.NamespaceURI == MucNs.NsXData)
+            if (xElement?.NamespaceURI == MucNs.NsXData)
             {
                 switch (xElement.FirstChild.Value)
                 {
@@ -152,7 +138,7 @@ namespace Net.Xmpp.Extensions
             // Service Updates Nick
             foreach (XmlElement xElement in stanza.Data.ChildNodes)
             {
-                if (xElement != null && xElement.NamespaceURI == MucNs.NsUser)
+                if (xElement?.NamespaceURI == MucNs.NsUser)
                 {
                     Occupant person = null;
                     foreach (XmlElement item in xElement.GetElementsByTagName("item"))
@@ -162,8 +148,8 @@ namespace Net.Xmpp.Extensions
                         var itemJid = item.GetAttribute("jid");
                         var itemAffiliation = item.GetAttribute("affiliation");
                         var itemRole = item.GetAttribute("role");
-                        if (!String.IsNullOrWhiteSpace(itemJid) && !String.IsNullOrWhiteSpace(itemAffiliation) &&
-                                !String.IsNullOrWhiteSpace(itemRole))
+                        if (!string.IsNullOrWhiteSpace(itemJid) && !string.IsNullOrWhiteSpace(itemAffiliation) &&
+                                !string.IsNullOrWhiteSpace(itemRole))
                         {
                             person = new Occupant(
                                item.GetAttribute("jid"),
@@ -171,7 +157,6 @@ namespace Net.Xmpp.Extensions
                                item.GetAttribute("role"));
                         }
                     }
-
 
                     IList<MucStatusType> statusCodeList = new List<MucStatusType>();
                     foreach (XmlElement item in xElement.GetElementsByTagName("status"))
@@ -183,7 +168,6 @@ namespace Net.Xmpp.Extensions
                             statusCodeList.Add(code);
                         }
                     }
-
 
                     if (person != null)
                     {
@@ -232,7 +216,7 @@ namespace Net.Xmpp.Extensions
             if (!string.IsNullOrEmpty(password))
                 elem.Child(Xml.Element("password").Text(password));
 
-            Jid joinRequest = new Jid(jid.Domain, jid.Node, nickname);
+            Jid joinRequest = new(jid.Domain, jid.Node, nickname);
             var msg = new Im.Presence(joinRequest, im.Jid, PresenceType.Available, null, null, elem);
             im.SendPresence(msg);
         }
@@ -242,7 +226,7 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         public void LeaveRoom(Jid jid, string nickname)
         {
-            Jid groupSpecificJid = new Jid(jid.Domain, jid.Node, nickname);
+            Jid groupSpecificJid = new(jid.Domain, jid.Node, nickname);
             var msg = new Im.Presence(jid, groupSpecificJid, PresenceType.Unavailable);
             im.SendPresence(msg);
         }
@@ -287,7 +271,7 @@ namespace Net.Xmpp.Extensions
             room.ThrowIfNull("room");
             nickname.ThrowIfNullOrEmpty("nickname");
 
-            Jid request = new Jid(room.Domain, room.Node, nickname);
+            Jid request = new(room.Domain, room.Node, nickname);
             var msg = new Core.Presence(request, im.Jid, null, null, null);
 
             im.SendPresence(new Im.Presence(msg));
@@ -323,7 +307,7 @@ namespace Net.Xmpp.Extensions
                 new DataField(requestedRole)
             };
 
-            SubmitForm form = new SubmitForm(fields);
+            SubmitForm form = new(fields);
             var message = new Core.Message(room, im.Jid, form.ToXmlElement());
             SendMessage(message);
         }
@@ -336,19 +320,15 @@ namespace Net.Xmpp.Extensions
 
             // Parse the result.
             var query = iq.Data["query"];
-            if (query == null || query.NamespaceURI != "jabber:iq:register")
-                throw new NotSupportedException("Erroneous response: " + iq);
-
-            return DataFormFactory.Create(query["x"]);
+            return query == null || query.NamespaceURI != "jabber:iq:register"
+                ? throw new NotSupportedException("Erroneous response: " + iq)
+                : DataFormFactory.Create(query["x"]);
         }
 
         public bool SendRegistration(Jid room, DataForm form)
         {
             Iq iq = im.IqRequest(IqType.Set, room, im.Jid, Xml.Element("query", "jabber:iq:register").Child(form.ToXmlElement()));
-            if (iq.Type != IqType.Result)
-                throw new NotSupportedException("Could not query features: " + iq);
-
-            return true;
+            return iq.Type != IqType.Result ? throw new NotSupportedException("Could not query features: " + iq) : true;
         }
 
         public void RequestInstantRoom(Jid room)
@@ -432,7 +412,7 @@ namespace Net.Xmpp.Extensions
         public void EditRoomSubject(Jid room, string subject)
         {
             subject.ThrowIfNull("subject");
-            Im.Message message = new Im.Message(room, null, subject, null, MessageType.Groupchat);
+            Im.Message message = new(room, null, subject, null, MessageType.Groupchat);
             SendMessage(message);
         }
 
@@ -464,9 +444,9 @@ namespace Net.Xmpp.Extensions
 
             // Parse the result.
             var query = iq.Data["query"];
-            if (query == null || query.NamespaceURI != MucNs.NsOwner)
-                throw new NotSupportedException("Erroneous response: " + iq);
-            return DataFormFactory.Create(query["x"]) as RequestForm;
+            return query == null || query.NamespaceURI != MucNs.NsOwner
+                ? throw new NotSupportedException("Erroneous response: " + iq)
+                : DataFormFactory.Create(query["x"]) as RequestForm;
         }
 
         private void SubmitRoomConfigForm(Jid room, SubmitForm configForm)
@@ -629,7 +609,7 @@ namespace Net.Xmpp.Extensions
                 string _jid = e.GetAttribute("jid"), node = e.GetAttribute("node"),
                     name = e.GetAttribute("name"), nick = e.GetAttribute("nick"),
                     affiliation = e.GetAttribute("affiliation"), role = e.GetAttribute("role");
-                if (String.IsNullOrEmpty(_jid))
+                if (string.IsNullOrEmpty(_jid))
                     continue;
                 try
                 {
@@ -683,10 +663,10 @@ namespace Net.Xmpp.Extensions
                 string type = e.GetAttribute("type");
                 string name = e.GetAttribute("name");
 
-                if (!String.IsNullOrEmpty(cat) && !String.IsNullOrEmpty(type))
+                if (!string.IsNullOrEmpty(cat) && !string.IsNullOrEmpty(type))
                 {
                     result = new Identity(cat, type,
-                        String.IsNullOrEmpty(name) ? null : name);
+                        string.IsNullOrEmpty(name) ? null : name);
                     break;
                 }
             }
@@ -706,7 +686,7 @@ namespace Net.Xmpp.Extensions
 
             foreach (XmlElement f in query.GetElementsByTagName(tagName))
             {
-                fields.Add((new DataField(f)));
+                fields.Add(new DataField(f));
             }
 
             return fields;

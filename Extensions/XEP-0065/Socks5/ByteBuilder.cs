@@ -15,20 +15,9 @@ namespace Net.Xmpp.Extensions.Socks5
         private byte[] buffer = new byte[1024];
 
         /// <summary>
-        /// The current position in the buffer.
-        /// </summary>
-        private int position = 0;
-
-        /// <summary>
         /// The length of the underlying data buffer.
         /// </summary>
-        public int Length
-        {
-            get
-            {
-                return position;
-            }
-        }
+        public int Length { get; private set; } = 0;
 
         /// <summary>
         /// Resizes the internal byte buffer.
@@ -49,10 +38,10 @@ namespace Net.Xmpp.Extensions.Socks5
         /// <returns>A reference to the calling instance.</returns>
         public ByteBuilder Append(params byte[] values)
         {
-            if ((position + values.Length) >= buffer.Length)
+            if (Length + values.Length >= buffer.Length)
                 Resize();
             foreach (byte b in values)
-                buffer[position++] = b;
+                buffer[Length++] = b;
             return this;
         }
 
@@ -67,10 +56,10 @@ namespace Net.Xmpp.Extensions.Socks5
         /// <returns>A reference to the calling instance.</returns>
         public ByteBuilder Append(byte[] buffer, int offset, int count)
         {
-            if ((position + count) >= buffer.Length)
+            if (Length + count >= buffer.Length)
                 Resize();
             for (int i = 0; i < count; i++)
-                this.buffer[position++] = buffer[offset + i];
+                this.buffer[Length++] = buffer[offset + i];
             return this;
         }
 
@@ -83,12 +72,12 @@ namespace Net.Xmpp.Extensions.Socks5
         /// <returns>A reference to the calling instance.</returns>
         public ByteBuilder Append(int value, bool bigEndian = false)
         {
-            if ((position + 4) >= buffer.Length)
+            if (Length + 4 >= buffer.Length)
                 Resize();
             int[] o = bigEndian ? new int[4] { 3, 2, 1, 0 } :
                 new int[4] { 0, 1, 2, 3 };
             for (int i = 0; i < 4; i++)
-                buffer[position++] = (byte)((value >> (o[i] * 8)) & 0xFF);
+                buffer[Length++] = (byte)((value >> (o[i] * 8)) & 0xFF);
             return this;
         }
 
@@ -101,12 +90,12 @@ namespace Net.Xmpp.Extensions.Socks5
         /// <returns>A reference to the calling instance.</returns>
         public ByteBuilder Append(short value, bool bigEndian = false)
         {
-            if ((position + 2) >= buffer.Length)
+            if (Length + 2 >= buffer.Length)
                 Resize();
             int[] o = bigEndian ? new int[2] { 1, 0 } :
                 new int[2] { 0, 1 };
             for (int i = 0; i < 2; i++)
-                buffer[position++] = (byte)((value >> (o[i] * 8)) & 0xFF);
+                buffer[Length++] = (byte)((value >> (o[i] * 8)) & 0xFF);
             return this;
         }
 
@@ -119,12 +108,12 @@ namespace Net.Xmpp.Extensions.Socks5
         /// <returns>A reference to the calling instance.</returns>
         public ByteBuilder Append(ushort value, bool bigEndian = false)
         {
-            if ((position + 2) >= buffer.Length)
+            if (Length + 2 >= buffer.Length)
                 Resize();
             int[] o = bigEndian ? new int[2] { 1, 0 } :
                 new int[2] { 0, 1 };
             for (int i = 0; i < 2; i++)
-                buffer[position++] = (byte)((value >> (o[i] * 8)) & 0xFF);
+                buffer[Length++] = (byte)((value >> (o[i] * 8)) & 0xFF);
             return this;
         }
 
@@ -137,12 +126,12 @@ namespace Net.Xmpp.Extensions.Socks5
         /// <returns>A reference to the calling instance.</returns>
         public ByteBuilder Append(uint value, bool bigEndian = false)
         {
-            if ((position + 4) >= buffer.Length)
+            if (Length + 4 >= buffer.Length)
                 Resize();
             int[] o = bigEndian ? new int[4] { 3, 2, 1, 0 } :
                 new int[4] { 0, 1, 2, 3 };
             for (int i = 0; i < 4; i++)
-                buffer[position++] = (byte)((value >> (o[i] * 8)) & 0xFF);
+                buffer[Length++] = (byte)((value >> (o[i] * 8)) & 0xFF);
             return this;
         }
 
@@ -155,12 +144,12 @@ namespace Net.Xmpp.Extensions.Socks5
         /// <returns>A reference to the calling instance.</returns>
         public ByteBuilder Append(long value, bool bigEndian = false)
         {
-            if ((position + 8) >= buffer.Length)
+            if (Length + 8 >= buffer.Length)
                 Resize();
             int[] o = bigEndian ? new int[8] { 7, 6, 5, 4, 3, 2, 1, 0 } :
                 new int[8] { 0, 1, 2, 3, 4, 5, 6, 7 };
             for (int i = 0; i < 8; i++)
-                buffer[position++] = (byte)((value >> (o[i] * 8)) & 0xFF);
+                buffer[Length++] = (byte)((value >> (o[i] * 8)) & 0xFF);
             return this;
         }
 
@@ -178,10 +167,10 @@ namespace Net.Xmpp.Extensions.Socks5
             if (encoding == null)
                 encoding = Encoding.ASCII;
             byte[] bytes = encoding.GetBytes(value);
-            if ((position + bytes.Length) >= buffer.Length)
+            if (Length + bytes.Length >= buffer.Length)
                 Resize();
             foreach (byte b in bytes)
-                buffer[position++] = b;
+                buffer[Length++] = b;
             return this;
         }
 
@@ -192,8 +181,8 @@ namespace Net.Xmpp.Extensions.Socks5
         public byte[] ToArray()
         {
             // Fixme: Do this properly.
-            byte[] b = new byte[position];
-            Array.Copy(buffer, b, position);
+            byte[] b = new byte[Length];
+            Array.Copy(buffer, b, Length);
             return b;
         }
 
@@ -203,7 +192,7 @@ namespace Net.Xmpp.Extensions.Socks5
         public void Clear()
         {
             buffer = new byte[1024];
-            position = 0;
+            Length = 0;
         }
     }
 }

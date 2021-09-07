@@ -12,55 +12,33 @@ namespace Net.Xmpp.Im
         /// <summary>
         /// The groups this roster item is part of.
         /// </summary>
-        private ISet<string> groups = new HashSet<string>();
+        private readonly ISet<string> groups = new HashSet<string>();
 
         /// <summary>
         /// The JID of the user this item is associated with.
         /// </summary>
-        public Jid Jid
-        {
-            get;
-            private set;
-        }
+        public Jid Jid { get; }
 
         /// <summary>
         /// The nickname associated with the JID. This may be null.
         /// </summary>
-        public string Name
-        {
-            get;
-            private set;
-        }
+        public string Name { get; }
 
         /// <summary>
         /// The groups or categories this item is part of.
         /// </summary>
-        public IEnumerable<string> Groups
-        {
-            get
-            {
-                return groups;
-            }
-        }
+        public IEnumerable<string> Groups => groups;
 
         /// <summary>
         /// The subscription state of this item.
         /// </summary>
-        public SubscriptionState SubscriptionState
-        {
-            get;
-            private set;
-        }
+        public SubscriptionState SubscriptionState { get; }
 
         /// <summary>
         /// Determines whether the user has sent a subscription request and is
         /// awaiting approval or refusal from the contact.
         /// </summary>
-        public bool Pending
-        {
-            get;
-            private set;
-        }
+        public bool Pending { get; }
 
         /// <summary>
         /// Initializes a new instance of the RosterItem class.
@@ -99,7 +77,7 @@ namespace Net.Xmpp.Im
             {
                 foreach (string s in groups)
                 {
-                    if (String.IsNullOrEmpty(s))
+                    if (string.IsNullOrEmpty(s))
                         continue;
                     this.groups.Add(s);
                 }

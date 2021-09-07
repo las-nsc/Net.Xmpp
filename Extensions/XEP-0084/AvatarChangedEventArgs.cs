@@ -17,10 +17,7 @@ namespace Net.Xmpp.Extensions
 		/// <summary>
 		/// The JID of the XMPP entity that published the avatar information.
 		/// </summary>
-		public Jid Jid {
-			get;
-			private set;
-		}
+		public Jid Jid { get; private set; }
 
 		/// <summary>
 		/// True if the XMPP entity has cleared its avatar image.
@@ -34,18 +31,12 @@ namespace Net.Xmpp.Extensions
 		/// <summary>
 		/// The SHA-1 hash of the XMPP entity's avatar image.
 		/// </summary>
-		public string Hash {
-			get;
-			private set;
-		}
+		public string Hash { get; private set; }
 
 		/// <summary>
 		/// The image representing the XMPP entity's avatar.
 		/// </summary>
-		public Image Avatar {
-			get;
-			private set;
-		}
+		public Image Avatar { get; private set; }
 
 		/// <summary>
 		/// Initializes a new instance of the AvatarChangedEventArgs class.

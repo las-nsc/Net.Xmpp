@@ -18,32 +18,20 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// A cache of binary data items indexed by cid.
         /// </summary>
-        private IDictionary<string, BobData> cache = new Dictionary<string, BobData>();
+        private readonly IDictionary<string, BobData> cache = new Dictionary<string, BobData>();
 
         /// <summary>
         /// An enumerable collection of XMPP namespaces the extension implements.
         /// </summary>
         /// <remarks>This is used for compiling the list of supported extensions
         /// advertised by the 'Service Discovery' extension.</remarks>
-        public override IEnumerable<string> Namespaces
-        {
-            get
-            {
-                return new string[] { "urn:xmpp:bob" };
-            }
-        }
+        public override IEnumerable<string> Namespaces => new string[] { "urn:xmpp:bob" };
 
         /// <summary>
         /// The named constant of the Extension enumeration that corresponds to this
         /// extension.
         /// </summary>
-        public override Extension Xep
-        {
-            get
-            {
-                return Extension.BitsOfBinary;
-            }
-        }
+        public override Extension Xep => Extension.BitsOfBinary;
 
         /// <summary>
         /// Invoked after all extensions have been loaded.
@@ -68,7 +56,7 @@ namespace Net.Xmpp.Extensions
         {
             data.ThrowIfNull("data");
             type.ThrowIfNull("type");
-            BobData b = new BobData(data, type);
+            BobData b = new(data, type);
             if (cache)
                 this.cache[b.Cid] = b;
             return b;
@@ -100,9 +88,9 @@ namespace Net.Xmpp.Extensions
         public BobData Get(string cid)
         {
             cid.ThrowIfNull("cid");
-            if (cache.ContainsKey(cid))
-                return cache[cid];
-            throw new ArgumentException("A data-item with the specified CID does " +
+            return cache.ContainsKey(cid)
+                ? cache[cid]
+                : throw new ArgumentException("A data-item with the specified CID does " +
                 "not exist.");
         }
 

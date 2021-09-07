@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Net.Xmpp.Extensions
@@ -15,7 +13,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The jid of the entity that the chat was with
         /// </summary>
-        public Jid With { get; private set; }
+        public Jid With { get; }
 
         /// <summary>
         /// The start time of the chat
@@ -25,12 +23,12 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The subject of the chat
         /// </summary>
-        public string Subject { get; private set; }
+        public string Subject { get; }
 
         /// <summary>
         /// The version of this chat collection
         /// </summary>
-        public int Version { get; private set; }
+        public int Version { get; }
 
         /// <summary>
         /// Create an archived chat page from an xml response
@@ -60,9 +58,7 @@ namespace Net.Xmpp.Extensions
             var versionAttribute = xml.Attributes["version"];
             if (versionAttribute != null)
             {
-                int version = 0;
-
-                int.TryParse(versionAttribute.InnerText, out version);
+                int.TryParse(versionAttribute.InnerText, out int version);
 
                 Version = version;
             }
@@ -70,7 +66,7 @@ namespace Net.Xmpp.Extensions
 
         private static IList<ArchivedMessage> GetChatMessagesFromStanza(XmlElement xml)
         {
-            List<ArchivedMessage> messages = new List<ArchivedMessage>();
+            List<ArchivedMessage> messages = new();
 
             DateTimeOffset startTime = default(DateTimeOffset);
             var startAttribute = xml.Attributes["start"];
@@ -98,7 +94,7 @@ namespace Net.Xmpp.Extensions
 
         private static ArchivedMessage GetChatMessageFromNode(DateTimeOffset chatStartTime, XmlElement xml)
         {
-            ArchivedMessage message = new ArchivedMessage();
+            ArchivedMessage message = new();
 
             if (xml.LocalName == "from")
             {
@@ -117,13 +113,9 @@ namespace Net.Xmpp.Extensions
             }
 
             var secsAttribute = xml.Attributes["secs"];
-            if (secsAttribute != null)
+            if (secsAttribute != null && int.TryParse(secsAttribute.InnerText, out int secs))
             {
-                int secs = 0;
-                if (int.TryParse(secsAttribute.InnerText, out secs))
-                {
-                    message.Timestamp = chatStartTime + TimeSpan.FromSeconds(secs);
-                }
+                message.Timestamp = chatStartTime + TimeSpan.FromSeconds(secs);
             }
 
             var nameAttribute = xml.Attributes["name"];

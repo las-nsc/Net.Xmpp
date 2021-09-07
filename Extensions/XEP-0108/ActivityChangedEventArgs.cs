@@ -11,39 +11,23 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The JID of the XMPP entity that published the activity information.
         /// </summary>
-        public Jid Jid
-        {
-            get;
-            private set;
-        }
+        public Jid Jid { get; }
 
         /// <summary>
         /// The general activity of the XMPP entity.
         /// </summary>
-        public GeneralActivity Activity
-        {
-            get;
-            private set;
-        }
+        public GeneralActivity Activity { get; }
 
         /// <summary>
         /// The specific activity of the XMPP entity.
         /// </summary>
-        public SpecificActivity Specific
-        {
-            get;
-            private set;
-        }
+        public SpecificActivity Specific { get; }
 
         /// <summary>
         /// a natural-language description of, or reason for, the activity. This
         /// may be null.
         /// </summary>
-        public string Description
-        {
-            get;
-            private set;
-        }
+        public string Description { get; }
 
         /// <summary>
         /// Initializes a new instance of the ActivityChangedEventArgs class.

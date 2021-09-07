@@ -1,9 +1,4 @@
-﻿using Net.Xmpp.Core;
-using Net.Xmpp.Extensions.Socks5;
-using Net.Xmpp.Extensions.Stun;
-using Net.Xmpp.Extensions.Upnp;
-using Net.Xmpp.Im;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,6 +9,11 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+
+using Net.Xmpp.Core;
+using Net.Xmpp.Extensions.Socks5;
+using Net.Xmpp.Extensions.Stun;
+using Net.Xmpp.Im;
 
 namespace Net.Xmpp.Extensions
 {
@@ -70,52 +70,28 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <remarks>This is used for compiling the list of supported extensions
         /// advertised by the 'Service Discovery' extension.</remarks>
-        public override IEnumerable<string> Namespaces
-        {
-            get
-            {
-                return new string[] { "http://jabber.org/protocol/bytestreams" };
-            }
-        }
+        public override IEnumerable<string> Namespaces => new string[] { "http://jabber.org/protocol/bytestreams" };
 
         /// <summary>
         /// The named constant of the Extension enumeration that corresponds to this
         /// extension.
         /// </summary>
-        public override Extension Xep
-        {
-            get
-            {
-                return Extension.Socks5Bytestreams;
-            }
-        }
+        public override Extension Xep => Extension.Socks5Bytestreams;
 
         /// <summary>
         /// The STUN server to use for determining the external IP address.
         /// </summary>
-        public DnsEndPoint StunServer
-        {
-            get;
-            set;
-        }
+        public DnsEndPoint StunServer { get; set; }
 
         /// <summary>
         /// Determines whether usage of a proxy server is allowed.
         /// </summary>
-        public bool ProxyAllowed
-        {
-            get;
-            set;
-        }
+        public bool ProxyAllowed { get; set; }
 
         /// <summary>
         /// A collection of user-defined SOCKS5 proxy servers.
         /// </summary>
-        public ICollection<Streamhost> Proxies
-        {
-            get;
-            private set;
-        }
+        public ICollection<Streamhost> Proxies { get; }
 
         /// <summary>
         /// Defines, along with the ServerPortTo property, a range of ports eligible
@@ -126,10 +102,7 @@ namespace Net.Xmpp.Extensions
         /// ServerPortTo property.</exception>
         public int ServerPortFrom
         {
-            get
-            {
-                return serverPortFrom;
-            }
+            get => serverPortFrom;
 
             set
             {
@@ -147,10 +120,7 @@ namespace Net.Xmpp.Extensions
         /// property, or the value is greater than 65535.</exception>
         public int ServerPortTo
         {
-            get
-            {
-                return serverPortTo;
-            }
+            get => serverPortTo;
 
             set
             {
@@ -163,11 +133,7 @@ namespace Net.Xmpp.Extensions
         /// Determines whether usage of UPnP for automatic port-forwarding is
         /// allowed.
         /// </summary>
-        public bool UseUPnP
-        {
-            get;
-            set;
-        }
+        public bool UseUPnP { get; set; }
 
         /// <summary>
         /// The event that is raised whenever bytes have been transferred.
@@ -219,7 +185,7 @@ namespace Net.Xmpp.Extensions
             }
             // Build a collection of Streamhosts.
             var hosts = ParseStreamhosts(query);
-            if (hosts.Count() == 0)
+            if (!hosts.Any())
             {
                 im.IqError(stanza, ErrorType.Modify, ErrorCondition.BadRequest,
                     "No streamhosts advertised.");
@@ -230,11 +196,9 @@ namespace Net.Xmpp.Extensions
             // dispatcher thread.
             Task.Factory.StartNew(() =>
             {
-                using (var client = EstablishConnection(stanza, sid, hosts))
-                {
-                    // We can not start reading data from the network-stream.
-                    ReceiveData(stanza, sid, client.GetStream());
-                }
+                using var client = EstablishConnection(stanza, sid, hosts);
+                // We can not start reading data from the network-stream.
+                ReceiveData(stanza, sid, client.GetStream());
             });
             // We took care of this IQ request, so intercept it and don't pass it
             // on to other handlers.
@@ -288,13 +252,8 @@ namespace Net.Xmpp.Extensions
                     if (behindNAT)
                     {
                         // Look for user-defined proxies first.
-                        if (Proxies.Count > 0)
-                            proxies = Proxies;
-                        else
-                        {
-                            // Otherwise query XMPP server for a list of proxies.
-                            proxies = GetProxyList();
-                        }
+                        // Otherwise query XMPP server for a list of proxies.
+                        proxies = Proxies.Count > 0 ? Proxies : GetProxyList();
                     }
                 }
                 catch
@@ -307,7 +266,7 @@ namespace Net.Xmpp.Extensions
 
             try
             {
-                if (proxies != null && proxies.Count() > 0)
+                if (proxies?.Count() > 0)
                     MediatedTransfer(session, proxies);
                 else
                     DirectTransfer(session);
@@ -344,14 +303,12 @@ namespace Net.Xmpp.Extensions
         private string Sha1(string s)
         {
             s.ThrowIfNull("s");
-            using (var sha1 = new SHA1Managed())
-            {
-                byte[] hash = sha1.ComputeHash(Encoding.UTF8.GetBytes(s));
-                StringBuilder builder = new StringBuilder();
-                foreach (byte h in hash)
-                    builder.Append(h.ToString("x2"));
-                return builder.ToString();
-            }
+            using var sha1 = new SHA1Managed();
+            byte[] hash = sha1.ComputeHash(Encoding.UTF8.GetBytes(s));
+            StringBuilder builder = new();
+            foreach (byte h in hash)
+                builder.Append(h.ToString("x2"));
+            return builder.ToString();
         }
 
         /// <summary>
@@ -363,7 +320,7 @@ namespace Net.Xmpp.Extensions
         /// false.</returns>
         private bool VerifySession(Iq stanza, string sid)
         {
-            if (String.IsNullOrEmpty(sid))
+            if (string.IsNullOrEmpty(sid))
                 return false;
             var session = siFileTransfer.GetSession(sid, stanza.From, im.Jid);
             return session != null;
@@ -387,7 +344,7 @@ namespace Net.Xmpp.Extensions
                     string jid = e.GetAttribute("jid"),
                         host = e.GetAttribute("host"), p = e.GetAttribute("port");
                     // The 'port' attribute is optional.
-                    int port = String.IsNullOrEmpty(p) ? defaultPort : int.Parse(p);
+                    int port = string.IsNullOrEmpty(p) ? defaultPort : int.Parse(p);
                     list.Add(new Streamhost(jid, host, port));
                 }
                 catch
@@ -474,10 +431,10 @@ namespace Net.Xmpp.Extensions
                     int read = stream.Read(buffer, 0, buffer.Length);
                     if (read <= 0)
                         break;
-                    left = left - read;
+                    left -= read;
                     session.Stream.Write(buffer, 0, read);
                     // Update the byte count and raise the 'BytesTransferred' event.
-                    session.Count = session.Count + read;
+                    session.Count += read;
                     BytesTransferred.Raise(this, new BytesTransferredEventArgs(session));
                 }
             }
@@ -514,9 +471,9 @@ namespace Net.Xmpp.Extensions
         private Streamhost GetNetworkAddress(Jid jid)
         {
             jid.ThrowIfNull("jid");
-            var iq = im.IqRequest(Core.IqType.Get, jid, im.Jid,
+            var iq = im.IqRequest(IqType.Get, jid, im.Jid,
                 Xml.Element("query", "http://jabber.org/protocol/bytestreams"));
-            if (iq.Type == Core.IqType.Error)
+            if (iq.Type == IqType.Error)
             {
                 throw Util.ExceptionFromError(iq, "The network address could not be " +
                     "retrieved.");
@@ -529,9 +486,7 @@ namespace Net.Xmpp.Extensions
             }
             // Parse the streamhost element.
             IEnumerable<Streamhost> hosts = ParseStreamhosts(query);
-            if (hosts.Count() < 1)
-                throw new XmppException("No streamhost element found.");
-            return hosts.First();
+            return !hosts.Any() ? throw new XmppException("No streamhost element found.") : hosts.First();
         }
 
         /// <summary>
@@ -610,12 +565,10 @@ namespace Net.Xmpp.Extensions
                 // Nothing to do here.
             }
             // See if we could gather any external addresses at all.
-            if (set.Count == 0)
-            {
-                throw new NotSupportedException("The external IP address(es) could not " +
-                    "be obtained.");
-            }
-            return set;
+            return set.Count == 0
+                ? throw new NotSupportedException("The external IP address(es) could not " +
+                    "be obtained.")
+                : set;
         }
 
         /// <summary>
@@ -736,11 +689,7 @@ namespace Net.Xmpp.Extensions
             //FIXME
             //http://stackoverflow.com/questions/17868420/networkinterface-getallnetworkinterfaces-returns-interfaces-with-operationalst
             //http://developer.xamarin.com/recipes/ios/network/reachability/detect_if_network_is_available/
-            if (netInterfaces == null)
-            {
-                throw new NotImplementedException();
-            }
-            return null;
+            return netInterfaces == null ? throw new NotImplementedException() : null;
         }
 
         /// <summary>
@@ -843,23 +792,21 @@ namespace Net.Xmpp.Extensions
         {
             var proxy = NegotiateProxy(session, proxies);
             // Connect to the designated proxy.
-            using (var client = new Socks5Client(proxy.Host, proxy.Port))
-            {
-                // Send the SOCKS5 Connect command.
-                string hostname = Sha1(session.Sid + session.From + session.To);
-                SocksReply reply = client.Request(SocksCommand.Connect, hostname, 0);
-                if (reply.Status != ReplyStatus.Succeeded)
-                    throw new Socks5Exception("SOCKS5 Connect request failed.");
-                // Activate the bytetream.
-                var xml = Xml.Element("query", "http://jabber.org/protocol/bytestreams")
-                    .Attr("sid", session.Sid).Child(
-                    Xml.Element("activate").Text(session.To.ToString()));
-                Iq iq = im.IqRequest(IqType.Set, proxy.Jid, im.Jid, xml);
-                if (iq.Type == IqType.Error)
-                    throw Util.ExceptionFromError(iq, "Could not activate the bytestream.");
-                // Finally, go ahead and send the data to the proxy.
-                SendData(session, client.GetStream());
-            }
+            using var client = new Socks5Client(proxy.Host, proxy.Port);
+            // Send the SOCKS5 Connect command.
+            string hostname = Sha1(session.Sid + session.From + session.To);
+            SocksReply reply = client.Request(SocksCommand.Connect, hostname, 0);
+            if (reply.Status != ReplyStatus.Succeeded)
+                throw new Socks5Exception("SOCKS5 Connect request failed.");
+            // Activate the bytetream.
+            var xml = Xml.Element("query", "http://jabber.org/protocol/bytestreams")
+                .Attr("sid", session.Sid).Child(
+                Xml.Element("activate").Text(session.To.ToString()));
+            Iq iq = im.IqRequest(IqType.Set, proxy.Jid, im.Jid, xml);
+            if (iq.Type == IqType.Error)
+                throw Util.ExceptionFromError(iq, "Could not activate the bytestream.");
+            // Finally, go ahead and send the data to the proxy.
+            SendData(session, client.GetStream());
         }
 
         /// <summary>
@@ -903,9 +850,7 @@ namespace Net.Xmpp.Extensions
                 throw new XmppException("Missing streamhost-used element.");
             var proxyJid = used.GetAttribute("jid");
             var streamhost = proxies.FirstOrDefault(proxy => proxy.Jid == proxyJid);
-            if (streamhost == null)
-                throw new XmppException("Invalid streamhost JID.");
-            return streamhost;
+            return streamhost ?? throw new XmppException("Invalid streamhost JID.");
         }
 
         /// <summary>
@@ -929,10 +874,8 @@ namespace Net.Xmpp.Extensions
                 {
                     return new Socks5Server(port);
                 }
-                catch (SocketException e)
+                catch (SocketException e) when (e.SocketErrorCode == SocketError.AddressAlreadyInUse)
                 {
-                    if (e.SocketErrorCode != SocketError.AddressAlreadyInUse)
-                        throw;
                 }
             }
             throw new ArgumentException("All ports of the specified range are " +
@@ -997,9 +940,9 @@ namespace Net.Xmpp.Extensions
                         stream.Write(buffer, 0, read);
                     else
                         break;
-                    left = left - read;
+                    left -= read;
                     // Update the byte count and raise the 'BytesTransferred' event.
-                    session.Count = session.Count + read;
+                    session.Count += read;
                     BytesTransferred.Raise(this, new BytesTransferredEventArgs(session));
                 }
             }

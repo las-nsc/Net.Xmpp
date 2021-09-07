@@ -20,10 +20,7 @@ namespace Net.Xmpp.Core
         /// The tag name of the stanza's root element
         /// Allows the element tag name to be overridden.
         /// </summary>
-        protected virtual string RootElementName
-        {
-            get { return GetType().Name.ToLowerInvariant(); }
-        }
+        protected virtual string RootElementName => GetType().Name.ToLowerInvariant();
 
         /// <summary>
         /// Specifies the JID of the intended recipient for the stanza.
@@ -33,7 +30,7 @@ namespace Net.Xmpp.Core
             get
             {
                 string v = element.GetAttribute("to");
-                return String.IsNullOrEmpty(v) ? null : new Jid(v);
+                return string.IsNullOrEmpty(v) ? null : new Jid(v);
             }
 
             set
@@ -54,7 +51,7 @@ namespace Net.Xmpp.Core
             get
             {
                 string v = element.GetAttribute("from");
-                return String.IsNullOrEmpty(v) ? null : new Jid(v);
+                return string.IsNullOrEmpty(v) ? null : new Jid(v);
             }
 
             set
@@ -74,7 +71,7 @@ namespace Net.Xmpp.Core
             get
             {
                 var v = element.GetAttribute("id");
-                return String.IsNullOrEmpty(v) ? null : v;
+                return string.IsNullOrEmpty(v) ? null : v;
             }
 
             set
@@ -95,7 +92,7 @@ namespace Net.Xmpp.Core
             get
             {
                 string v = element.GetAttribute("xml:lang");
-                return String.IsNullOrEmpty(v) ? null : new CultureInfo(v);
+                return string.IsNullOrEmpty(v) ? null : new CultureInfo(v);
             }
 
             set
@@ -110,24 +107,12 @@ namespace Net.Xmpp.Core
         /// <summary>
         /// The data of the stanza.
         /// </summary>
-        public XmlElement Data
-        {
-            get
-            {
-                return element;
-            }
-        }
+        public XmlElement Data => element;
 
         /// <summary>
         /// Determines whether the stanza is empty, i.e. has no child nodes.
         /// </summary>
-        public bool IsEmpty
-        {
-            get
-            {
-                return Data.IsEmpty;
-            }
-        }
+        public bool IsEmpty => Data.IsEmpty;
 
         /// <summary>
         /// Initializes a new instance of the Stanza class.

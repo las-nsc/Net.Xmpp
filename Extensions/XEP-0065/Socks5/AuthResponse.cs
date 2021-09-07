@@ -18,11 +18,7 @@ namespace Net.Xmpp.Extensions.Socks5
         /// <summary>
         /// Determines whether authentication has been successful.
         /// </summary>
-        public bool Success
-        {
-            get;
-            private set;
-        }
+        public bool Success { get; }
 
         /// <summary>
         /// Serializes the instance into an array of bytes.
@@ -51,16 +47,12 @@ namespace Net.Xmpp.Extensions.Socks5
         public static AuthResponse Deserialize(byte[] buffer)
         {
             buffer.ThrowIfNull("buffer");
-            using (var ms = new MemoryStream(buffer))
-            {
-                using (BinaryReader r = new BinaryReader(ms))
-                {
-                    if (r.ReadByte() != version)
-                        throw new SerializationException("Invalid auth response.");
-                    bool success = r.ReadByte() == 0;
-                    return new AuthResponse(success);
-                }
-            }
+            using var ms = new MemoryStream(buffer);
+            using BinaryReader r = new(ms);
+            if (r.ReadByte() != version)
+                throw new SerializationException("Invalid auth response.");
+            bool success = r.ReadByte() == 0;
+            return new AuthResponse(success);
         }
 
         /// <summary>

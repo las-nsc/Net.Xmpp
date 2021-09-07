@@ -14,10 +14,7 @@ namespace Net.Xmpp.Im
         /// </summary>
         public PresenceType Type
         {
-            get
-            {
-                return type;
-            }
+            get => type;
 
             set
             {
@@ -83,9 +80,9 @@ namespace Net.Xmpp.Im
         {
             // The 'type' attribute of presence-stanzas is optional and if absent
             // availability is assumed.
-            if (String.IsNullOrEmpty(value))
-                return PresenceType.Available;
-            return (PresenceType)Enum.Parse(typeof(PresenceType),
+            return string.IsNullOrEmpty(value)
+                ? PresenceType.Available
+                : (PresenceType)Enum.Parse(typeof(PresenceType),
                 value.Capitalize());
         }
     }

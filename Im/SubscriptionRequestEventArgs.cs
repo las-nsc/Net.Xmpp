@@ -11,11 +11,7 @@ namespace Net.Xmpp.Im
         /// The JID of the user or resource who wishes to subscribe to presence
         /// notifications.
         /// </summary>
-        public Jid Jid
-        {
-            get;
-            private set;
-        }
+        public Jid Jid { get; }
 
         /// <summary>
         /// Initializes a new instance of the SubscriptionRequestEventArgs class.

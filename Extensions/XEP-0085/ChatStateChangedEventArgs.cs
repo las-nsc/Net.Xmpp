@@ -11,20 +11,12 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The JID of the XMPP entity that published the chat state information.
         /// </summary>
-        public Jid Jid
-        {
-            get;
-            private set;
-        }
+        public Jid Jid { get; }
 
         /// <summary>
         /// The chat-state of the XMPP entity.
         /// </summary>
-        public ChatState ChatState
-        {
-            get;
-            private set;
-        }
+        public ChatState ChatState { get; }
 
         /// <summary>
         /// Initializes a new instance of the ChatStateChangedEventArgs class.

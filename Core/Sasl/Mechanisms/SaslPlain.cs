@@ -15,52 +15,28 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// True if the authentication exchange between client and server
         /// has been completed.
         /// </summary>
-        public override bool IsCompleted
-        {
-            get
-            {
-                return Completed;
-            }
-        }
+        public override bool IsCompleted => Completed;
 
         /// <summary>
         /// Sasl Plain just sends one initial response.
         /// </summary>
-        public override bool HasInitial
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool HasInitial => true;
 
         /// <summary>
         /// The IANA name for the Plain authentication mechanism as described
         /// in RFC 4616.
         /// </summary>
-        public override string Name
-        {
-            get
-            {
-                return "PLAIN";
-            }
-        }
+        public override string Name => "PLAIN";
 
         /// <summary>
         /// The username to authenticate with.
         /// </summary>
         private string Username
         {
-            get
-            {
-                return Properties.ContainsKey("Username") ?
+            get => Properties.ContainsKey("Username") ?
                     Properties["Username"] as string : null;
-            }
 
-            set
-            {
-                Properties["Username"] = value;
-            }
+            set => Properties["Username"] = value;
         }
 
         /// <summary>
@@ -68,16 +44,10 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// </summary>
         private string Password
         {
-            get
-            {
-                return Properties.ContainsKey("Password") ?
+            get => Properties.ContainsKey("Password") ?
                     Properties["Password"] as string : null;
-            }
 
-            set
-            {
-                Properties["Password"] = value;
-            }
+            set => Properties["Password"] = value;
         }
 
         /// <summary>
@@ -102,7 +72,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         public SaslPlain(string username, string password)
         {
             username.ThrowIfNull("username");
-            if (username == String.Empty)
+            if (username?.Length == 0)
                 throw new ArgumentException("The username must not be empty.");
             password.ThrowIfNull("password");
 
@@ -122,7 +92,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         {
             // Precondition: Ensure username and password are not null and
             // username is not empty.
-            if (String.IsNullOrEmpty(Username) || Password == null)
+            if (string.IsNullOrEmpty(Username) || Password == null)
             {
                 throw new SaslException("The username must not be null or empty and " +
                     "the password must not be null.");

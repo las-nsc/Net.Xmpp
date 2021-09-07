@@ -21,7 +21,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// A dictionary of registered profiles.
         /// </summary>
-        private IDictionary<string, Action<Jid, XmlElement, Action<XmlElement>>> profiles =
+        private readonly IDictionary<string, Action<Jid, XmlElement, Action<XmlElement>>> profiles =
             new Dictionary<string, Action<Jid, XmlElement, Action<XmlElement>>>();
 
         /// <summary>
@@ -29,25 +29,13 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <remarks>This is used for compiling the list of supported extensions
         /// advertised by the 'Service Discovery' extension.</remarks>
-        public override IEnumerable<string> Namespaces
-        {
-            get
-            {
-                return new string[] { "http://jabber.org/protocol/si" };
-            }
-        }
+        public override IEnumerable<string> Namespaces => new string[] { "http://jabber.org/protocol/si" };
 
         /// <summary>
         /// The named constant of the Extension enumeration that corresponds to this
         /// extension.
         /// </summary>
-        public override Extension Xep
-        {
-            get
-            {
-                return Extension.StreamInitiation;
-            }
-        }
+        public override Extension Xep => Extension.StreamInitiation;
 
         /// <summary>
         /// Invoked after all extensions have been loaded.
@@ -72,7 +60,7 @@ namespace Net.Xmpp.Extensions
                 return false;
             var profile = si.GetAttribute("profile");
             // If it's an unknown profile, send back an error response.
-            if (profiles.ContainsKey(profile) == false)
+            if (!profiles.ContainsKey(profile))
             {
                 im.IqError(stanza, ErrorType.Cancel, ErrorCondition.BadRequest,
                     "Unknown SI profile", Xml.Element("bad-profile",
@@ -80,7 +68,6 @@ namespace Net.Xmpp.Extensions
             }
             else
             {
-
                 //Chamar em paralelo
                 // Invoke the profile's callback.
 
@@ -141,7 +128,7 @@ namespace Net.Xmpp.Extensions
             mimeType.ThrowIfNull("mimeType");
             profile.ThrowIfNull("profile");
             streamOptions.ThrowIfNull("streamOptions");
-            if (streamOptions.Count() == 0)
+            if (!streamOptions.Any())
             {
                 throw new ArgumentException("The streamOptions enumerable must " +
                     "include one or more stream-options.");
@@ -199,7 +186,7 @@ namespace Net.Xmpp.Extensions
             mimeType.ThrowIfNull("mimeType");
             profile.ThrowIfNull("profile");
             streamOptions.ThrowIfNull("streamOptions");
-            if (streamOptions.Count() == 0)
+            if (!streamOptions.Any())
             {
                 throw new ArgumentException("The streamOptions enumerable must " +
                     "include one or more stream-options.");
@@ -272,7 +259,7 @@ namespace Net.Xmpp.Extensions
             streamOptions.ThrowIfNull("streamOptions");
             // Create the data-form for stream-method selection.
             DataForm form = new RequestForm();
-            HashSet<Option> options = new HashSet<Option>();
+            HashSet<Option> options = new();
             foreach (string opt in streamOptions)
                 options.Add(new Option(opt));
             form.Fields.Add(new ListField("stream-method", true, null, null,
@@ -329,9 +316,7 @@ namespace Net.Xmpp.Extensions
             if (field == null)
                 throw new ArgumentException("Missing or erroneous 'stream-method' field.");
             string selected = field.Values.FirstOrDefault();
-            if (selected == null)
-                throw new ArgumentException("No stream-method selected.");
-            return selected;
+            return selected ?? throw new ArgumentException("No stream-method selected.");
         }
 
         /// <summary>

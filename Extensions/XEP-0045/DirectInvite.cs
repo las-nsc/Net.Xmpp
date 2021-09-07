@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml;
-using Net.Xmpp.Core;
+﻿using Net.Xmpp.Core;
 
 namespace Net.Xmpp.Extensions
 {
@@ -18,10 +14,7 @@ namespace Net.Xmpp.Extensions
         /// The tag name of the stanza's root element
         /// Allows the element tag name to be overridden.
         /// </summary>
-        protected override string RootElementName
-        {
-            get { return "message"; }
-        }
+        protected override string RootElementName => "message";
 
         /// <summary>
         /// Initialises a group chat invite.
@@ -39,7 +32,7 @@ namespace Net.Xmpp.Extensions
             Password = password;
         }
 
-        internal DirectInvite(Core.Message message)
+        internal DirectInvite(Message message)
             : base(message.Data)
         {
         }
@@ -53,7 +46,7 @@ namespace Net.Xmpp.Extensions
             {
                 string v = Data["x"].GetAttribute("jid");
 
-                return String.IsNullOrEmpty(v) ? null : new Jid(v);
+                return string.IsNullOrEmpty(v) ? null : new Jid(v);
             }
 
             set
@@ -70,10 +63,7 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         public string Reason
         {
-            get
-            {
-                return Data["x"].GetAttribute(reasonTag);
-            }
+            get => Data["x"].GetAttribute(reasonTag);
 
             set
             {
@@ -89,10 +79,7 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         public string Password
         {
-            get
-            {
-                return Data["x"].GetAttribute(passwordTag);
-            }
+            get => Data["x"].GetAttribute(passwordTag);
 
             set
             {
@@ -103,11 +90,10 @@ namespace Net.Xmpp.Extensions
             }
         }
 
-        internal static bool IsElement(Core.Message message)
+        internal static bool IsElement(Message message)
         {
-            DirectInvite temp = new DirectInvite(message);
+            DirectInvite temp = new(message);
             return temp?.Data["x"]?.NamespaceURI == "jabber:x:conference";
         }
-
     }
 }

@@ -21,25 +21,13 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <remarks>This is used for compiling the list of supported extensions
         /// advertised by the 'Service Discovery' extension.</remarks>
-        public override IEnumerable<string> Namespaces
-        {
-            get
-            {
-                return new string[] { "urn:sharp.xmpp:customiq" };
-            }
-        }
+        public override IEnumerable<string> Namespaces => new string[] { "urn:sharp.xmpp:customiq" };
 
         /// <summary>
         /// The named constant of the Extension enumeration that corresponds to this
         /// extension.
         /// </summary>
-        public override Extension Xep
-        {
-            get
-            {
-                return Extension.CustomIqExtension;
-            }
-        }
+        public override Extension Xep => Extension.CustomIqExtension;
 
         /// <summary>
         /// Invoked after all extensions have been loaded.
@@ -73,7 +61,7 @@ namespace Net.Xmpp.Extensions
             //It has not to do with the semantics of the message
             XmlElement query = stanza.Data["customiq"];
 
-            XmlDocument targetDocument = new XmlDocument();
+            XmlDocument targetDocument = new();
 
             CopyNodes(targetDocument, targetDocument, query.FirstChild);
 
@@ -84,7 +72,7 @@ namespace Net.Xmpp.Extensions
                 //and wait for answer in order provide it
                 response = im.CustomIqDelegate.Invoke(stanza.From, targetDocument.InnerXml);
 
-                if (response != null && response != "")
+                if (!string.IsNullOrEmpty(response))
                 {
                     xmlresponse.Text(response);
                 }
@@ -118,7 +106,7 @@ namespace Net.Xmpp.Extensions
 
         /// <summary>
         /// Requests the XMPP entity with the specified JID a GET command.
-        /// When the Result is received and it not not an error
+        /// When the Result is received and it not an error
         /// if fires the callback function
         /// </summary>
         /// <param name="jid">The JID of the XMPP entity to get.</param>
@@ -155,10 +143,7 @@ namespace Net.Xmpp.Extensions
                     try
                     {
                         //An empty response means the message was received
-                        if (callback != null)
-                        {
-                            callback.Invoke();
-                        }
+                        callback?.Invoke();
                     }
                     catch (Exception e)
                     {
@@ -171,7 +156,7 @@ namespace Net.Xmpp.Extensions
 
         /// <summary>
         /// Requests the XMPP entity with the specified JID a GET command.
-        /// When the Result is received and it not not an error
+        /// When the Result is received and it not an error
         /// if fires the callback function
         /// </summary>
         /// <param name="jid">The JID of the XMPP entity to get.</param>

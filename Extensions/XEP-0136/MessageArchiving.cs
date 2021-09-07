@@ -1,10 +1,8 @@
 ﻿using Net.Xmpp.Core;
 using Net.Xmpp.Im;
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Net.Xmpp.Extensions
@@ -13,18 +11,9 @@ namespace Net.Xmpp.Extensions
     {
         private const string xmlns = "urn:xmpp:archive";
 
-        public override IEnumerable<string> Namespaces
-        {
-            get
-            {
-                return new string[] { xmlns };
-            }
-        }
+        public override IEnumerable<string> Namespaces => new string[] { xmlns };
 
-        public override Extension Xep
-        {
-            get { return Extension.MessageArchiving; }
-        }
+        public override Extension Xep => Extension.MessageArchiving;
 
         public MessageArchiving(XmppIm im)
             : base(im)
@@ -33,10 +22,8 @@ namespace Net.Xmpp.Extensions
 
         private static IList<ArchivedChatId> GetChatIdsFromStanza(XmlElement xml)
         {
-            List<ArchivedChatId> chats = new List<ArchivedChatId>();
-            var chatNodes = xml.GetElementsByTagName("chat");
-
-            foreach (XmlNode node in chatNodes)
+            List<ArchivedChatId> chats = new();
+            foreach (XmlNode node in xml.GetElementsByTagName("chat"))
             {
                 string with = null;
                 try
@@ -104,12 +91,9 @@ namespace Net.Xmpp.Extensions
 
             var response = im.IqRequest(IqType.Get, null, null, request);
 
-            if (response.Type == IqType.Error)
-            {
-                throw Util.ExceptionFromError(response, "Failed to get archived chat ids");
-            }
-
-            return new XmppPage<ArchivedChatId>(response.Data["list"], GetChatIdsFromStanza);
+            return response.Type == IqType.Error
+                ? throw Util.ExceptionFromError(response, "Failed to get archived chat ids")
+                : new XmppPage<ArchivedChatId>(response.Data["list"], GetChatIdsFromStanza);
         }
 
         /// <summary>
@@ -142,12 +126,9 @@ namespace Net.Xmpp.Extensions
 
             var response = im.IqRequest(IqType.Get, null, null, request);
 
-            if (response.Type == IqType.Error)
-            {
-                throw Util.ExceptionFromError(response, "Failed to get archived chat messages");
-            }
-
-            return new ArchivedChatPage(response.Data["chat"]);
+            return response.Type == IqType.Error
+                ? throw Util.ExceptionFromError(response, "Failed to get archived chat messages")
+                : new ArchivedChatPage(response.Data["chat"]);
         }
     }
 }

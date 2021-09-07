@@ -12,29 +12,17 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The natural-language name of the software.
         /// </summary>
-        public string Name
-        {
-            get;
-            private set;
-        }
+        public string Name { get; }
 
         /// <summary>
         /// The specific version of the software.
         /// </summary>
-        public string Version
-        {
-            get;
-            private set;
-        }
+        public string Version { get; }
 
         /// <summary>
         /// The operating system of the entity.
         /// </summary>
-        public string Os
-        {
-            get;
-            private set;
-        }
+        public string Os { get; }
 
         /// <summary>
         /// Initializes a new instance of the VersionInformation class.

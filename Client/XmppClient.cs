@@ -1,13 +1,13 @@
-﻿using Net.Xmpp.Extensions;
-using Net.Xmpp.Extensions.Dataforms;
-using Net.Xmpp.Im;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Net.Security;
-using System.Xml;
 using System.Threading.Tasks;
+
+using Net.Xmpp.Extensions;
+using Net.Xmpp.Extensions.Dataforms;
+using Net.Xmpp.Im;
 
 namespace Net.Xmpp.Client
 {
@@ -28,12 +28,6 @@ namespace Net.Xmpp.Client
         private bool disposed;
 
         /// <summary>
-        /// The instance of the XmppIm class used for implementing the basic messaging
-        /// and presence functionality.
-        /// </summary>
-        private XmppIm im;
-
-        /// <summary>
         /// Provides access to the 'Message Archiving' XMPP extension functionality.
         /// </summary>
         private MessageArchiving messageArchiving;
@@ -42,7 +36,7 @@ namespace Net.Xmpp.Client
         /// Provices access to the 'Message Archive management' XMPP extension functionality.
         /// </summary>
         private MessageArchiveManagement messageArchiveManagement;
-        
+
         /// <summary>
         /// Provides access to the 'Software Version' XMPP extension functionality.
         /// </summary>
@@ -174,7 +168,7 @@ namespace Net.Xmpp.Client
         /// Provides vcard functionality
         /// </summary>
         private VCards vcard;
-        
+
         /// <summary>
         /// Provides the Message Carbons extension
         /// </summary>
@@ -195,15 +189,8 @@ namespace Net.Xmpp.Client
         /// </summary>
         public string Hostname
         {
-            get
-            {
-                return im.Hostname;
-            }
-
-            set
-            {
-                im.Hostname = value;
-            }
+            get => Im.Hostname;
+            set => Im.Hostname = value;
         }
 
         /// <summary>
@@ -211,15 +198,8 @@ namespace Net.Xmpp.Client
         /// </summary>
         public int Port
         {
-            get
-            {
-                return im.Port;
-            }
-
-            set
-            {
-                im.Port = value;
-            }
+            get => Im.Port;
+            set => Im.Port = value;
         }
 
         /// <summary>
@@ -228,15 +208,8 @@ namespace Net.Xmpp.Client
         /// </summary>
         public string Username
         {
-            get
-            {
-                return im.Username;
-            }
-
-            set
-            {
-                im.Username = value;
-            }
+            get => Im.Username;
+            set => Im.Username = value;
         }
 
         /// <summary>
@@ -244,15 +217,8 @@ namespace Net.Xmpp.Client
         /// </summary>
         public string Password
         {
-            get
-            {
-                return im.Password;
-            }
-
-            set
-            {
-                im.Password = value;
-            }
+            get => Im.Password;
+            set => Im.Password = value;
         }
 
         /// <summary>
@@ -260,15 +226,8 @@ namespace Net.Xmpp.Client
         /// </summary>
         public bool Tls
         {
-            get
-            {
-                return im.Tls;
-            }
-
-            set
-            {
-                im.Tls = value;
-            }
+            get => Im.Tls;
+            set => Im.Tls = value;
         }
 
         /// <summary>
@@ -277,90 +236,46 @@ namespace Net.Xmpp.Client
         /// </summary>
         public RemoteCertificateValidationCallback Validate
         {
-            get
-            {
-                return im.Validate;
-            }
-
-            set
-            {
-                im.Validate = value;
-            }
+            get => Im.Validate;
+            set => Im.Validate = value;
         }
 
         /// <summary>
         /// Determines whether the session with the server is TLS/SSL encrypted.
         /// </summary>
-        public bool IsEncrypted
-        {
-            get
-            {
-                return im.IsEncrypted;
-            }
-        }
+        public bool IsEncrypted => Im.IsEncrypted;
 
         /// <summary>
         /// The address of the Xmpp entity.
         /// </summary>
-        public Jid Jid
-        {
-            get
-            {
-                return im.Jid;
-            }
-        }
+        public Jid Jid => Im.Jid;
 
         /// <summary>
         /// Determines whether the instance is connected to the XMPP server.
         /// </summary>
-        public bool Connected
-        {
-            get
-            {
-                if (im != null)
-                {
-                    return im.Connected;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
+        public bool Connected => Im?.Connected == true;
 
         /// <summary>
         /// The event that is raised when a connection state changed.
         /// </summary>
         public event EventHandler<ConnectEventArgs> OnConnect
         {
-            add
-            {
-                im.OnConnect += value;
-            }
-            remove
-            {
-                im.OnConnect -= value;
-            }
+            add => Im.OnConnect += value;
+            remove => Im.OnConnect -= value;
         }
 
         /// <summary>
         /// Determines whether the instance has been authenticated.
         /// </summary>
-        public bool Authenticated
-        {
-            get
-            {
-                return im.Authenticated;
-            }
-        }
+        public bool Authenticated => Im.Authenticated;
 
         /// <summary>
         /// The default IQ Set Time out in Milliseconds. -1 means no timeout
         /// </summary>
         public int DefaultTimeOut
         {
-            get { return im.DefaultTimeOut; }
-            set { im.DefaultTimeOut = value; }
+            get => Im.DefaultTimeOut;
+            set => Im.DefaultTimeOut = value;
         }
 
         /// <summary>
@@ -368,29 +283,19 @@ namespace Net.Xmpp.Client
         /// </summary>
         public bool DebugStanzas
         {
-            get { return im.DebugStanzas; }
-            set { im.DebugStanzas = value; }
+            get => Im.DebugStanzas;
+            set => Im.DebugStanzas = value;
         }
 
         /// <summary>
         /// Contains settings for configuring file-transfer options.
         /// </summary>
-        public FileTransferSettings FileTransferSettings
-        {
-            get;
-            private set;
-        }
+        public FileTransferSettings FileTransferSettings { get; private set; }
 
         /// <summary>
         /// The underlying XmppIm instance.
         /// </summary>
-        public XmppIm Im
-        {
-            get
-            {
-                return im;
-            }
-        }
+        public XmppIm Im { get; private set; }
 
         /// <summary>
         /// A callback method to invoke when a request for a subscription is received
@@ -399,15 +304,8 @@ namespace Net.Xmpp.Client
         /// <include file='Examples.xml' path='S22/Xmpp/Client/XmppClient[@name="SubscriptionRequest"]/*'/>
         public SubscriptionRequest SubscriptionRequest
         {
-            get
-            {
-                return im.SubscriptionRequest;
-            }
-
-            set
-            {
-                im.SubscriptionRequest = value;
-            }
+            get => Im.SubscriptionRequest;
+            set => Im.SubscriptionRequest = value;
         }
 
         /// <summary>
@@ -416,15 +314,8 @@ namespace Net.Xmpp.Client
         /// </summary>
         public RegistrationCallback VoiceRequestedInGroupChat
         {
-            get
-            {
-                return groupChat.VoiceRequested;
-            }
-
-            set
-            {
-                groupChat.VoiceRequested = value;
-            }
+            get => groupChat.VoiceRequested;
+            set => groupChat.VoiceRequested = value;
         }
 
         /// <summary>
@@ -432,14 +323,8 @@ namespace Net.Xmpp.Client
         /// </summary>
         public event EventHandler<StatusEventArgs> StatusChanged
         {
-            add
-            {
-                im.Status += value;
-            }
-            remove
-            {
-                im.Status -= value;
-            }
+            add => Im.Status += value;
+            remove => Im.Status -= value;
         }
 
         /// <summary>
@@ -447,14 +332,8 @@ namespace Net.Xmpp.Client
         /// </summary>
         public event EventHandler<MoodChangedEventArgs> MoodChanged
         {
-            add
-            {
-                userMood.MoodChanged += value;
-            }
-            remove
-            {
-                userMood.MoodChanged -= value;
-            }
+            add => userMood.MoodChanged += value;
+            remove => userMood.MoodChanged -= value;
         }
 
         /// <summary>
@@ -462,14 +341,8 @@ namespace Net.Xmpp.Client
         /// </summary>
         public event EventHandler<ActivityChangedEventArgs> ActivityChanged
         {
-            add
-            {
-                userActivity.ActivityChanged += value;
-            }
-            remove
-            {
-                userActivity.ActivityChanged -= value;
-            }
+            add => userActivity.ActivityChanged += value;
+            remove => userActivity.ActivityChanged -= value;
         }
 
 #if WINDOWSPLATFORM
@@ -477,12 +350,8 @@ namespace Net.Xmpp.Client
 		/// The event that is raised when a contact has updated his or her avatar.
 		/// </summary>
 		public event EventHandler<AvatarChangedEventArgs> AvatarChanged {
-			add {
-				userAvatar.AvatarChanged += value;
-			}
-			remove {
-				userAvatar.AvatarChanged -= value;
-			}
+			add => userAvatar.AvatarChanged += value;
+			remove => userAvatar.AvatarChanged -= value;
 		}
 #endif
 
@@ -491,14 +360,8 @@ namespace Net.Xmpp.Client
         /// </summary>
         public event EventHandler<TuneEventArgs> Tune
         {
-            add
-            {
-                userTune.Tune += value;
-            }
-            remove
-            {
-                userTune.Tune -= value;
-            }
+            add => userTune.Tune += value;
+            remove => userTune.Tune -= value;
         }
 
         /// <summary>
@@ -506,29 +369,17 @@ namespace Net.Xmpp.Client
         /// </summary>
         public event EventHandler<MessageEventArgs> Message
         {
-            add
-            {
-                im.Message += value;
-            }
-            remove
-            {
-                im.Message -= value;
-            }
+            add => Im.Message += value;
+            remove => Im.Message -= value;
         }
-        
+
         /// <summary>
         /// The event that is raised when an error message is received.
         /// </summary>
         public event EventHandler<MessageEventArgs> ErrorMessage
         {
-            add
-            {
-                im.ErrorMessage += value;
-            }
-            remove
-            {
-                im.ErrorMessage -= value;
-            }
+            add => Im.ErrorMessage += value;
+            remove => Im.ErrorMessage -= value;
         }
 
         /// <summary>
@@ -536,14 +387,8 @@ namespace Net.Xmpp.Client
         /// </summary>
         public event EventHandler<MessageEventArgs> GroupChatSubjectChanged
         {
-            add
-            {
-                groupChat.SubjectChanged += value;
-            }
-            remove
-            {
-                groupChat.SubjectChanged -= value;
-            }
+            add => groupChat.SubjectChanged += value;
+            remove => groupChat.SubjectChanged -= value;
         }
 
         /// <summary>
@@ -560,14 +405,8 @@ namespace Net.Xmpp.Client
         /// </summary>
         public event EventHandler<GroupPresenceEventArgs> GroupPresenceChanged
         {
-            add
-            {
-                groupChat.PrescenceChanged += value;
-            }
-            remove
-            {
-                groupChat.PrescenceChanged -= value;
-            }
+            add => groupChat.PrescenceChanged += value;
+            remove => groupChat.PrescenceChanged -= value;
         }
 
         /// <summary>
@@ -575,14 +414,8 @@ namespace Net.Xmpp.Client
         /// </summary>
         public event EventHandler<GroupInviteEventArgs> GroupInviteReceived
         {
-            add
-            {
-                groupChat.InviteReceived += value;
-            }
-            remove
-            {
-                groupChat.InviteReceived -= value;
-            }
+            add => groupChat.InviteReceived += value;
+            remove => groupChat.InviteReceived -= value;
         }
 
         /// <summary>
@@ -590,14 +423,8 @@ namespace Net.Xmpp.Client
         /// </summary>
         public event EventHandler<GroupInviteDeclinedEventArgs> GroupInviteDeclined
         {
-            add
-            {
-                groupChat.InviteWasDeclined += value;
-            }
-            remove
-            {
-                groupChat.InviteWasDeclined -= value;
-            }
+            add => groupChat.InviteWasDeclined += value;
+            remove => groupChat.InviteWasDeclined -= value;
         }
 
         /// <summary>
@@ -605,14 +432,8 @@ namespace Net.Xmpp.Client
         /// </summary>
         public event EventHandler<GroupErrorEventArgs> GroupMucError
         {
-            add
-            {
-                groupChat.MucErrorResponse += value;
-            }
-            remove
-            {
-                groupChat.MucErrorResponse -= value;
-            }
+            add => groupChat.MucErrorResponse += value;
+            remove => groupChat.MucErrorResponse -= value;
         }
 
         /// <summary>
@@ -621,14 +442,8 @@ namespace Net.Xmpp.Client
         /// </summary>
         public event EventHandler<FileTransferProgressEventArgs> FileTransferProgress
         {
-            add
-            {
-                siFileTransfer.FileTransferProgress += value;
-            }
-            remove
-            {
-                siFileTransfer.FileTransferProgress -= value;
-            }
+            add => siFileTransfer.FileTransferProgress += value;
+            remove => siFileTransfer.FileTransferProgress -= value;
         }
 
         /// <summary>
@@ -637,14 +452,8 @@ namespace Net.Xmpp.Client
         /// </summary>
         public event EventHandler<FileTransferAbortedEventArgs> FileTransferAborted
         {
-            add
-            {
-                siFileTransfer.FileTransferAborted += value;
-            }
-            remove
-            {
-                siFileTransfer.FileTransferAborted -= value;
-            }
+            add => siFileTransfer.FileTransferAborted += value;
+            remove => siFileTransfer.FileTransferAborted -= value;
         }
 
         /// <summary>
@@ -653,14 +462,8 @@ namespace Net.Xmpp.Client
         /// </summary>
         public event EventHandler<ChatStateChangedEventArgs> ChatStateChanged
         {
-            add
-            {
-                chatStateNotifications.ChatStateChanged += value;
-            }
-            remove
-            {
-                chatStateNotifications.ChatStateChanged -= value;
-            }
+            add => chatStateNotifications.ChatStateChanged += value;
+            remove => chatStateNotifications.ChatStateChanged -= value;
         }
 
         /// <summary>
@@ -669,14 +472,8 @@ namespace Net.Xmpp.Client
         /// </summary>
         public event EventHandler<RosterUpdatedEventArgs> RosterUpdated
         {
-            add
-            {
-                im.RosterUpdated += value;
-            }
-            remove
-            {
-                im.RosterUpdated -= value;
-            }
+            add => Im.RosterUpdated += value;
+            remove => Im.RosterUpdated -= value;
         }
 
         /// <summary>
@@ -685,14 +482,8 @@ namespace Net.Xmpp.Client
         /// </summary>
         public event EventHandler<UnsubscribedEventArgs> Unsubscribed
         {
-            add
-            {
-                im.Unsubscribed += value;
-            }
-            remove
-            {
-                im.Unsubscribed -= value;
-            }
+            add => Im.Unsubscribed += value;
+            remove => Im.Unsubscribed -= value;
         }
 
         /// <summary>
@@ -701,14 +492,8 @@ namespace Net.Xmpp.Client
         /// </summary>
         public event EventHandler<SubscriptionApprovedEventArgs> SubscriptionApproved
         {
-            add
-            {
-                im.SubscriptionApproved += value;
-            }
-            remove
-            {
-                im.SubscriptionApproved -= value;
-            }
+            add => Im.SubscriptionApproved += value;
+            remove => Im.SubscriptionApproved -= value;
         }
 
         /// <summary>
@@ -717,14 +502,8 @@ namespace Net.Xmpp.Client
         /// </summary>
         public event EventHandler<SubscriptionRefusedEventArgs> SubscriptionRefused
         {
-            add
-            {
-                im.SubscriptionRefused += value;
-            }
-            remove
-            {
-                im.SubscriptionRefused -= value;
-            }
+            add => Im.SubscriptionRefused += value;
+            remove => Im.SubscriptionRefused -= value;
         }
 
         /// <summary>
@@ -732,14 +511,8 @@ namespace Net.Xmpp.Client
         /// </summary>
         public event EventHandler<Im.ErrorEventArgs> Error
         {
-            add
-            {
-                im.Error += value;
-            }
-            remove
-            {
-                im.Error -= value;
-            }
+            add => Im.Error += value;
+            remove => Im.Error -= value;
         }
 
         /// <summary>
@@ -767,7 +540,7 @@ namespace Net.Xmpp.Client
         public XmppClient(string hostname, string username, string password,
             int port = 5222, bool tls = true, RemoteCertificateValidationCallback validate = null, string serveradress = "")
         {
-            im = new XmppIm(hostname, username, password, port, tls, validate, serveradress);
+            Im = new XmppIm(hostname, username, password, port, tls, validate, serveradress);
             // Initialize the various extension modules.
             LoadExtensions();
         }
@@ -794,7 +567,7 @@ namespace Net.Xmpp.Client
         public XmppClient(string hostname, int port = 5222, bool tls = true,
             RemoteCertificateValidationCallback validate = null, string serverAdress = "")
         {
-            im = new XmppIm(hostname, port, tls, validate, serverAdress);
+            Im = new XmppIm(hostname, port, tls, validate, serverAdress);
             LoadExtensions();
         }
 
@@ -808,7 +581,7 @@ namespace Net.Xmpp.Client
         /// authentication error occured while trying to establish a secure connection, or
         /// the provided credentials were rejected by the server, or the server requires
         /// TLS/SSL and the Tls property has been set to false.</exception>
-        /// <exception cref="System.IO.IOException">There was a failure while writing to or
+        /// <exception cref="IOException">There was a failure while writing to or
         /// reading from the network. If the InnerException is of type SocketExcption, use
         /// the ErrorCode property to obtain the specific socket error code.</exception>
         /// <exception cref="ObjectDisposedException">The XmppClient object has been
@@ -818,7 +591,7 @@ namespace Net.Xmpp.Client
         /// of an XMPP extension failed.</exception>
         public void Connect(string resource = null)
         {
-            im.Connect(resource);
+            Im.Connect(resource);
         }
 
         /// <summary>
@@ -843,7 +616,7 @@ namespace Net.Xmpp.Client
         /// of an XMPP extension failed.</exception>
         public void Authenticate(string username, string password)
         {
-            im.Autenticate(username, password);
+            Im.Autenticate(username, password);
         }
 
         /// <summary>
@@ -864,7 +637,7 @@ namespace Net.Xmpp.Client
         /// of an XMPP extension failed.</exception>
         public void SimpleAutenticate(string username, string password)
         {
-            im.SimpleAutenticate(username, password);
+            Im.SimpleAutenticate(username, password);
         }
 
         /// <summary>
@@ -873,7 +646,7 @@ namespace Net.Xmpp.Client
         public void SetPresence()
         {
             // Send initial presence.
-            im.SetPresence();
+            Im.SetPresence();
         }
 
         /// <summary>
@@ -881,7 +654,7 @@ namespace Net.Xmpp.Client
         /// </summary>
         public void Reconnect()
         {
-            im.Reconnect();
+            Im.Reconnect();
         }
 
         /// <summary>
@@ -922,7 +695,7 @@ namespace Net.Xmpp.Client
             AssertValid();
             to.ThrowIfNull("to");
             body.ThrowIfNullOrEmpty("body");
-            im.SendMessage(to, body, subject, thread, type, language);
+            Im.SendMessage(to, body, subject, thread, type, language);
         }
 
         /// <summary>
@@ -962,7 +735,7 @@ namespace Net.Xmpp.Client
             AssertValid();
             to.ThrowIfNull("to");
             bodies.ThrowIfNull("bodies");
-            im.SendMessage(to, bodies, subjects, thread, type, language);
+            Im.SendMessage(to, bodies, subjects, thread, type, language);
         }
 
         /// <summary>
@@ -981,7 +754,7 @@ namespace Net.Xmpp.Client
         {
             AssertValid();
             message.ThrowIfNull("message");
-            im.SendMessage(message);
+            Im.SendMessage(message);
         }
 
         /// <summary>
@@ -1008,7 +781,7 @@ namespace Net.Xmpp.Client
             sbyte priority = 0, CultureInfo language = null)
         {
             AssertValid();
-            im.SetStatus(availability, message, 0, language);
+            Im.SetStatus(availability, message, 0, language);
         }
 
         /// <summary>
@@ -1035,7 +808,7 @@ namespace Net.Xmpp.Client
             Dictionary<string, string> messages, sbyte priority = 0)
         {
             AssertValid();
-            im.SetStatus(availability, messages, priority);
+            Im.SetStatus(availability, messages, priority);
         }
 
         /// <summary>
@@ -1056,7 +829,7 @@ namespace Net.Xmpp.Client
         {
             AssertValid();
             status.ThrowIfNull("status");
-            im.SetStatus(status);
+            Im.SetStatus(status);
         }
 
         /// <summary>
@@ -1081,7 +854,7 @@ namespace Net.Xmpp.Client
         public Roster GetRoster()
         {
             AssertValid();
-            return im.GetRoster();
+            return Im.GetRoster();
         }
 
         /// <summary>
@@ -1111,9 +884,9 @@ namespace Net.Xmpp.Client
             AssertValid();
             jid.ThrowIfNull("jid");
             // Create a roster item for the new contact.
-            im.AddToRoster(new RosterItem(jid, name, groups));
+            Im.AddToRoster(new RosterItem(jid, name, groups));
             // Request a subscription from the contact.
-            im.RequestSubscription(jid);
+            Im.RequestSubscription(jid);
         }
 
         /// <summary>
@@ -1139,7 +912,7 @@ namespace Net.Xmpp.Client
             jid.ThrowIfNull("jid");
             // This removes the contact from the user's roster AND also cancels any
             // subscriptions.
-            im.RemoveFromRoster(jid);
+            Im.RemoveFromRoster(jid);
         }
 
         /// <summary>
@@ -1163,7 +936,7 @@ namespace Net.Xmpp.Client
         {
             AssertValid();
             item.ThrowIfNull("item");
-            im.RemoveFromRoster(item);
+            Im.RemoveFromRoster(item);
         }
 
 #if WINDOWSPLATFORM
@@ -1223,10 +996,8 @@ namespace Net.Xmpp.Client
 
             try
             {
-                using (Stream s = File.OpenRead(filePath))
-                {
-                    vcardAvatars.SetAvatar(s);
-                }
+                using Stream s = File.OpenRead(filePath);
+                vcardAvatars.SetAvatar(s);
             }
             catch (IOException copyError)
             {
@@ -1371,15 +1142,9 @@ namespace Net.Xmpp.Client
         /// </summary>
         public FileTransferRequest FileTransferRequest
         {
-            get
-            {
-                return siFileTransfer.TransferRequest;
-            }
+            get => siFileTransfer.TransferRequest;
 
-            set
-            {
-                siFileTransfer.TransferRequest = value;
-            }
+            set => siFileTransfer.TransferRequest = value;
         }
 
         /// <summary>
@@ -1388,15 +1153,9 @@ namespace Net.Xmpp.Client
         /// </summary>
         public CustomIqRequestDelegate CustomIqDelegate
         {
-            get
-            {
-                return im.CustomIqDelegate;
-            }
+            get => Im.CustomIqDelegate;
 
-            set
-            {
-                im.CustomIqDelegate = value;
-            }
+            set => Im.CustomIqDelegate = value;
         }
 
         /// <summary>
@@ -1569,7 +1328,7 @@ namespace Net.Xmpp.Client
         /// <exception cref="ArgumentNullException">The jid parameter is null.</exception>
         /// <exception cref="InvalidOperationException">The XmppClient instance is
         /// not connected to a remote host.</exception>
-        /// <exception cref="System.IO.IOException">There was a failure while writing to or
+        /// <exception cref="IOException">There was a failure while writing to or
         /// reading from the network.</exception>
         /// <exception cref="NotSupportedException">The XMPP client of the
         /// user with the specified JID does not support the retrieval of the
@@ -1600,7 +1359,7 @@ namespace Net.Xmpp.Client
         /// <exception cref="InvalidOperationException">The XmppClient instance is not
         /// connected to a remote host, or the XmppCleint instance has not authenticated
         /// with the XMPP server.</exception>
-        /// <exception cref="System.IO.IOException">There was a failure while writing to or
+        /// <exception cref="IOException">There was a failure while writing to or
         /// reading from the network.</exception>
         /// <exception cref="NotSupportedException">The XMPP client of the
         /// user with the specified JID does not support the retrieval of version
@@ -1630,7 +1389,7 @@ namespace Net.Xmpp.Client
         /// <exception cref="ArgumentNullException">The jid parameter is null.</exception>
         /// <exception cref="InvalidOperationException">The XmppClient instance is
         /// not connected to a remote host.</exception>
-        /// <exception cref="System.IO.IOException">There was a failure while writing to or
+        /// <exception cref="IOException">There was a failure while writing to or
         /// reading from the network.</exception>
         /// <exception cref="NotSupportedException">The XMPP client of the
         /// user with the specified JID does not support the retrieval of feature
@@ -1691,7 +1450,7 @@ namespace Net.Xmpp.Client
         /// <exception cref="ArgumentNullException">The jid parameter is null.</exception>
         /// <exception cref="InvalidOperationException">The XmppClient instance is
         /// not connected to a remote host.</exception>
-        /// <exception cref="System.IO.IOException">There was a failure while writing to or
+        /// <exception cref="IOException">There was a failure while writing to or
         /// reading from the network.</exception>
         /// <exception cref="NotSupportedException">The XMPP client of the
         /// user with the specified JID does not support buzzing.</exception>
@@ -1718,7 +1477,7 @@ namespace Net.Xmpp.Client
         /// <exception cref="ArgumentNullException">The jid parameter is null.</exception>
         /// <exception cref="InvalidOperationException">The XmppClient instance is
         /// not connected to a remote host.</exception>
-        /// <exception cref="System.IO.IOException">There was a failure while writing to or
+        /// <exception cref="IOException">There was a failure while writing to or
         /// reading from the network.</exception>
         /// <exception cref="NotSupportedException">The XMPP client of the
         /// user with the specified JID does not support the 'Ping' XMPP protocol
@@ -1762,17 +1521,19 @@ namespace Net.Xmpp.Client
             // If our server supports the 'Blocking Command' extension, we can just
             // use that.
             if (block.Supported)
+            {
                 block.Block(jid);
+            }
             else
             {
                 // Privacy list blocking. If our server doesn't support privacy lists, we're
                 // out of luck.
                 PrivacyList privacyList = null;
-                string name = im.GetDefaultPrivacyList();
+                string name = Im.GetDefaultPrivacyList();
                 if (name != null)
-                    privacyList = im.GetPrivacyList(name);
+                    privacyList = Im.GetPrivacyList(name);
                 // If no default list has been set, look for a 'blocklist' list.
-                foreach (var list in im.GetPrivacyLists())
+                foreach (var list in Im.GetPrivacyLists())
                 {
                     if (list.Name == "blocklist")
                         privacyList = list;
@@ -1782,9 +1543,9 @@ namespace Net.Xmpp.Client
                     privacyList = new PrivacyList("blocklist");
                 privacyList.Add(new JidPrivacyRule(jid, false, 0), true);
                 // Save the privacy list and activate it.
-                im.EditPrivacyList(privacyList);
-                im.SetDefaultPrivacyList(privacyList.Name);
-                im.SetActivePrivacyList(privacyList.Name);
+                Im.EditPrivacyList(privacyList);
+                Im.SetDefaultPrivacyList(privacyList.Name);
+                Im.SetActivePrivacyList(privacyList.Name);
             }
         }
 
@@ -1852,7 +1613,7 @@ namespace Net.Xmpp.Client
         {
             return messageArchiving.GetArchivedChat(pageRequest, chatId);
         }
-		
+
         /// <summary>
         /// Unblocks all communication to and from the XMPP entity with the specified
         /// JID.
@@ -1881,17 +1642,19 @@ namespace Net.Xmpp.Client
             // If our server supports the 'Blocking Command' extension, we can just
             // use that.
             if (block.Supported)
+            {
                 block.Unblock(jid);
+            }
             else
             {
                 // Privacy list blocking. If our server doesn't support privacy lists, we're
                 // out of luck.
                 PrivacyList privacyList = null;
-                string name = im.GetDefaultPrivacyList();
+                string name = Im.GetDefaultPrivacyList();
                 if (name != null)
-                    privacyList = im.GetPrivacyList(name);
+                    privacyList = Im.GetPrivacyList(name);
                 // If no default list has been set, look for a 'blocklist' list.
-                foreach (var list in im.GetPrivacyLists())
+                foreach (var list in Im.GetPrivacyLists())
                 {
                     if (list.Name == "blocklist")
                         privacyList = list;
@@ -1905,7 +1668,7 @@ namespace Net.Xmpp.Client
                     if (rule is JidPrivacyRule)
                     {
                         var jidRule = rule as JidPrivacyRule;
-                        if (jidRule.Jid == jid && jidRule.Allow == false)
+                        if (jidRule.Jid == jid && !jidRule.Allow)
                             set.Add(jidRule);
                     }
                 }
@@ -1914,13 +1677,13 @@ namespace Net.Xmpp.Client
                 // Save the privacy list and activate it.
                 if (privacyList.Count == 0)
                 {
-                    im.SetDefaultPrivacyList();
-                    im.RemovePrivacyList(privacyList.Name);
+                    Im.SetDefaultPrivacyList();
+                    Im.RemovePrivacyList(privacyList.Name);
                 }
                 else
                 {
-                    im.EditPrivacyList(privacyList);
-                    im.SetDefaultPrivacyList(privacyList.Name);
+                    Im.EditPrivacyList(privacyList);
+                    Im.SetDefaultPrivacyList(privacyList.Name);
                 }
             }
         }
@@ -1948,10 +1711,10 @@ namespace Net.Xmpp.Client
             if (block.Supported)
                 return block.GetBlocklist();
             PrivacyList privacyList = null;
-            string name = im.GetDefaultPrivacyList();
+            string name = Im.GetDefaultPrivacyList();
             if (name != null)
-                privacyList = im.GetPrivacyList(name);
-            foreach (var list in im.GetPrivacyLists())
+                privacyList = Im.GetPrivacyList(name);
+            foreach (var list in Im.GetPrivacyLists())
             {
                 if (list.Name == "blocklist")
                     privacyList = list;
@@ -1961,8 +1724,8 @@ namespace Net.Xmpp.Client
             {
                 foreach (var rule in privacyList)
                 {
-                    if (rule is JidPrivacyRule)
-                        items.Add((rule as JidPrivacyRule).Jid);
+                    if (rule is JidPrivacyRule privacy)
+                        items.Add(privacy.Jid);
                 }
             }
             return items;
@@ -1978,7 +1741,6 @@ namespace Net.Xmpp.Client
             AssertValid();
             return groupChat.DiscoverRooms(chatService);
         }
-
 
         /// <summary>
         /// Returns a list of active public chat room messages.
@@ -2023,7 +1785,6 @@ namespace Net.Xmpp.Client
             AssertValid();
             return groupChat.SendRegistration(room, form);
         }
-
 
         /// <summary>
         /// Request immediate room creation with default server options
@@ -2198,7 +1959,7 @@ namespace Net.Xmpp.Client
             AssertValid();
             return groupChat.GetMembers(chatRoom, Role.Moderator);
         }
-        
+
         /// <summary>
         /// Allows moderators to kick an occupant from the room.
         /// </summary>
@@ -2276,7 +2037,7 @@ namespace Net.Xmpp.Client
         /// Request the Search Form
         /// </summary>
         /// <returns>DataForm for avaible fields search</returns>
-        public void RequestSlot(string fileName, long size, string contentType, Action<Slot> upload, Action<String> error)
+        public void RequestSlot(string fileName, long size, string contentType, Action<Slot> upload, Action<string> error)
         {
             AssertValid();
             this.httpUpload.RequestSlot(fileName, size, contentType, upload, error);
@@ -2319,9 +2080,8 @@ namespace Net.Xmpp.Client
                 // Get rid of managed resources.
                 if (disposing)
                 {
-                    if (im != null)
-                        im.Close();
-                    im = null;
+                    Im?.Close();
+                    Im = null;
                 }
                 // Get rid of unmanaged resources.
             }
@@ -2350,41 +2110,41 @@ namespace Net.Xmpp.Client
         /// </summary>
         private void LoadExtensions()
         {
-            version = im.LoadExtension<SoftwareVersion>();
-            sdisco = im.LoadExtension<ServiceDiscovery>();
-            ecapa = im.LoadExtension<EntityCapabilities>();
-            ping = im.LoadExtension<Ping>();
-            attention = im.LoadExtension<Attention>();
-            time = im.LoadExtension<EntityTime>();
-            block = im.LoadExtension<BlockingCommand>();
-            pep = im.LoadExtension<Pep>();
-            userTune = im.LoadExtension<UserTune>();
+            version = Im.LoadExtension<SoftwareVersion>();
+            sdisco = Im.LoadExtension<ServiceDiscovery>();
+            ecapa = Im.LoadExtension<EntityCapabilities>();
+            ping = Im.LoadExtension<Ping>();
+            attention = Im.LoadExtension<Attention>();
+            time = Im.LoadExtension<EntityTime>();
+            block = Im.LoadExtension<BlockingCommand>();
+            pep = Im.LoadExtension<Pep>();
+            userTune = Im.LoadExtension<UserTune>();
 #if WINDOWSPLATFORM
 			userAvatar = im.LoadExtension<UserAvatar>();
 #endif
-            userMood = im.LoadExtension<UserMood>();
-            dataForms = im.LoadExtension<DataForms>();
-            featureNegotiation = im.LoadExtension<FeatureNegotiation>();
-            streamInitiation = im.LoadExtension<StreamInitiation>();
-            siFileTransfer = im.LoadExtension<SIFileTransfer>();
-            inBandBytestreams = im.LoadExtension<InBandBytestreams>();
-            userActivity = im.LoadExtension<UserActivity>();
-            socks5Bytestreams = im.LoadExtension<Socks5Bytestreams>();
+            userMood = Im.LoadExtension<UserMood>();
+            dataForms = Im.LoadExtension<DataForms>();
+            featureNegotiation = Im.LoadExtension<FeatureNegotiation>();
+            streamInitiation = Im.LoadExtension<StreamInitiation>();
+            siFileTransfer = Im.LoadExtension<SIFileTransfer>();
+            inBandBytestreams = Im.LoadExtension<InBandBytestreams>();
+            userActivity = Im.LoadExtension<UserActivity>();
+            socks5Bytestreams = Im.LoadExtension<Socks5Bytestreams>();
             FileTransferSettings = new FileTransferSettings(socks5Bytestreams,
                 siFileTransfer);
-            serverIpCheck = im.LoadExtension<ServerIpCheck>();
-            messageCarbons = im.LoadExtension<MessageCarbons>();
-            inBandRegistration = im.LoadExtension<InBandRegistration>();
-            chatStateNotifications = im.LoadExtension<ChatStateNotifications>();
-            bitsOfBinary = im.LoadExtension<BitsOfBinary>();
-            vcardAvatars = im.LoadExtension<VCardAvatars>();
-            vcard = im.LoadExtension<VCards>();
-            cusiqextension = im.LoadExtension<CustomIqExtension>();
-            groupChat = im.LoadExtension<MultiUserChat>();
-            search = im.LoadExtension<JabberSearch>();
-            messageArchiving = im.LoadExtension<MessageArchiving>();
-            messageArchiveManagement = im.LoadExtension<MessageArchiveManagement>();
-            httpUpload = im.LoadExtension<HTTPFileUpload>();
+            serverIpCheck = Im.LoadExtension<ServerIpCheck>();
+            messageCarbons = Im.LoadExtension<MessageCarbons>();
+            inBandRegistration = Im.LoadExtension<InBandRegistration>();
+            chatStateNotifications = Im.LoadExtension<ChatStateNotifications>();
+            bitsOfBinary = Im.LoadExtension<BitsOfBinary>();
+            vcardAvatars = Im.LoadExtension<VCardAvatars>();
+            vcard = Im.LoadExtension<VCards>();
+            cusiqextension = Im.LoadExtension<CustomIqExtension>();
+            groupChat = Im.LoadExtension<MultiUserChat>();
+            search = Im.LoadExtension<JabberSearch>();
+            messageArchiving = Im.LoadExtension<MessageArchiving>();
+            messageArchiveManagement = Im.LoadExtension<MessageArchiveManagement>();
+            httpUpload = Im.LoadExtension<HTTPFileUpload>();
         }
     }
 }

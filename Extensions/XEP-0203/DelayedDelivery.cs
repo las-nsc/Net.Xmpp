@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Net.Xmpp.Extensions
@@ -21,9 +17,7 @@ namespace Net.Xmpp.Extensions
             DateTimeOffset timestamp = DateTimeOffset.UtcNow;
 
             // Refer to XEP-0203.
-            var delay = xml["delay"];
-
-            if (delay != null && delay.NamespaceURI == "urn:xmpp:delay")
+            if (xml["delay"] is { } delay && delay.NamespaceURI == "urn:xmpp:delay")
             {
                 var stampAttribute = delay.GetAttribute("stamp");
                 if (stampAttribute != null)

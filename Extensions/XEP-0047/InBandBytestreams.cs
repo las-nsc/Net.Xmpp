@@ -34,27 +34,15 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <remarks>This is used for compiling the list of supported extensions
         /// advertised by the 'Service Discovery' extension.</remarks>
-        public override IEnumerable<string> Namespaces
-        {
-            get
-            {
-                return new string[] {
-					"http://jabber.org/protocol/ibb"
-				};
-            }
-        }
+        public override IEnumerable<string> Namespaces => new string[] {
+                    "http://jabber.org/protocol/ibb"
+                };
 
         /// <summary>
         /// The named constant of the Extension enumeration that corresponds to this
         /// extension.
         /// </summary>
-        public override Extension Xep
-        {
-            get
-            {
-                return Extension.InBandBytestreams;
-            }
-        }
+        public override Extension Xep => Extension.InBandBytestreams;
 
         /// <summary>
         /// The event that is raised whenever bytes have been transferred.
@@ -161,7 +149,7 @@ namespace Net.Xmpp.Extensions
                 while (left > 0)
                 {
                     int read = session.Stream.Read(buf, 0, blockSize);
-                    left = left - read;
+                    left -= read;
                     if (read <= 0)
                         break;
                     string b64 = Convert.ToBase64String(buf, 0, read);
@@ -173,7 +161,7 @@ namespace Net.Xmpp.Extensions
                     Iq response = im.IqRequest(IqType.Set, session.To, im.Jid, data);
                     if (response.Type == IqType.Error)
                         throw Util.ExceptionFromError(response);
-                    session.Count = session.Count + read;
+                    session.Count += read;
                     // Raise the 'BytesTransferred' event.
                     BytesTransferred.Raise(this, new BytesTransferredEventArgs(session));
                 }
@@ -240,7 +228,7 @@ namespace Net.Xmpp.Extensions
             if (siFileTransfer.GetSession(sessionId, stanza.From, im.Jid) == null)
                 throw new XmppException("Invalid session-id.");
             string s = stanza.Data["open"].GetAttribute("stanza");
-            if (!String.IsNullOrEmpty(s) && s != "iq")
+            if (!string.IsNullOrEmpty(s) && s != "iq")
                 throw new XmppException("Only IQ stanzas are supported.");
         }
 
@@ -307,7 +295,7 @@ namespace Net.Xmpp.Extensions
                 throw new IOException("The stream could not be written.", e);
             }
             // Update the byte count and raise the 'BytesTransferred' event.
-            session.Count = session.Count + bytes.Length;
+            session.Count += bytes.Length;
             BytesTransferred.Raise(this, new BytesTransferredEventArgs(session));
         }
 

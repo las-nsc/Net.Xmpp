@@ -13,17 +13,17 @@ namespace Net.Xmpp.Im
         /// <summary>
         /// The parent XML element of the dictionary items.
         /// </summary>
-        private XmlElement element;
+        private readonly XmlElement element;
 
         /// <summary>
         /// The tag name of a single dictionary item.
         /// </summary>
-        private string tag;
+        private readonly string tag;
 
         /// <summary>
         /// The attribute name of the items which acts as key.
         /// </summary>
-        private string key;
+        private readonly string key;
 
         /// <summary>
         /// Initializes a new instance of the XmlDictionary class.
@@ -92,7 +92,7 @@ namespace Net.Xmpp.Im
                 foreach (XmlElement e in element.GetElementsByTagName(tag))
                 {
                     string k = e.GetAttribute(this.key);
-                    if (!String.IsNullOrEmpty(k))
+                    if (!string.IsNullOrEmpty(k))
                         set.Add(k);
                 }
                 return set;
@@ -131,7 +131,7 @@ namespace Net.Xmpp.Im
         {
             key.ThrowIfNull("key");
             XmlElement e = GetElement(key);
-            value = e != null ? e.InnerText : null;
+            value = (e?.InnerText);
             return e != null;
         }
 
@@ -146,7 +146,7 @@ namespace Net.Xmpp.Im
                 foreach (XmlElement e in element.GetElementsByTagName(tag))
                 {
                     string k = e.GetAttribute(this.key);
-                    if (!String.IsNullOrEmpty(k))
+                    if (!string.IsNullOrEmpty(k))
                         set.Add(e.InnerText);
                 }
                 return set;
@@ -215,7 +215,7 @@ namespace Net.Xmpp.Im
             foreach (XmlElement e in element.GetElementsByTagName(tag))
             {
                 string k = e.GetAttribute(key);
-                if (!String.IsNullOrEmpty(k))
+                if (!string.IsNullOrEmpty(k))
                     set.Add(e);
             }
             foreach (var e in set)
@@ -232,9 +232,7 @@ namespace Net.Xmpp.Im
         public bool Contains(KeyValuePair<string, string> item)
         {
             XmlElement e = GetElement(item.Key);
-            if (e != null)
-                return e.InnerText == item.Value;
-            return false;
+            return e != null && e.InnerText == item.Value;
         }
 
         /// <summary>
@@ -268,24 +266,12 @@ namespace Net.Xmpp.Im
         /// <summary>
         /// Gets the number of elements contained in the dictionary.
         /// </summary>
-        public int Count
-        {
-            get
-            {
-                return Keys.Count;
-            }
-        }
+        public int Count => Keys.Count;
 
         /// <summary>
         /// Gets a value indicating whether the dictionary is read-only.
         /// </summary>
-        public bool IsReadOnly
-        {
-            get
-            {
-                return element.IsReadOnly;
-            }
-        }
+        public bool IsReadOnly => element.IsReadOnly;
 
         /// <summary>
         /// Removes the specific object from the dictionary.

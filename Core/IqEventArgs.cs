@@ -10,11 +10,7 @@ namespace Net.Xmpp.Core
         /// <summary>
         /// The IQ stanza.
         /// </summary>
-        public Iq Stanza
-        {
-            get;
-            private set;
-        }
+        public Iq Stanza { get; }
 
         /// <summary>
         /// Initializes a new instance of the IqEventArgs class.

@@ -12,38 +12,22 @@ namespace Net.Xmpp.Im
         /// <summary>
         /// The set of rules that make up the privacy list.
         /// </summary>
-        private ISet<PrivacyRule> rules = new HashSet<PrivacyRule>();
+        private readonly ISet<PrivacyRule> rules = new HashSet<PrivacyRule>();
 
         /// <summary>
         /// The name of the privacy list.
         /// </summary>
-        public string Name
-        {
-            get;
-            private set;
-        }
+        public string Name { get; }
 
         /// <summary>
         /// Gets the number of elements contained in the privacy list.
         /// </summary>
-        public int Count
-        {
-            get
-            {
-                return rules.Count;
-            }
-        }
+        public int Count => rules.Count;
 
         /// <summary>
         /// Gets a value indicating whether the privacy list is read-only.
         /// </summary>
-        public bool IsReadOnly
-        {
-            get
-            {
-                return rules.IsReadOnly;
-            }
-        }
+        public bool IsReadOnly => rules.IsReadOnly;
 
         /// <summary>
         /// Initializes a new instance of the PrivacyList class.
@@ -89,8 +73,7 @@ namespace Net.Xmpp.Im
             foreach (PrivacyRule rule in rules)
             {
                 if (rule.Order == item.Order)
-                    throw new ArgumentException("A rule with an order value of " +
-                        rule.Order + " already exists.");
+                    throw new ArgumentException($"A rule with an order value of {rule.Order} already exists.");
             }
             rules.Add(item);
         }
@@ -111,8 +94,7 @@ namespace Net.Xmpp.Im
             foreach (PrivacyRule rule in rules)
             {
                 if (!overWriteOrder && rule.Order == item.Order)
-                    throw new ArgumentException("A rule with an order value of " +
-                        rule.Order + " already exists.");
+                    throw new ArgumentException($"A rule with an order value of {rule.Order} already exists.");
                 if (!highest.HasValue)
                     highest = rule.Order;
                 if (rule.Order > highest)

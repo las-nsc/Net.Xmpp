@@ -11,58 +11,32 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The JID of the item.
         /// </summary>
-        public Jid Jid
-        {
-            get;
-            private set;
-        }
+        public Jid Jid { get; }
 
         /// <summary>
         /// The node identifier of the item. This may be null.
         /// </summary>
-        public string Node
-        {
-            get;
-            private set;
-        }
+        public string Node { get; }
 
         /// <summary>
         /// The name of the item. This may be null.
         /// </summary>
-        public string Name
-        {
-            get;
-            private set;
-        }
+        public string Name { get; }
 
         /// <summary>
         /// The nickname of the item. This may be null.
         /// </summary>
-        public string Nick
-        {
-            get;
-            private set;
-        }
+        public string Nick { get; }
 
         /// <summary>
         /// The affiliation of the item. This may be null.
         /// </summary>
-
-        public string Affiliation
-        {
-            get;
-            private set;
-        }
+        public string Affiliation { get; }
 
         /// <summary>
         /// The role of the item. This may be null.
         /// </summary>
-
-        public string Role
-        {
-            get;
-            private set;
-        }
+        public string Role { get; }
 
         /// <summary>
         /// Initializes a new instance of the Item class.

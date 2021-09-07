@@ -21,39 +21,23 @@ namespace Net.Xmpp.Extensions.Socks5
         /// <summary>
         /// The status of the reply.
         /// </summary>
-        public ReplyStatus Status
-        {
-            get;
-            private set;
-        }
+        public ReplyStatus Status { get; }
 
         /// <summary>
         /// The type of address contained within the request.
         /// </summary>
-        public ATyp ATyp
-        {
-            get;
-            private set;
-        }
+        public ATyp ATyp { get; }
 
         /// <summary>
         /// The destination address. The type is either IPAddress or
         /// string, depending on the value of the ATyp field.
         /// </summary>
-        public object Address
-        {
-            get;
-            private set;
-        }
+        public object Address { get; }
 
         /// <summary>
         /// The port of the destination host.
         /// </summary>
-        public ushort Port
-        {
-            get;
-            private set;
-        }
+        public ushort Port { get; }
 
         /// <summary>
         /// Serializes the instance into an array of bytes.
@@ -64,7 +48,7 @@ namespace Net.Xmpp.Extensions.Socks5
         {
             byte[] addr;
             if (Address is IPAddress)
-                addr = (Address as IPAddress).GetAddressBytes();
+                addr = (Address as IPAddress)?.GetAddressBytes();
             else
             {
                 byte[] domainBytes = Encoding.ASCII.GetBytes((string)Address);
@@ -97,36 +81,30 @@ namespace Net.Xmpp.Extensions.Socks5
         public static SocksReply Deserialize(byte[] buffer)
         {
             buffer.ThrowIfNull("buffer");
-            using (var ms = new MemoryStream(buffer))
+            using var ms = new MemoryStream(buffer);
+            using BinaryReader r = new(ms);
+            if (r.ReadByte() != version)
+                throw new SerializationException("Invalid SOCKS5 reply.");
+            ReplyStatus status = (ReplyStatus)r.ReadByte();
+            // Skip reserved octet.
+            r.ReadByte();
+            ATyp atyp = (ATyp)r.ReadByte();
+            IPAddress addr = null;
+            string domain = null;
+            switch (atyp)
             {
-                using (BinaryReader r = new BinaryReader(ms))
-                {
-                    if (r.ReadByte() != version)
-                        throw new SerializationException("Invalid SOCKS5 reply.");
-                    ReplyStatus status = (ReplyStatus)r.ReadByte();
-                    // Skip reserved octet.
-                    r.ReadByte();
-                    ATyp atyp = (ATyp)r.ReadByte();
-                    IPAddress addr = null;
-                    string domain = null;
-                    switch (atyp)
-                    {
-                        case ATyp.IPv4:
-                        case ATyp.IPv6:
-                            addr = new IPAddress(r.ReadBytes(atyp == ATyp.IPv4 ? 4 : 16));
-                            break;
+                case ATyp.IPv4:
+                case ATyp.IPv6:
+                    addr = new IPAddress(r.ReadBytes(atyp == ATyp.IPv4 ? 4 : 16));
+                    break;
 
-                        case ATyp.Domain:
-                            byte len = r.ReadByte();
-                            domain = Encoding.ASCII.GetString(r.ReadBytes(len));
-                            break;
-                    }
-                    ushort port = r.ReadUInt16(true);
-                    if (atyp == ATyp.Domain)
-                        return new SocksReply(status, domain, port);
-                    return new SocksReply(status, addr, port);
-                }
+                case ATyp.Domain:
+                    byte len = r.ReadByte();
+                    domain = Encoding.ASCII.GetString(r.ReadBytes(len));
+                    break;
             }
+            ushort port = r.ReadUInt16(true);
+            return atyp == ATyp.Domain ? new SocksReply(status, domain, port) : new SocksReply(status, addr, port);
         }
 
         /// <summary>

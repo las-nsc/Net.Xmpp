@@ -12,11 +12,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The session for which the event is raised.
         /// </summary>
-        public SISession Session
-        {
-            get;
-            private set;
-        }
+        public SISession Session { get; }
 
         /// <summary>
         /// Initializes a new instance of the BytesTransferredEventArgs class.

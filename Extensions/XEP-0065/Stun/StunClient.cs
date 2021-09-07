@@ -57,7 +57,7 @@ namespace Net.Xmpp.Extensions.Stun
         /// <exception cref="TimeoutException">The specified timeout has
         /// expired.</exception>
         public static IPAddress Query(string host, int port = 3478,
-            int timeout = Int32.MaxValue)
+            int timeout = int.MaxValue)
         {
             host.ThrowIfNull("host");
             port.ThrowIfOutOfRange("port", 0, 65535);
@@ -93,52 +93,47 @@ namespace Net.Xmpp.Extensions.Stun
         /// <exception cref="TimeoutException">The specified timeout has
         /// expired.</exception>
         public static IPAddress Query(IPAddress address, int port = 3478,
-            int timeout = Int32.MaxValue)
+            int timeout = int.MaxValue)
         {
             address.ThrowIfNull("address");
             port.ThrowIfOutOfRange("port", 0, 65535);
-            IPEndPoint IpEp = new IPEndPoint(address, port);
+            IPEndPoint IpEp = new(address, port);
             var request = new BindingRequest().Serialize();
             int rto = initialRto;
-            using (UdpClient udp = new UdpClient())
+            using UdpClient udp = new();
+            // The timeout mechanism is similar to TCP. For details,
+            // refer to RFC 5389, Section 7.2.1. Sending over UDP.
+            for (int tries = 0; tries < rc; tries++)
             {
-                // The timeout mechanism is similar to TCP. For details,
-                // refer to RFC 5389, Section 7.2.1. Sending over UDP.
-                for (int tries = 0; tries < rc; tries++)
+                // Transmit the datagram.
+                udp.Send(request, request.Length, IpEp);
+                // Set the timeout value on the socket.
+                udp.Client.ReceiveTimeout = rto;
+                try
                 {
-                    // Transmit the datagram.
-                    udp.Send(request, request.Length, IpEp);
-                    // Set the timeout value on the socket.
-                    udp.Client.ReceiveTimeout = rto;
-                    try
-                    {
-                        byte[] datagram = udp.Receive(ref IpEp);
-                        return BindingResponse.Deserialize(datagram).Address;
-                    }
-                    catch (SocketException e)
-                    {
-                        if (e.ErrorCode != connectionTimeout)
-                            throw;
-                        timeout = timeout - rto;
-                        if (timeout <= 0)
-                            throw new TimeoutException("The timeout has expired.");
-                    }
-                    catch (SerializationException)
-                    {
-                        throw new ProtocolViolationException("The STUN " +
-                            "Binding Response is invalid.");
-                    }
-                    // Increase the timeout value.
-                    if (tries < (rc - 1))
-                        rto = rto * 2;
-                    else
-                        rto = initialRto * rm;
-                    if (timeout < rto)
-                        rto = timeout;
+                    byte[] datagram = udp.Receive(ref IpEp);
+                    return BindingResponse.Deserialize(datagram).Address;
                 }
-                // Give up.
-                throw new SocketException(connectionTimeout);
+                catch (SocketException e)
+                {
+                    if (e.ErrorCode != connectionTimeout)
+                        throw;
+                    timeout -= rto;
+                    if (timeout <= 0)
+                        throw new TimeoutException("The timeout has expired.");
+                }
+                catch (SerializationException)
+                {
+                    throw new ProtocolViolationException("The STUN " +
+                        "Binding Response is invalid.");
+                }
+                // Increase the timeout value.
+                rto = tries < rc - 1 ? rto * 2 : initialRto * rm;
+                if (timeout < rto)
+                    rto = timeout;
             }
+            // Give up.
+            throw new SocketException(connectionTimeout);
         }
     }
 }

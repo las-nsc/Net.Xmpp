@@ -23,17 +23,13 @@ namespace Net.Xmpp.Extensions.Stun
         /// <summary>
         /// The crypto provider for generating random transaction ids.
         /// </summary>
-        private static RNGCryptoServiceProvider cryptoProvider =
-            new RNGCryptoServiceProvider();
+        private static readonly RNGCryptoServiceProvider cryptoProvider =
+            new();
 
         /// <summary>
         /// The transaction id of the binding request.
         /// </summary>
-        public byte[] Id
-        {
-            get;
-            private set;
-        }
+        public byte[] Id { get; }
 
         /// <summary>
         /// Serializes this instance into an array of bytes.

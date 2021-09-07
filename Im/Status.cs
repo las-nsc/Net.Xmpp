@@ -14,11 +14,7 @@ namespace Net.Xmpp.Im
         /// <summary>
         /// The contact's availability.
         /// </summary>
-        public Availability Availability
-        {
-            get;
-            private set;
-        }
+        public Availability Availability { get; }
 
         /// <summary>
         /// A user-provided description of his or her availability status.
@@ -26,13 +22,7 @@ namespace Net.Xmpp.Im
         /// <remarks>If the Status instance contains multiple messages, this
         /// field returns the value of the first message in the 'Messages'
         /// dictionary.</remarks>
-        public string Message
-        {
-            get
-            {
-                return Messages.Values.FirstOrDefault();
-            }
-        }
+        public string Message => Messages.Values.FirstOrDefault();
 
         /// <summary>
         /// A dictionary of user-provided descriptions of his or her availability
@@ -40,11 +30,7 @@ namespace Net.Xmpp.Im
         /// </summary>
         /// <remarks>The keys of the dictionary are ISO 2 letter language
         /// Codes denoting the language of the respective value.</remarks>
-        public Dictionary<string, string> Messages
-        {
-            get;
-            private set;
-        }
+        public Dictionary<string, string> Messages { get; }
 
         /// <summary>
         /// The priority level of the resource.
@@ -52,11 +38,7 @@ namespace Net.Xmpp.Im
         /// <remarks>The priority value serves as a hint for the server
         /// in stanza routing within instant messaging and presence
         /// applications.</remarks>
-        public sbyte Priority
-        {
-            get;
-            private set;
-        }
+        public sbyte Priority { get; }
 
         /// <summary>
         /// Initializes a new instance of the Status class.

@@ -11,11 +11,7 @@ namespace Net.Xmpp.Im
         /// The JID of the user or resource who unsubscribed from receiving presence
         /// information of the JID associated with this instance.
         /// </summary>
-        public Jid Jid
-        {
-            get;
-            private set;
-        }
+        public Jid Jid { get; }
 
         /// <summary>
         /// Initializes a new instance of the UnsubscribedEventArgs class.

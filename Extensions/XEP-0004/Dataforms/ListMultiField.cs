@@ -17,34 +17,22 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// <summary>
         /// The values of the field.
         /// </summary>
-        private XmlCollection<string> values;
+        private readonly XmlCollection<string> values;
 
         /// <summary>
         /// The options of the field.
         /// </summary>
-        private XmlCollection<Option> options;
+        private readonly XmlCollection<Option> options;
 
         /// <summary>
         /// Gets an enumerable collection of selected values.
         /// </summary>
-        public new ICollection<string> Values
-        {
-            get
-            {
-                return values;
-            }
-        }
+        public new ICollection<string> Values => values;
 
         /// <summary>
         /// Gets an enumerable collection of options.
         /// </summary>
-        public ICollection<Option> Options
-        {
-            get
-            {
-                return options;
-            }
-        }
+        public ICollection<Option> Options => options;
 
         /// <summary>
         /// Initializes a new instance of the ListField class for use in a
@@ -129,7 +117,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         private Option OptionFromElement(XmlElement element)
         {
             string label = element.GetAttribute("label");
-            if (label == String.Empty)
+            if (label?.Length == 0)
                 label = null;
             if (element["value"] == null)
                 throw new ArgumentException("Missing 'value' child.");

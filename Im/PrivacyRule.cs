@@ -9,31 +9,19 @@
         /// Determines whether entities affected by this rule should be blocked
         /// or allowed.
         /// </summary>
-        public bool Allow
-        {
-            get;
-            private set;
-        }
+        public bool Allow { get; }
 
         /// <summary>
         /// The order of the privacy rule. Privacy rules are processed in ascending
         /// order determined by this value.
         /// </summary>
-        public uint Order
-        {
-            get;
-            set;
-        }
+        public uint Order { get; set; }
 
         /// <summary>
         /// Specifies which kinds of stanzas are to be blocked (a value of 0 denotes
         /// blocking of all stanzas).
         /// </summary>
-        public PrivacyGranularity Granularity
-        {
-            get;
-            private set;
-        }
+        public PrivacyGranularity Granularity { get; }
 
         /// <summary>
         /// Initializes a new instance of the PrivacyRule class.

@@ -25,28 +25,16 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <remarks>This is used for compiling the list of supported extensions
         /// advertised by the 'Service Discovery' extension.</remarks>
-        public override IEnumerable<string> Namespaces
-        {
-            get
-            {
-                return new string[] {
-					 "vcard-temp:x:update" ,
-					 "vcard-temp"
-				};
-            }
-        }
+        public override IEnumerable<string> Namespaces => new string[] {
+                     "vcard-temp:x:update" ,
+                     "vcard-temp"
+                };
 
         /// <summary>
         /// The named constant of the Extension enumeration that corresponds to this
         /// extension.
         /// </summary>
-        public override Extension Xep
-        {
-            get
-            {
-                return Extension.vCardsAvatars;
-            }
-        }
+        public override Extension Xep => Extension.vCardsAvatars;
 
         /// <summary>
         /// Invoked after all extensions have been loaded.
@@ -86,8 +74,8 @@ namespace Net.Xmpp.Extensions
 
             string mimeType = "image/png";
 
-            string hash = String.Empty, base64Data = String.Empty;
-            MemoryStream ms = new MemoryStream();
+            string hash = string.Empty, base64Data = string.Empty;
+            MemoryStream ms = new();
             stream.CopyTo(ms);
             using (ms)
             {
@@ -103,7 +91,7 @@ namespace Net.Xmpp.Extensions
                 if (iq.Type == IqType.Result)
                 {
                     // Result must contain a 'feature' element.
-                    im.SendPresence(new Net.Xmpp.Im.Presence(null, null, PresenceType.Available, null, null, Xml.Element("x", "vcard-temp:x:update").Child(Xml.Element("photo").Text(hash))));
+                    im.SendPresence(new Im.Presence(null, null, PresenceType.Available, null, null, Xml.Element("x", "vcard-temp:x:update").Child(Xml.Element("photo").Text(hash))));
                 }
             });
         }
@@ -116,10 +104,8 @@ namespace Net.Xmpp.Extensions
         private string Hash(byte[] data)
         {
             data.ThrowIfNull("data");
-            using (var sha1 = new SHA1Managed())
-            {
-                return Convert.ToBase64String(sha1.ComputeHash(data));
-            }
+            using var sha1 = new SHA1Managed();
+            return Convert.ToBase64String(sha1.ComputeHash(data));
         }
 
         /// <summary>
@@ -153,8 +139,8 @@ namespace Net.Xmpp.Extensions
                 {
                     XElement root = XElement.Parse(iq.Data.OuterXml);
                     XNamespace aw = "vcard-temp"; //SOS the correct namespace
-                    IEnumerable<string> b64collection = (from el in root.Descendants(aw + "BINVAL")
-                                                         select (string)el);
+                    IEnumerable<string> b64collection = from el in root.Descendants(aw + "BINVAL")
+                                                         select (string)el;
                     string b64 = null;
                     if (b64collection != null)
                     {
@@ -173,15 +159,11 @@ namespace Net.Xmpp.Extensions
                                         Directory.CreateDirectory(dir);
                                     }
 
-                                    using (var file = new FileStream(filepath, FileMode.Create, System.IO.FileAccess.Write))
+                                    using (var file = new FileStream(filepath, FileMode.Create, FileAccess.Write))
                                     {
                                         file.Write(data, 0, data.Length);
                                     }
-                                    if (callback != null)
-                                    {
-                                        
-                                        callback.Invoke(filepath, jid);
-                                    }
+                                    callback?.Invoke(filepath, jid);
                                 }
                             }
                             catch (Exception e)
@@ -194,8 +176,6 @@ namespace Net.Xmpp.Extensions
                 }
             });
                                     }
-
-
 
         public void RequestAvatar(Jid jid, Action<byte[], Jid> callback)
         {
@@ -213,7 +193,7 @@ namespace Net.Xmpp.Extensions
                 {
                     XElement root = XElement.Parse(iq.Data.OuterXml);
                     XNamespace aw = "vcard-temp"; //SOS the correct namespace
-                    IEnumerable<string> b64collection = (from el in root.Descendants(aw + "BINVAL") select (string)el);
+                    IEnumerable<string> b64collection = from el in root.Descendants(aw + "BINVAL") select (string)el;
                     string b64 = null;
                     if (b64collection != null)
                     {
@@ -221,7 +201,6 @@ namespace Net.Xmpp.Extensions
 
                         if (b64 != null)
                         {
-
                             try
                             {
                                 byte[] data = Convert.FromBase64String(b64);

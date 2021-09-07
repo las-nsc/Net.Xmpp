@@ -10,11 +10,7 @@ namespace Net.Xmpp.Core
         /// <summary>
         /// The Presence stanza.
         /// </summary>
-        public Presence Stanza
-        {
-            get;
-            private set;
-        }
+        public Presence Stanza { get; }
 
         /// <summary>
         /// Initializes a new instance of the PresenceEventArgs class.

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml;
+﻿using System.Xml;
+
 using Net.Xmpp.Core;
 
 namespace Net.Xmpp.Extensions
@@ -31,7 +29,7 @@ namespace Net.Xmpp.Extensions
             Reason = reason;
         }
 
-        internal InviteDeclined(Core.Message message)
+        internal InviteDeclined(Message message)
             : base(message.Data)
         {
         }
@@ -44,9 +42,9 @@ namespace Net.Xmpp.Extensions
             get
             {
                 XmlElement node = InviteElement;
-                string v = node == null ? null : node.GetAttribute(toAttribute);
+                string v = node?.GetAttribute(toAttribute);
 
-                return String.IsNullOrEmpty(v) ? null : new Jid(v);
+                return string.IsNullOrEmpty(v) ? null : new Jid(v);
             }
 
             set
@@ -66,9 +64,9 @@ namespace Net.Xmpp.Extensions
             get
             {
                 XmlElement node = InviteElement;
-                string v = node == null ? null : node.GetAttribute(fromAttribute);
+                string v = node?.GetAttribute(fromAttribute);
 
-                return String.IsNullOrEmpty(v) ? null : new Jid(v);
+                return string.IsNullOrEmpty(v) ? null : new Jid(v);
             }
 
             private set
@@ -88,7 +86,7 @@ namespace Net.Xmpp.Extensions
             get
             {
                 XmlElement invite = ReasonElement;
-                return invite == null ? null : invite.InnerText;
+                return invite?.InnerText;
             }
 
             set
@@ -97,21 +95,21 @@ namespace Net.Xmpp.Extensions
                     ReasonElement.Text(value);
             }
         }
-        
+
         /// <summary>
         /// The tag name of the stanza's root element
         /// </summary>
-        protected override string RootElementName { get { return rootTag; } }
+        protected override string RootElementName => rootTag;
 
-        private XmlElement XElement { get { return element[xTag]; } }
+        private XmlElement XElement => element[xTag];
 
-        private XmlElement InviteElement { get { return GetNode(xTag, inviteTag); } }
+        private XmlElement InviteElement => GetNode(xTag, inviteTag);
 
-        private XmlElement ReasonElement { get { return GetNode(xTag, inviteTag, reasonTag); } }
+        private XmlElement ReasonElement => GetNode(xTag, inviteTag, reasonTag);
 
-        internal static bool IsElement(Core.Message message)
+        internal static bool IsElement(Message message)
         {
-            InviteDeclined temp = new InviteDeclined(message);
+            InviteDeclined temp = new(message);
             return temp?.XElement?.NamespaceURI == MucNs.NsUser && temp?.InviteElement != null;
         }
     }

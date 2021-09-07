@@ -19,36 +19,20 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The current software version.
         /// </summary>
-        public VersionInformation Version
-        {
-            get;
-            private set;
-        }
+        public VersionInformation Version { get; }
 
         /// <summary>
         /// An enumerable collection of XMPP namespaces the extension implements.
         /// </summary>
         /// <remarks>This is used for compiling the list of supported extensions
         /// advertised by the 'Service Discovery' extension.</remarks>
-        public override IEnumerable<string> Namespaces
-        {
-            get
-            {
-                return new string[] { "jabber:iq:version" };
-            }
-        }
+        public override IEnumerable<string> Namespaces => new string[] { "jabber:iq:version" };
 
         /// <summary>
         /// The named constant of the Extension enumeration that corresponds to this
         /// extension.
         /// </summary>
-        public override Extension Xep
-        {
-            get
-            {
-                return Extension.SoftwareVersion;
-            }
-        }
+        public override Extension Xep => Extension.SoftwareVersion;
 
         /// <summary>
         /// Invoked after all extensions have been loaded.
@@ -117,7 +101,7 @@ namespace Net.Xmpp.Extensions
                 throw new XmppException("Erroneous server response: " + response);
             if (query["name"] == null || query["version"] == null)
                 throw new XmppException("Missing name or version element: " + response);
-            string os = query["os"] != null ? query["os"].InnerText : null;
+            string os = query["os"]?.InnerText;
             return new VersionInformation(query["name"].InnerText,
                 query["version"].InnerText, os);
         }

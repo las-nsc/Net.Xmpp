@@ -1,10 +1,11 @@
-﻿using Net.Xmpp.Core;
-using Net.Xmpp.Extensions.Dataforms;
-using Net.Xmpp.Im;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+
+using Net.Xmpp.Core;
+using Net.Xmpp.Extensions.Dataforms;
+using Net.Xmpp.Im;
 
 namespace Net.Xmpp.Extensions
 {
@@ -28,25 +29,13 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <remarks>This is used for compiling the list of supported extensions
         /// advertised by the 'Service Discovery' extension.</remarks>
-        public override IEnumerable<string> Namespaces
-        {
-            get
-            {
-                return new string[] { "jabber:iq:register" };
-            }
-        }
+        public override IEnumerable<string> Namespaces => new string[] { "jabber:iq:register" };
 
         /// <summary>
         /// The named constant of the Extension enumeration that corresponds to this
         /// extension.
         /// </summary>
-        public override Extension Xep
-        {
-            get
-            {
-                return Extension.InBandRegistration;
-            }
-        }
+        public override Extension Xep => Extension.InBandRegistration;
 
         /// <summary>
         /// Invoked after all extensions have been loaded.
@@ -86,19 +75,14 @@ namespace Net.Xmpp.Extensions
             if (query["registered"] != null)
                 throw new XmppException("The XMPP entity is already registered.");
             // If the IQ contains binary data, cache it.
-            var data = query["data"];
-            if (data != null && data.NamespaceURI == "urn:xmpp:bob")
+            if (query["data"] is { } data && data.NamespaceURI == "urn:xmpp:bob")
             {
                 BobData bobData = BobData.Parse(data);
                 bob.Add(bobData);
             }
             RequestForm form = null;
             bool xdata = query["x"] != null;
-            if (xdata)
-                form = DataFormFactory.Create(query["x"]) as RequestForm;
-            // "Traditional" registration, create a data-form off the provided fields.
-            else
-                form = CreateDataForm(query);
+            form = xdata ? DataFormFactory.Create(query["x"]) as RequestForm : CreateDataForm(query);
             // Hand the data-form to the caller to have it filled-out.
             var submit = callback.Invoke(form);
             // Construct the response element.
@@ -168,9 +152,8 @@ namespace Net.Xmpp.Extensions
         /// element.</returns>
         private RequestForm CreateDataForm(XmlElement query)
         {
-            string instructions = query["instructions"] != null ?
-                query["instructions"].InnerText : null;
-            RequestForm form = new RequestForm(null, instructions);
+            string instructions = query["instructions"]?.InnerText;
+            RequestForm form = new(null, instructions);
             foreach (XmlElement child in query.ChildNodes)
             {
                 if (child.Name == "instructions")

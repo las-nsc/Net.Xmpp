@@ -16,10 +16,7 @@ namespace Net.Xmpp.Core
         /// </summary>
         public IqType Type
         {
-            get
-            {
-                return ParseType(element.GetAttribute("type"));
-            }
+            get => ParseType(element.GetAttribute("type"));
 
             set
             {
@@ -36,20 +33,14 @@ namespace Net.Xmpp.Core
             get
             {
                 var t = Type;
-                return t == IqType.Set || t == IqType.Get;
+                return t is IqType.Set or IqType.Get;
             }
         }
 
         /// <summary>
         /// Determines whether the IQ stanza is a response.
         /// </summary>
-        public bool IsResponse
-        {
-            get
-            {
-                return !IsRequest;
-            }
-        }
+        public bool IsResponse => !IsRequest;
 
         /// <summary>
         /// Initializes a new instance of the Iq class.

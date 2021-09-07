@@ -10,21 +10,13 @@ namespace Net.Xmpp.Im
         /// <summary>
         /// The contact that has been added to the user's roster.
         /// </summary>
-        public RosterItem Item
-        {
-            get;
-            private set;
-        }
+        public RosterItem Item { get; }
 
         /// <summary>
         /// Determines whether the item has been removed from the roster or
         /// added/updated.
         /// </summary>
-        public bool Removed
-        {
-            get;
-            private set;
-        }
+        public bool Removed { get; }
 
         /// <summary>
         /// Initializes a new instance of the RosterUpdatedEventArgs class.

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Net.Xmpp.Extensions
+﻿namespace Net.Xmpp.Extensions
 {
     /// <summary>
     /// Type of archived message

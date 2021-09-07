@@ -17,7 +17,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// <summary>
         /// The client nonce value used during authentication.
         /// </summary>
-        private string Cnonce = GenerateCnonce();
+        private readonly string Cnonce = GenerateCnonce();
 
         /// <summary>
         /// Scram-Sha-1 involves several steps.
@@ -40,52 +40,28 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// True if the authentication exchange between client and server
         /// has been completed.
         /// </summary>
-        public override bool IsCompleted
-        {
-            get
-            {
-                return Completed;
-            }
-        }
+        public override bool IsCompleted => Completed;
 
         /// <summary>
         /// Client sends the first message in the authentication exchange.
         /// </summary>
-        public override bool HasInitial
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool HasInitial => true;
 
         /// <summary>
         /// The IANA name for the Scram-Sha-1 authentication mechanism as described
         /// in RFC 5802.
         /// </summary>
-        public override string Name
-        {
-            get
-            {
-                return "SCRAM-SHA-1";
-            }
-        }
+        public override string Name => "SCRAM-SHA-1";
 
         /// <summary>
         /// The username to authenticate with.
         /// </summary>
         private string Username
         {
-            get
-            {
-                return Properties.ContainsKey("Username") ?
+            get => Properties.ContainsKey("Username") ?
                     Properties["Username"] as string : null;
-            }
 
-            set
-            {
-                Properties["Username"] = value;
-            }
+            set => Properties["Username"] = value;
         }
 
         /// <summary>
@@ -93,16 +69,10 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// </summary>
         private string Password
         {
-            get
-            {
-                return Properties.ContainsKey("Password") ?
+            get => Properties.ContainsKey("Password") ?
                     Properties["Password"] as string : null;
-            }
 
-            set
-            {
-                Properties["Password"] = value;
-            }
+            set => Properties["Password"] = value;
         }
 
         /// <summary>
@@ -144,7 +114,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         public SaslScramSha1(string username, string password)
         {
             username.ThrowIfNull("username");
-            if (username == String.Empty)
+            if (username?.Length == 0)
                 throw new ArgumentException("The username must not be empty.");
             password.ThrowIfNull("password");
 
@@ -163,7 +133,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         {
             // Precondition: Ensure username and password are not null and
             // username is not empty.
-            if (String.IsNullOrEmpty(Username) || Password == null)
+            if (string.IsNullOrEmpty(Username) || Password == null)
             {
                 throw new SaslException("The username must not be null or empty and " +
                     "the password must not be null.");
@@ -173,7 +143,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
             byte[] ret = Step == 0 ? ComputeInitialResponse() :
                 (Step == 1 ? ComputeFinalResponse(challenge) :
                 VerifyServerSignature(challenge));
-            Step = Step + 1;
+            Step++;
             return ret;
         }
 
@@ -202,7 +172,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
             NameValueCollection nv = ParseServerFirstMessage(challenge);
             // Extract the server data needed to calculate the client proof.
             string salt = nv["s"], nonce = nv["r"];
-            int iterationCount = Int32.Parse(nv["i"]);
+            int iterationCount = int.Parse(nv["i"]);
             if (!VerifyServerNonce(nonce))
                 throw new SaslException("Invalid server nonce: " + nonce);
             // Calculate the client proof (refer to RFC 5802, p.7).
@@ -276,7 +246,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         {
             challenge.ThrowIfNull("challenge");
             string message = Encoding.UTF8.GetString(challenge);
-            NameValueCollection coll = new NameValueCollection();
+            NameValueCollection coll = new();
             foreach (string s in message.Split(','))
             {
                 int delimiter = s.IndexOf('=');
@@ -305,11 +275,9 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         {
             // The salt is sent by the server as a base64-encoded string.
             byte[] saltBytes = Convert.FromBase64String(salt);
-            using (var db = new Rfc2898DeriveBytes(password, saltBytes, count))
-            {
-                // Generate 20 key bytes, which is the size of the hash result of SHA-1.
-                return db.GetBytes(20);
-            }
+            using var db = new Rfc2898DeriveBytes(password, saltBytes, count);
+            // Generate 20 key bytes, which is the size of the hash result of SHA-1.
+            return db.GetBytes(20);
         }
 
         /// <summary>
@@ -322,10 +290,8 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// <returns>The hashcode of the specified data input.</returns>
         private byte[] HMAC(byte[] key, byte[] data)
         {
-            using (var hmac = new HMACSHA1(key))
-            {
-                return hmac.ComputeHash(data);
-            }
+            using var hmac = new HMACSHA1(key);
+            return hmac.ComputeHash(data);
         }
 
         /// <summary>
@@ -349,10 +315,8 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// <returns>The hash value for the specified byte array.</returns>
         private byte[] H(byte[] data)
         {
-            using (var sha1 = new SHA1Managed())
-            {
-                return sha1.ComputeHash(data);
-            }
+            using var sha1 = new SHA1Managed();
+            return sha1.ComputeHash(data);
         }
 
         /// <summary>

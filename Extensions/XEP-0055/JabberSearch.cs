@@ -17,7 +17,6 @@ namespace Net.Xmpp.Extensions
 
         public JabberSearch(XmppIm im): base(im)
         {
-
         }
 
         /// <summary>
@@ -33,27 +32,15 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <remarks>This is used for compiling the list of supported extensions
         /// advertised by the 'Service Discovery' extension.</remarks>
-        public override IEnumerable<string> Namespaces
-        {
-            get
-            {
-                return new string[] {
+        public override IEnumerable<string> Namespaces => new string[] {
                      xmlns
                 };
-            }
-        }
 
         /// <summary>
         /// The named constant of the Extension enumeration that corresponds to this
         /// extension.
         /// </summary>
-        public override Extension Xep
-        {
-            get
-            {
-                return Extension.JabberSearch;
-            }
-        }
+        public override Extension Xep => Extension.JabberSearch;
 
         private Jid SearchDomain()
         {
@@ -89,10 +76,9 @@ namespace Net.Xmpp.Extensions
             if (iq.Type == IqType.Result)
             {
                 var query = iq.Data["query"];
-                if (query == null || query.NamespaceURI != xmlns)
-                    throw new XmppException("Erroneous server response.");
-
-                return DataFormFactory.Create(query["x"]);
+                return query == null || query.NamespaceURI != xmlns
+                    ? throw new XmppException("Erroneous server response.")
+                    : DataFormFactory.Create(query["x"]);
             }
             else
             {
@@ -118,10 +104,9 @@ namespace Net.Xmpp.Extensions
             if (iq.Type == IqType.Result)
             {
                 var query = iq.Data["query"];
-                if (query == null || query.NamespaceURI != xmlns)
-                    throw new XmppException("Erroneous server response.");
-
-                return DataFormFactory.Create(query["x"]);
+                return query == null || query.NamespaceURI != xmlns
+                    ? throw new XmppException("Erroneous server response.")
+                    : DataFormFactory.Create(query["x"]);
             }
             else
             {
@@ -129,6 +114,5 @@ namespace Net.Xmpp.Extensions
                 throw new Exception(error["text"].InnerText);
             }
         }
-
     }
 }

@@ -10,11 +10,6 @@ namespace Net.Xmpp.Extensions.Dataforms
     public abstract class DataForm
     {
 		private const string xmlns = "jabber:x:data";
-		
-        /// <summary>
-        /// The fields contained in the data-form.
-        /// </summary>
-        private FieldList fields;
 
         /// <summary>
         /// The underlying XML element representing the data-form.
@@ -26,12 +21,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// </summary>
         public string Title
         {
-            get
-            {
-                if (element["title"] != null)
-                    return element["title"].InnerText;
-                return null;
-            }
+            get => element["title"]?.InnerText;
 
             set
             {
@@ -57,12 +47,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// </summary>
         public string Instructions
         {
-            get
-            {
-                if (element["instructions"] != null)
-                    return element["instructions"].InnerText;
-                return null;
-            }
+            get => element["instructions"]?.InnerText;
 
             set
             {
@@ -89,27 +74,15 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// XML element is invalid.</exception>
         public DataFormType Type
         {
-            get
-            {
-                return GetDataFormType();
-            }
+            get => GetDataFormType();
 
-            protected set
-            {
-                element.SetAttribute("type", value.ToString().ToLower());
-            }
+            protected set => element.SetAttribute("type", value.ToString().ToLower());
         }
 
         /// <summary>
         /// A list of fields contained in the data-form.
         /// </summary>
-        public FieldList Fields
-        {
-            get
-            {
-                return fields;
-            }
-        }
+        public FieldList Fields { get; }
 
         /// <summary>
         /// Returns a textual XML representation of the data-form.
@@ -146,12 +119,12 @@ namespace Net.Xmpp.Extensions.Dataforms
             element = Xml.Element("x", xmlns);
             Title = title;
             Instructions = instructions;
-            this.fields = new FieldList(element, readOnly);
+            this.Fields = new FieldList(element, readOnly);
             if (fields != null)
             {
                 foreach (var f in fields)
                     if (f != null)
-                        this.fields.Add(f);
+                        this.Fields.Add(f);
             }
         }
 
@@ -173,7 +146,7 @@ namespace Net.Xmpp.Extensions.Dataforms
             this.element = element;
             try
             {
-                fields = new FieldList(element, readOnly);
+                Fields = new FieldList(element, readOnly);
                 // Call GetDataFormType method to verify the 'type' attribute.
                 GetDataFormType();
             }

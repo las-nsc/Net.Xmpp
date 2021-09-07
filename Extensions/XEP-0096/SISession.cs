@@ -12,78 +12,46 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The identifier of the session.
         /// </summary>
-        public string Sid
-        {
-            get;
-            private set;
-        }
+        public string Sid { get; }
 
         /// <summary>
         /// The IO-stream from which data is read, if we are sending the data or
         /// to which data is written, if we are receiving the data.
         /// </summary>
-        public Stream Stream
-        {
-            get;
-            private set;
-        }
+        public Stream Stream { get; }
 
         /// <summary>
         /// The number of bytes to read from the IO-stream, if we are sending the
         /// data, or the number of bytes to write to the IO-stream, if we are
         /// receiving the data.
         /// </summary>
-        public long Size
-        {
-            get;
-            private set;
-        }
+        public long Size { get; }
 
         /// <summary>
         /// The number of bytes read, if we are receiving the data, or the number
         /// of bytes sent, if we are sending the data.
         /// </summary>
-        public long Count
-        {
-            get;
-            set;
-        }
+        public long Count { get; set; }
 
         /// <summary>
         /// Determines whether data is being received or data is being sent.
         /// </summary>
-        public bool Receiving
-        {
-            get;
-            private set;
-        }
+        public bool Receiving { get; }
 
         /// <summary>
         /// The JID of the XMPP entity that is sending the data.
         /// </summary>
-        public Jid From
-        {
-            get;
-            private set;
-        }
+        public Jid From { get; }
 
         /// <summary>
         /// The JID of the XMPP entity that is receiving the data.
         /// </summary>
-        public Jid To
-        {
-            get;
-            private set;
-        }
+        public Jid To { get; }
 
         /// <summary>
         /// A reference to the XMPP extension performing the actual transfer.
         /// </summary>
-        public IDataStream Extension
-        {
-            get;
-            private set;
-        }
+        public IDataStream Extension { get; }
 
         /// <summary>
         /// Initializes a new instance of the SISession class.
@@ -113,7 +81,7 @@ namespace Net.Xmpp.Extensions
         {
             sid.ThrowIfNull("sid");
             stream.ThrowIfNull("stream");
-            size.ThrowIfOutOfRange(0, Int64.MaxValue);
+            size.ThrowIfOutOfRange(0, long.MaxValue);
             from.ThrowIfNull("from");
             to.ThrowIfNull("to");
             extension.ThrowIfNull("extension");

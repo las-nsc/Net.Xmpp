@@ -10,20 +10,12 @@ namespace Net.Xmpp.Im
         /// <summary>
         /// The JID of the user or resource who sent the message.
         /// </summary>
-        public Jid Jid
-        {
-            get;
-            private set;
-        }
+        public Jid Jid { get; }
 
         /// <summary>
         /// The received chat message.
         /// </summary>
-        public Message Message
-        {
-            get;
-            private set;
-        }
+        public Message Message { get; }
 
         /// <summary>
         /// Initializes a new instance of the MessageEventArgs class.

@@ -15,29 +15,17 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The actual binary data.
         /// </summary>
-        public byte[] Data
-        {
-            get;
-            private set;
-        }
+        public byte[] Data { get; }
 
         /// <summary>
         /// The content-type of the binary data.
         /// </summary>
-        public string Type
-        {
-            get;
-            private set;
-        }
+        public string Type { get; }
 
         /// <summary>
         /// The content-id of the data.
         /// </summary>
-        public string Cid
-        {
-            get;
-            private set;
-        }
+        public string Cid { get; }
 
         /// <summary>
         /// Returns a textual representation of the BobData instance.
@@ -69,10 +57,10 @@ namespace Net.Xmpp.Extensions
             if (data.NamespaceURI != "urn:xmpp:bob")
                 throw new ArgumentException("Invalid namespace attribute.");
             string type = data.GetAttribute("type");
-            if (String.IsNullOrEmpty(type))
+            if (string.IsNullOrEmpty(type))
                 throw new ArgumentException("The type attribute is missing.");
             string cid = data.GetAttribute("cid");
-            if (String.IsNullOrEmpty(cid))
+            if (string.IsNullOrEmpty(cid))
                 throw new ArgumentException("The cid attribute is missing.");
             try
             {
@@ -129,14 +117,12 @@ namespace Net.Xmpp.Extensions
         private string Sha1(byte[] data)
         {
             data.ThrowIfNull("data");
-            using (var sha1 = new SHA1Managed())
-            {
-                byte[] hash = sha1.ComputeHash(data);
-                StringBuilder builder = new StringBuilder();
-                foreach (byte h in hash)
-                    builder.Append(h.ToString("x2"));
-                return builder.ToString();
-            }
+            using var sha1 = new SHA1Managed();
+            byte[] hash = sha1.ComputeHash(data);
+            StringBuilder builder = new();
+            foreach (byte h in hash)
+                builder.Append(h.ToString("x2"));
+            return builder.ToString();
         }
     }
 }

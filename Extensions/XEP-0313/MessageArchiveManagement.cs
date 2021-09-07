@@ -1,23 +1,24 @@
-﻿using Net.Xmpp.Extensions.Dataforms;
-using Net.Xmpp.Im;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Xml;
 
+using Net.Xmpp.Extensions.Dataforms;
+using Net.Xmpp.Im;
+
 namespace Net.Xmpp.Extensions
 {
-    internal class MessageArchiveManagement : XmppExtension, IInputFilter<Im.Message>, IInputFilter<Net.Xmpp.Core.Iq>
+    internal class MessageArchiveManagement : XmppExtension, IInputFilter<Message>, IInputFilter<Core.Iq>
     {
         /// <summary>
         /// Hold the state of pending queries
         /// </summary>
         private class ArchiveQueryTask
         {
-            public List<Im.Message> Messages { get; private set; }
+            public List<Message> Messages { get; }
 
-            private TaskCompletionSource<XmppPage<Message>> taskCompletionSource;
+            private readonly TaskCompletionSource<XmppPage<Message>> taskCompletionSource;
 
             public ArchiveQueryTask(TaskCompletionSource<XmppPage<Message>> tcs)
             {
@@ -27,7 +28,7 @@ namespace Net.Xmpp.Extensions
 
             public void Finalise(XmlElement setNode)
             {
-                taskCompletionSource.SetResult(new XmppPage<Im.Message>(setNode, Messages));
+                taskCompletionSource.SetResult(new XmppPage<Message>(setNode, Messages));
             }
 
             public void SetException(Exception ex)
@@ -38,17 +39,11 @@ namespace Net.Xmpp.Extensions
 
         private const string xmlns = "urn:xmpp:mam:2";
 
-        private ConcurrentDictionary<string, ArchiveQueryTask> pendingQueries = new ConcurrentDictionary<string, ArchiveQueryTask>();
+        private readonly ConcurrentDictionary<string, ArchiveQueryTask> pendingQueries = new();
 
-        public override IEnumerable<string> Namespaces
-        {
-            get { return new string[] { xmlns }; }
-        }
+        public override IEnumerable<string> Namespaces => new string[] { xmlns };
 
-        public override Extension Xep
-        {
-            get { return Extension.MessageArchiveManagement; }
-        }
+        public override Extension Xep => Extension.MessageArchiveManagement;
 
         public MessageArchiveManagement(XmppIm im)
             : base(im)
@@ -63,7 +58,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="roomId">Optional filter to only return messages if they match the supplied JID</param>
         /// <param name="start">Optional filter to only return messages whose timestamp is equal to or later than the given timestamp.</param>
         /// <param name="end">Optional filter to only return messages whose timestamp is equal to or earlier than the timestamp given in the 'end' field.</param>
-        internal Task<XmppPage<Im.Message>> GetArchivedMessages(XmppPageRequest pageRequest, Jid with = null, Jid roomId = null, DateTimeOffset? start = null, DateTimeOffset? end = null)
+        internal Task<XmppPage<Message>> GetArchivedMessages(XmppPageRequest pageRequest, Jid with = null, Jid roomId = null, DateTimeOffset? start = null, DateTimeOffset? end = null)
         {
             Core.Iq iq = im.IqRequest(Core.IqType.Get, null, im.Jid, Xml.Element("query", xmlns));
             if (iq.Type == Core.IqType.Result)
@@ -93,21 +88,20 @@ namespace Net.Xmpp.Extensions
                     }
                     if (campo.Name == "start" && start.HasValue)
                     {
-                        filterForm.AddUntypedValue("start", DateTimeProfiles.ToXmppDateTimeString(start.Value));
+                        filterForm.AddUntypedValue("start", start.Value.ToXmppDateTimeString());
                     }
                     if (campo.Name == "end" && end.HasValue)
                     {
-                        filterForm.AddUntypedValue("end", DateTimeProfiles.ToXmppDateTimeString(end.Value));
+                        filterForm.AddUntypedValue("end", end.Value.ToXmppDateTimeString());
                     }
                 }
 
                 request.Child(filterForm.ToXmlElement());
 
-
-                var tcs = new TaskCompletionSource<XmppPage<Im.Message>>();
+                var tcs = new TaskCompletionSource<XmppPage<Message>>();
                 var queryTask = pendingQueries[queryId] = new ArchiveQueryTask(tcs);
 
-                im.IqRequestAsync(Net.Xmpp.Core.IqType.Set, roomId, null, request,null,
+                im.IqRequestAsync(Core.IqType.Set, roomId, null, request, null,
                     (string id, Core.Iq response) =>
                     {
                         if (response.Type == Core.IqType.Error)
@@ -121,7 +115,6 @@ namespace Net.Xmpp.Extensions
                     });
 
                 return tcs.Task;
-
             }
             else
             {
@@ -139,28 +132,20 @@ namespace Net.Xmpp.Extensions
         public bool Input(Message stanza)
         {
             var resultNode = stanza.Data["result"];
-            if (resultNode != null && resultNode.NamespaceURI == xmlns)
+            if (resultNode?.NamespaceURI == xmlns
+                && resultNode.Attributes["queryid"] is { } queryIdAttribute
+                && pendingQueries.TryGetValue(queryIdAttribute.InnerText, out ArchiveQueryTask queryTask)
+                && resultNode["forwarded"] is { } forwardedMessageNode
+                && forwardedMessageNode.NamespaceURI == "urn:xmpp:forward:0")
             {
-                var queryIdAttribute = resultNode.Attributes["queryid"];
-                if (queryIdAttribute != null)
+                var forwardedTimestamp = DelayedDelivery.GetDelayedTimestampOrNow(forwardedMessageNode);
+                var message = new Message(forwardedMessageNode["message"], forwardedTimestamp);
+
+                lock (queryTask)
                 {
-                    ArchiveQueryTask queryTask = null;
-                    if (pendingQueries.TryGetValue(queryIdAttribute.InnerText, out queryTask))
-                    {
-                        var forwardedMessageNode = resultNode["forwarded"];
-                        if (forwardedMessageNode != null && forwardedMessageNode.NamespaceURI == "urn:xmpp:forward:0")
-                        {
-                            var forwardedTimestamp = DelayedDelivery.GetDelayedTimestampOrNow(forwardedMessageNode);
-                            var message = new Message(forwardedMessageNode["message"], forwardedTimestamp);
+                    queryTask.Messages.Add(message);
 
-                            lock (queryTask)
-                            {
-                                queryTask.Messages.Add(message);
-
-                                return true;
-                            }
-                        }
-                    }
+                    return true;
                 }
             }
 
@@ -185,25 +170,19 @@ namespace Net.Xmpp.Extensions
         private bool TryFinaliseQuery(XmlElement xml)
         {
             //The spec says that the <fin> element should arrive in an <iq>, but Prosody seems to send it in a <message>...
-            var finNode = xml["fin"];
-            if (finNode != null && finNode.NamespaceURI == xmlns)
+            if (xml["fin"] is { } finNode && finNode.NamespaceURI == xmlns)
             {
                 var queryIdAttribute = finNode.Attributes["queryid"];
-                if (queryIdAttribute != null)
+                if (queryIdAttribute != null && pendingQueries.TryGetValue(queryIdAttribute.InnerText, out ArchiveQueryTask queryTask))
                 {
-                    ArchiveQueryTask queryTask = null;
-                    if (pendingQueries.TryGetValue(queryIdAttribute.InnerText, out queryTask))
+                    if (finNode["set"] is { } setNode && setNode.NamespaceURI == "http://jabber.org/protocol/rsm")
                     {
-                        var setNode = finNode["set"];
-                        if (setNode != null && setNode.NamespaceURI == "http://jabber.org/protocol/rsm")
-                        {
-                            queryTask.Finalise(setNode);
-                            return true;
-                        }
-                        else
-                        {
-                            queryTask.SetException(new XmppException("Received notification that the archived messages query has finished, but the notification did not contain result set information"));
-                        }
+                        queryTask.Finalise(setNode);
+                        return true;
+                    }
+                    else
+                    {
+                        queryTask.SetException(new XmppException("Received notification that the archived messages query has finished, but the notification did not contain result set information"));
                     }
                 }
             }

@@ -16,18 +16,12 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// <summary>
         /// The options of the field.
         /// </summary>
-        private XmlCollection<Option> options;
+        private readonly XmlCollection<Option> options;
 
         /// <summary>
         /// Gets an enumerable collection of options.
         /// </summary>
-        public ICollection<Option> Options
-        {
-            get
-            {
-                return options;
-            }
-        }
+        public ICollection<Option> Options => options;
 
         /// <summary>
         /// The selected value.
@@ -37,7 +31,7 @@ namespace Net.Xmpp.Extensions.Dataforms
             get
             {
                 var v = element["value"];
-                return v != null ? v.InnerText : null;
+                return v?.InnerText;
             }
 
             private set
@@ -132,7 +126,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         {
             element.ThrowIfNull("element");
             string label = element.GetAttribute("label");
-            if (label == String.Empty)
+            if (label?.Length == 0)
                 label = null;
             if (element["value"] == null)
                 throw new ArgumentException("Missing 'value' child.");
