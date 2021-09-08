@@ -170,37 +170,37 @@ namespace Net.Xmpp.Extensions
             : base(im) {
         }
 
-        /// <summary>
-        /// Invoked when a contact has published avatar metadata information.
-        /// </summary>
-        /// <param name="jid">The JID of the XMPP entity that published the tune
-        /// information.</param>
-        /// <param name="item">The 'item' Xml element of the pubsub publish
-        /// event.</param>
-        void onMetadata(Jid jid, XmlElement item) {
-            if (item == null || item["metadata"] == null)
-                return;
-            // An empty 'metadata' element means the XMPP entity wishes to temporarily
-            // disable avatar publishing.
-            if (item["metadata"].IsEmpty) {
-                // Raise the 'AvatarChanged' event with the 'Cleared' property set to true.
-                AvatarChanged.Raise(this, new AvatarChangedEventArgs(jid));
-                return;
-            }
-            var info = item["metadata"]["info"];
-            if (info == null)
-                return;
-            // Parse meta data attributes.
-            string hash = info.GetAttribute("id");
-            if (String.IsNullOrEmpty(hash))
-                return;
-            // Request image unless we already have a cached copy.
-            if (!cachedImages.ContainsKey(hash))
-                cachedImages.Add(hash, RequestImage(jid, hash));
-            Image image = cachedImages[hash];
-            // Raise 'AvatarChanged' event.
-            AvatarChanged.Raise(this, new AvatarChangedEventArgs(jid, hash, image));
-        }
+		/// <summary>
+		/// Invoked when a contact has published avatar metadata information.
+		/// </summary>
+		/// <param name="jid">The JID of the XMPP entity that published the tune
+		/// information.</param>
+		/// <param name="item">The 'item' Xml element of the pubsub publish
+		/// event.</param>
+		void onMetadata(Jid jid, XmlElement item) {
+			if (item == null || item["metadata"] == null)
+				return;
+			// An empty 'metadata' element means the XMPP entity wishes to temporarily
+			// disable avatar publishing.
+			if (item["metadata"].IsEmpty) {
+				// Raise the 'AvatarChanged' event with the 'Cleared' property set to true.
+				AvatarChanged?.Raise(this, new AvatarChangedEventArgs(jid));
+				return;
+			}
+			var info = item["metadata"]["info"];
+			if (info == null)
+				return;
+			// Parse meta data attributes.
+			string hash = info.GetAttribute("id");
+			if (String.IsNullOrEmpty(hash))
+				return;
+			// Request image unless we already have a cached copy.
+			if (!cachedImages.ContainsKey(hash))
+				cachedImages.Add(hash, RequestImage(jid, hash));
+			Image image = cachedImages[hash];
+			// Raise 'AvatarChanged' event.
+			AvatarChanged?.Raise(this, new AvatarChangedEventArgs(jid, hash, image));
+		}
 
         /// <summary>
         /// Returns the mime-type of the specified image.

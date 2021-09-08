@@ -1,13 +1,13 @@
-﻿using Net.Xmpp.Core;
-using Net.Xmpp.Im;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Xml;
 using System.Xml.Linq;
+
+using Net.Xmpp.Core;
+using Net.Xmpp.Im;
 
 namespace Net.Xmpp.Extensions
 {
@@ -16,7 +16,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// A reference to the 'Entity Capabilities' extension instance.
         /// </summary>
-        private EntityCapabilities ecapa;
+        private readonly EntityCapabilities ecapa;
 
         /// <summary>
         /// An enumerable collection of XMPP namespaces the extension implements.
@@ -33,14 +33,6 @@ namespace Net.Xmpp.Extensions
         /// extension.
         /// </summary>
         public override Extension Xep => Extension.vCards;
-
-        /// <summary>
-        /// Invoked after all extensions have been loaded.
-        /// </summary>
-        public override void Initialize()
-        {
-            ecapa = im.GetExtension<EntityCapabilities>();
-        }
 
         /// <summary>
         /// Invoked when an IQ stanza is being received.
@@ -84,7 +76,7 @@ namespace Net.Xmpp.Extensions
                 base64Data = Convert.ToBase64String(data);
             }
             var xml = Xml.Element("vCard", "vcard-temp").Child(Xml.Element("Photo").Child(Xml.Element("Type").Text(mimeType)).Child(Xml.Element("BINVAL").Text(base64Data)));
-            im.IqRequestAsync(IqType.Set, null, im.Jid, xml, null, (id, iq) =>
+            im.IqRequestCallback(IqType.Set, null, im.Jid, xml, null, (id, iq) =>
             {
                 if (iq.Type == IqType.Result)
                 {
@@ -109,18 +101,17 @@ namespace Net.Xmpp.Extensions
         public void RequestvCards(Jid jid, Action<VCardsData, Jid> callback)
         {
             jid.ThrowIfNull(nameof(jid));
-            VCardsData vCD = new(); 
 
             //Make the request
             var xml = Xml.Element("vCard", "vcard-temp");
 
             //The Request is Async
-            im.IqRequestAsync(IqType.Get, jid, im.Jid, xml, null, (id, iq) =>
+            im.IqRequestCallback(IqType.Get, jid, im.Jid, xml, null, (id, iq) =>
             {
                 XmlElement query = iq.Data["vCard"];
                 if (iq.Data["vCard"].NamespaceURI == "vcard-temp")
                 {
-                    XElement root = XElement.Parse(iq.Data.OuterXml); 
+                    XElement root = XElement.Parse(iq.Data.OuterXml);
                     XNamespace aw = "vcard-temp"; //SOS the correct namespace
                     IEnumerable<string> b64collection = from el in root.Descendants(aw + "BINVAL") select (string)el;
                     IEnumerable<string> nicknamecollection = from el in root.Descendants(aw + "NICKNAME") select (string)el;
@@ -133,38 +124,32 @@ namespace Net.Xmpp.Extensions
                     IEnumerable<string> titlecollection = from el in root.Descendants(aw + "TITLE") select (string)el;
                     IEnumerable<string> rolecollection = from el in root.Descendants(aw + "ROLE") select (string)el;
 
-                    vCD.NickName = nicknamecollection.FirstOrDefault();
-                    vCD.FullName = fullnamecollection.FirstOrDefault();
-                    vCD.FamilyName = familynamecollection.FirstOrDefault();
-                    vCD.FirstName = firstnamecollection.FirstOrDefault();
-                    vCD.URL = urlcollection.FirstOrDefault();
-                    vCD.Birthday = birthdaycollection.FirstOrDefault();
-                    vCD.OrgName = orgnamecollection.FirstOrDefault();
-                    vCD.Title = titlecollection.FirstOrDefault();
-                    vCD.Role = rolecollection.FirstOrDefault();
-
-                    string? b64 = null;
-                    if (b64collection != null)
+                    byte[]? data = null;
+                    if (b64collection?.FirstOrDefault() is { } b64)
                     {
-                        b64 = b64collection.FirstOrDefault();
-
-                        if (b64 != null)
+                        try
                         {
-                            try
-                            {
-                                byte[] data = Convert.FromBase64String(b64);
-                                if (data != null)
-                                {
-                                    vCD.Avatar = data;
-                                }
-                            }
-                            catch (Exception e)
-                            {
-                                System.Diagnostics.Debug.WriteLine("Error downloading vcard data" + e.StackTrace + e.ToString());
-                                //Exception is not contained here. Fix?
-                            }
+                            data = Convert.FromBase64String(b64);
+                        }
+                        catch (Exception e)
+                        {
+                            System.Diagnostics.Debug.WriteLine("Error downloading vcard data" + e.StackTrace + e.ToString());
+                            //Exception is not contained here. Fix?
                         }
                     }
+
+                    VCardsData vCD = new(
+                        fullnamecollection.FirstOrDefault(),
+                        familynamecollection.FirstOrDefault(),
+                        firstnamecollection.FirstOrDefault(),
+                        nicknamecollection.FirstOrDefault(),
+                        urlcollection.FirstOrDefault(),
+                        birthdaycollection.FirstOrDefault(),
+                        orgnamecollection.FirstOrDefault(),
+                        titlecollection.FirstOrDefault(),
+                        rolecollection.FirstOrDefault(),
+                        data
+                    );
 
                     callback.Invoke(vCD, jid);
                 }
@@ -176,9 +161,10 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <param name="im">A reference to the XmppIm instance on whose behalf this
         /// instance is created.</param>
-        public VCards(XmppIm im)
+        public VCards(XmppIm im, EntityCapabilities ecapa)
             : base(im)
         {
+            this.ecapa = ecapa;
         }
     }
 
@@ -188,58 +174,68 @@ namespace Net.Xmpp.Extensions
     [Serializable]
     public sealed class VCardsData
     {
+        public VCardsData(string fullName, string familyName, string firstName, string nickName, string url, string birthday, string orgName, string title, string role, byte[]? avatar)
+        {
+            FullName = fullName;
+            FamilyName = familyName;
+            FirstName = firstName;
+            NickName = nickName;
+            URL = url;
+            Birthday = birthday;
+            OrgName = orgName;
+            Title = title;
+            Role = role;
+            Avatar = avatar;
+        }
+
         /// <summary>
         /// The FN from vCard.
         /// </summary>
-        public string FullName { get; set; }
+        public string FullName { get; }
 
         /// <summary>
         /// The FAMILY from vCard.
         /// </summary>
-        public string FamilyName { get; set; }
+        public string FamilyName { get; }
 
         /// <summary>
         /// The GIVEN from vCard.
         /// </summary>
-        public string FirstName { get; set; }
+        public string FirstName { get; }
 
         /// <summary>
         /// The nickname from vCard.
         /// </summary>
-        public string NickName { get; set; }
+        public string NickName { get; }
 
         /// <summary>
         /// The URL from vCard.
         /// </summary>
-        public string URL { get; set; }
+        public string URL { get; }
 
         /// <summary>
         /// The avatar from vCard.
         /// </summary>
-        public byte[] Avatar { get; set; }
+        public byte[]? Avatar { get; }
 
         /// <summary>
         /// The BDAY from vCard.
         /// </summary>
-        public string Birthday { get; set; }
+        public string Birthday { get; }
 
         /// <summary>
         /// The ORGNAME from vCard.
         /// </summary>
-        public string OrgName { get; set; }
+        public string OrgName { get; }
 
         /// <summary>
         /// The TITLE from vCard.
         /// </summary>
-        public string Title { get; set; }
+        public string Title { get; }
 
         /// <summary>
         /// The ROLE from vCard.
         /// </summary>
-        public string Role { get; set; }
-
-
-
-
+        public string Role { get; }
     }
 }

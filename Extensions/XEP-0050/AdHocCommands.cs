@@ -14,10 +14,6 @@ namespace Net.Xmpp.Extensions
         {
         }
 
-        public override void Initialize()
-        {
-        }
-
         public override IEnumerable<string> Namespaces => new string[0]; // todo:
 
         public override Extension Xep => Extension.AdHocCommands;

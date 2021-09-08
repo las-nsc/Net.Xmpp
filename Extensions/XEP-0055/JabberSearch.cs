@@ -1,8 +1,9 @@
-﻿using Net.Xmpp.Core;
+﻿using System;
+using System.Collections.Generic;
+
+using Net.Xmpp.Core;
 using Net.Xmpp.Extensions.Dataforms;
 using Net.Xmpp.Im;
-using System;
-using System.Collections.Generic;
 
 namespace Net.Xmpp.Extensions
 {
@@ -13,18 +14,11 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// A reference to the 'Service Discovery' extension instance.
         /// </summary>
-        private ServiceDiscovery sdisco;
+        private readonly ServiceDiscovery sdisco;
 
-        public JabberSearch(XmppIm im): base(im)
+        public JabberSearch(XmppIm im, ServiceDiscovery sdisco) : base(im)
         {
-        }
-
-        /// <summary>
-        /// Invoked after all extensions have been loaded.
-        /// </summary>
-        public override void Initialize()
-        {
-            sdisco = im.GetExtension<ServiceDiscovery>();
+            this.sdisco = sdisco;
         }
 
         /// <summary>
@@ -32,9 +26,8 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <remarks>This is used for compiling the list of supported extensions
         /// advertised by the 'Service Discovery' extension.</remarks>
-        public override IEnumerable<string> Namespaces => new string[] {
-                     xmlns
-                };
+        public override IEnumerable<string> Namespaces
+            => new string[] { xmlns };
 
         /// <summary>
         /// The named constant of the Extension enumeration that corresponds to this
@@ -42,7 +35,7 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         public override Extension Xep => Extension.JabberSearch;
 
-        private Jid SearchDomain()
+        private Jid? SearchDomain()
         {
             foreach (var item in sdisco.GetItems(im.Jid.Domain))
             {
@@ -65,9 +58,9 @@ namespace Net.Xmpp.Extensions
         /// <returns>DataForm for avaible fields search</returns>
         public DataForm RequestSearchForm()
         {
-            Jid searchDomain = SearchDomain();
+            var searchDomain = SearchDomain();
 
-            if (searchDomain == null)
+            if (searchDomain is null)
             {
                 throw new Exception("Feauture not supported");
             }
@@ -93,9 +86,9 @@ namespace Net.Xmpp.Extensions
         /// <returns>Search result based on DataForm request</returns>
         public DataForm Search(DataForm search)
         {
-            Jid searchDomain = SearchDomain();
+            var searchDomain = SearchDomain();
 
-            if (searchDomain == null)
+            if (searchDomain is null)
             {
                 throw new Exception("Feauture not supported");
             }

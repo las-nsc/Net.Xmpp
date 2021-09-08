@@ -45,15 +45,6 @@ namespace Net.Xmpp.Extensions
         public event EventHandler<TuneEventArgs>? Tune;
 
         /// <summary>
-        /// Invoked after all extensions have been loaded.
-        /// </summary>
-        public override void Initialize()
-        {
-            pep = im.GetExtension<Pep>();
-            pep.Subscribe("http://jabber.org/protocol/tune", OnTune);
-        }
-
-        /// <summary>
         /// Publishes the specified music information to contacts on the user's
         /// roster.
         /// </summary>
@@ -129,9 +120,11 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <param name="im">A reference to the XmppIm instance on whose behalf this
         /// instance is created.</param>
-        public UserTune(XmppIm im)
+        public UserTune(XmppIm im, Pep pep)
             : base(im)
         {
+            this.pep = pep;
+            pep.Subscribe("http://jabber.org/protocol/tune", OnTune);
         }
 
         /// <summary>

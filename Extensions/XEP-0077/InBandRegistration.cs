@@ -17,12 +17,12 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// A reference to the 'Entity Capabilities' extension instance.
         /// </summary>
-        private EntityCapabilities ecapa;
+        private readonly EntityCapabilities ecapa;
 
         /// <summary>
         /// A reference to the 'Bits of Binary' extension instance.
         /// </summary>
-        private BitsOfBinary bob;
+        private readonly BitsOfBinary bob;
 
         /// <summary>
         /// An enumerable collection of XMPP namespaces the extension implements.
@@ -36,15 +36,6 @@ namespace Net.Xmpp.Extensions
         /// extension.
         /// </summary>
         public override Extension Xep => Extension.InBandRegistration;
-
-        /// <summary>
-        /// Invoked after all extensions have been loaded.
-        /// </summary>
-        public override void Initialize()
-        {
-            ecapa = im.GetExtension<EntityCapabilities>();
-            bob = im.GetExtension<BitsOfBinary>();
-        }
 
         /// <summary>
         /// Registers a new XMPP account on the connected XMPP server.
@@ -136,9 +127,11 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <param name="im">A reference to the XmppIm instance on whose behalf this
         /// instance is created.</param>
-        public InBandRegistration(XmppIm im)
+        public InBandRegistration(XmppIm im, EntityCapabilities ecapa, BitsOfBinary bob)
             : base(im)
         {
+            this.ecapa = ecapa;
+            this.bob = bob;
         }
 
         /// <summary>
@@ -152,7 +145,7 @@ namespace Net.Xmpp.Extensions
         /// element.</returns>
         private RequestForm CreateDataForm(XmlElement query)
         {
-            string instructions = query["instructions"]?.InnerText;
+            var instructions = query["instructions"]?.InnerText;
             RequestForm form = new(null, instructions);
             foreach (XmlElement child in query.ChildNodes)
             {

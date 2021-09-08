@@ -17,11 +17,6 @@ namespace Net.Xmpp.Extensions
     internal class VCardAvatars : XmppExtension, IInputFilter<Iq>
     {
         /// <summary>
-        /// A reference to the 'Entity Capabilities' extension instance.
-        /// </summary>
-        private EntityCapabilities ecapa;
-
-        /// <summary>
         /// An enumerable collection of XMPP namespaces the extension implements.
         /// </summary>
         /// <remarks>This is used for compiling the list of supported extensions
@@ -36,14 +31,6 @@ namespace Net.Xmpp.Extensions
         /// extension.
         /// </summary>
         public override Extension Xep => Extension.vCardsAvatars;
-
-        /// <summary>
-        /// Invoked after all extensions have been loaded.
-        /// </summary>
-        public override void Initialize()
-        {
-            ecapa = im.GetExtension<EntityCapabilities>();
-        }
 
         /// <summary>
         /// Invoked when an IQ stanza is being received.
@@ -87,7 +74,7 @@ namespace Net.Xmpp.Extensions
                 base64Data = Convert.ToBase64String(data);
             }
             var xml = Xml.Element("vCard", "vcard-temp").Child(Xml.Element("Photo").Child(Xml.Element("Type").Text(mimeType)).Child(Xml.Element("BINVAL").Text(base64Data)));
-            im.IqRequestAsync(IqType.Set, null, im.Jid, xml, null, (id, iq) =>
+            im.IqRequestCallback(IqType.Set, null, im.Jid, xml, null, (id, iq) =>
             {
                 if (iq.Type == IqType.Result)
                 {
@@ -133,7 +120,7 @@ namespace Net.Xmpp.Extensions
             var xml = Xml.Element("vCard", "vcard-temp");
 
             //The Request is Async
-            im.IqRequestAsync(IqType.Get, jid, im.Jid, xml, null, (id, iq) =>
+            im.IqRequestCallback(IqType.Get, jid, im.Jid, xml, null, (id, iq) =>
             {
                 XmlElement query = iq.Data["vCard"];
                 if (iq.Data["vCard"].NamespaceURI == "vcard-temp")
@@ -187,7 +174,7 @@ namespace Net.Xmpp.Extensions
             var xml = Xml.Element("vCard", "vcard-temp");
 
             //The Request is Async
-            im.IqRequestAsync(IqType.Get, jid, im.Jid, xml, null, (id, iq) =>
+            im.IqRequestCallback(IqType.Get, jid, im.Jid, xml, null, (id, iq) =>
             {
                 XmlElement query = iq.Data["vCard"];
                 if (iq.Data["vCard"].NamespaceURI == "vcard-temp")

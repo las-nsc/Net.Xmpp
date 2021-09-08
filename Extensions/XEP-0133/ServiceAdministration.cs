@@ -1,9 +1,9 @@
-﻿using Net.Xmpp.Core;
-using Net.Xmpp.Im;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
+
+using Net.Xmpp.Core;
+using Net.Xmpp.Im;
 
 namespace Net.Xmpp.Extensions
 {
@@ -11,10 +11,6 @@ namespace Net.Xmpp.Extensions
     {
         public ServiceAdministration(XmppIm im)
             : base(im)
-        {
-        }
-
-        public override void Initialize()
         {
         }
 

@@ -15,7 +15,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// A reference to the 'Entity Capabilities' extension instance.
         /// </summary>
-        private EntityCapabilities ecapa;
+        private readonly EntityCapabilities ecapa;
 
         /// <summary>
         /// Determines whether our server supports the PEP extension.
@@ -50,14 +50,6 @@ namespace Net.Xmpp.Extensions
         /// Determines whether our server supports the personal eventing protocol.
         /// </summary>
         public bool Supported => !initialized ? QueryServer() : supported;
-
-        /// <summary>
-        /// Invoked after all extensions have been loaded.
-        /// </summary>
-        public override void Initialize()
-        {
-            ecapa = im.GetExtension<EntityCapabilities>();
-        }
 
         /// <summary>
         /// Invoked when a Message stanza is being received.
@@ -238,9 +230,10 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <param name="im">A reference to the XmppIm instance on whose behalf this
         /// instance is created.</param>
-        public Pep(XmppIm im)
+        public Pep(XmppIm im, EntityCapabilities ecapa)
             : base(im)
         {
+            this.ecapa = ecapa;
         }
 
         /// <summary>

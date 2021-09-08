@@ -92,12 +92,14 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// <summary>
         /// The name of the field.
         /// </summary>
-        public string? Name
+        public string Name
         {
             get
             {
                 var v = element.GetAttribute("var");
-                return v?.Length > 0 ? v : null;
+                return v?.Length > 0 ? v
+                    : Type == DataFieldType.Fixed ? ""
+                    : throw new ArgumentNullException(nameof(Name));
             }
 
             private set
@@ -170,7 +172,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         {
             element = Xml.Element("field", xmlns);
             Type = type;
-            Name = name;
+            Name = name ?? (type == DataFieldType.Fixed ? "" : throw new ArgumentNullException(nameof(Name)));
             Required = required;
             Label = label;
             Description = description;

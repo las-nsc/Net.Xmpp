@@ -1,7 +1,9 @@
-﻿using Net.Xmpp.Core;
-using Net.Xmpp.Im;
-using System;
+﻿using System;
 using System.Collections.Generic;
+
+using Net.Xmpp.Core;
+using Net.Xmpp.Im;
+
 using Message = Net.Xmpp.Im.Message;
 
 namespace Net.Xmpp.Extensions
@@ -9,16 +11,11 @@ namespace Net.Xmpp.Extensions
     internal class MessageCarbons : XmppExtension, IInputFilter<Message>
     {
         private static readonly string[] _namespaces = { "urn:xmpp:carbons:2" };
-        private EntityCapabilities ecapa;
+        private readonly EntityCapabilities ecapa;
 
         public override IEnumerable<string> Namespaces => _namespaces;
 
         public override Extension Xep => Extension.MessageCarbons;
-
-        public override void Initialize()
-        {
-            ecapa = im.GetExtension<EntityCapabilities>();
-        }
 
         public void EnableCarbons(bool enable = true)
         {
@@ -46,9 +43,10 @@ namespace Net.Xmpp.Extensions
             return false;
         }
 
-        public MessageCarbons(XmppIm im) :
+        public MessageCarbons(XmppIm im, EntityCapabilities ecapa) :
             base(im)
         {
+            this.ecapa = ecapa;
         }
     }
 }

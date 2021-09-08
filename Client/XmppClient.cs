@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net.Security;
 using System.Threading.Tasks;
 
@@ -96,7 +97,7 @@ namespace Net.Xmpp.Client
         /// <summary>
         /// Provides access to the 'User Avatar' XMPP extension functionality.
         /// </summary>
-        UserAvatar userAvatar;
+        private UserAvatar userAvatar;
 #endif
 
         /// <summary>
@@ -234,7 +235,7 @@ namespace Net.Xmpp.Client
         /// A delegate used for verifying the remote Secure Sockets Layer (SSL)
         /// certificate which is used for authentication.
         /// </summary>
-        public RemoteCertificateValidationCallback Validate
+        public RemoteCertificateValidationCallback? Validate
         {
             get => Im.Validate;
             set => Im.Validate = value;
@@ -248,7 +249,7 @@ namespace Net.Xmpp.Client
         /// <summary>
         /// The address of the Xmpp entity.
         /// </summary>
-        public Jid Jid => Im.Jid;
+        public Jid? Jid => Im.Jid;
 
         /// <summary>
         /// Determines whether the instance is connected to the XMPP server.
@@ -290,7 +291,7 @@ namespace Net.Xmpp.Client
         /// <summary>
         /// Contains settings for configuring file-transfer options.
         /// </summary>
-        public FileTransferSettings FileTransferSettings { get; private set; }
+        public FileTransferSettings? FileTransferSettings { get; private set; }
 
         /// <summary>
         /// The underlying XmppIm instance.
@@ -302,7 +303,7 @@ namespace Net.Xmpp.Client
         /// from another XMPP user.
         /// </summary>
         /// <include file='Examples.xml' path='S22/Xmpp/Client/XmppClient[@name="SubscriptionRequest"]/*'/>
-        public SubscriptionRequest SubscriptionRequest
+        public SubscriptionRequest? SubscriptionRequest
         {
             get => Im.SubscriptionRequest;
             set => Im.SubscriptionRequest = value;
@@ -312,10 +313,10 @@ namespace Net.Xmpp.Client
         /// A callback method to invoke when a request for voice is received
         /// from another XMPP user.
         /// </summary>
-        public RegistrationCallback VoiceRequestedInGroupChat
+        public RegistrationCallback? VoiceRequestedInGroupChat
         {
-            get => groupChat.VoiceRequested;
-            set => groupChat.VoiceRequested = value;
+            get => groupChat?.VoiceRequested;
+            set { if (groupChat is not null) groupChat.VoiceRequested = value; }
         }
 
         /// <summary>
@@ -539,10 +540,8 @@ namespace Net.Xmpp.Client
         /// an existing set of user credentials.</remarks>
         public XmppClient(string hostname, string username, string password,
             int port = 5222, bool tls = true, RemoteCertificateValidationCallback? validate = null, string serveradress = "")
+            : this(new XmppIm(hostname, username, password, port, tls, validate, serveradress))
         {
-            Im = new XmppIm(hostname, username, password, port, tls, validate, serveradress);
-            // Initialize the various extension modules.
-            LoadExtensions();
         }
 
         /// <summary>
@@ -566,9 +565,8 @@ namespace Net.Xmpp.Client
         /// the in-band account registration process supported by some servers.</remarks>
         public XmppClient(string hostname, int port = 5222, bool tls = true,
             RemoteCertificateValidationCallback? validate = null, string serverAdress = "")
+            : this(new XmppIm(hostname, port, tls, validate, serverAdress))
         {
-            Im = new XmppIm(hostname, port, tls, validate, serverAdress);
-            LoadExtensions();
         }
 
         /// <summary>
@@ -1048,7 +1046,7 @@ namespace Net.Xmpp.Client
         public void SetMood(Mood mood, string? description = null)
         {
             AssertValid();
-            userMood.SetMood(mood, description);
+            userMood?.SetMood(mood, description);
         }
 
         /// <summary>
@@ -1140,10 +1138,9 @@ namespace Net.Xmpp.Client
         /// A callback method to invoke when a request for a file-transfer is received
         /// from another XMPP user.
         /// </summary>
-        public FileTransferRequest FileTransferRequest
+        public FileTransferRequest? FileTransferRequest
         {
             get => siFileTransfer.TransferRequest;
-
             set => siFileTransfer.TransferRequest = value;
         }
 
@@ -1151,10 +1148,9 @@ namespace Net.Xmpp.Client
         /// A callback method to invoke when a Custom Iq Request is received
         /// from another XMPP user.
         /// </summary>
-        public CustomIqRequestDelegate CustomIqDelegate
+        public CustomIqRequestDelegate? CustomIqDelegate
         {
             get => Im.CustomIqDelegate;
-
             set => Im.CustomIqDelegate = value;
         }
 
@@ -1520,7 +1516,7 @@ namespace Net.Xmpp.Client
             jid.ThrowIfNull(nameof(jid));
             // If our server supports the 'Blocking Command' extension, we can just
             // use that.
-            if (block.Supported)
+            if (block?.Supported == true)
             {
                 block.Block(jid);
             }
@@ -1529,7 +1525,7 @@ namespace Net.Xmpp.Client
                 // Privacy list blocking. If our server doesn't support privacy lists, we're
                 // out of luck.
                 PrivacyList? privacyList = null;
-                string name = Im.GetDefaultPrivacyList();
+                var name = Im.GetDefaultPrivacyList();
                 if (name != null)
                     privacyList = Im.GetPrivacyList(name);
                 // If no default list has been set, look for a 'blocklist' list.
@@ -1650,7 +1646,7 @@ namespace Net.Xmpp.Client
                 // Privacy list blocking. If our server doesn't support privacy lists, we're
                 // out of luck.
                 PrivacyList? privacyList = null;
-                string name = Im.GetDefaultPrivacyList();
+                var name = Im.GetDefaultPrivacyList();
                 if (name != null)
                     privacyList = Im.GetPrivacyList(name);
                 // If no default list has been set, look for a 'blocklist' list.
@@ -1663,9 +1659,9 @@ namespace Net.Xmpp.Client
                 if (privacyList == null)
                     return;
                 ISet<JidPrivacyRule> set = new HashSet<JidPrivacyRule>();
-                foreach (var rule in privacyList)
+                foreach (var jidRule in privacyList.OfType<JidPrivacyRule>())
                 {
-                    if (rule is JidPrivacyRule jidRule && jidRule.Jid == jid && !jidRule.Allow)
+                    if (jidRule.Jid == jid && !jidRule.Allow)
                         set.Add(jidRule);
                 }
                 foreach (var rule in set)
@@ -1704,10 +1700,10 @@ namespace Net.Xmpp.Client
         public IEnumerable<Jid> GetBlocklist()
         {
             AssertValid();
-            if (block.Supported)
+            if (block?.Supported == true)
                 return block.GetBlocklist();
             PrivacyList? privacyList = null;
-            string name = Im.GetDefaultPrivacyList();
+            var name = Im.GetDefaultPrivacyList();
             if (name != null)
                 privacyList = Im.GetPrivacyList(name);
             foreach (var list in Im.GetPrivacyLists())
@@ -2036,7 +2032,7 @@ namespace Net.Xmpp.Client
         public void RequestSlot(string fileName, long size, string contentType, Action<Slot> upload, Action<string> error)
         {
             AssertValid();
-            this.httpUpload.RequestSlot(fileName, size, contentType, upload, error);
+            httpUpload.RequestSlot(fileName, size, contentType, upload, error);
         }
 
         /// <summary>
@@ -2077,7 +2073,7 @@ namespace Net.Xmpp.Client
                 if (disposing)
                 {
                     Im?.Close();
-                    Im = null;
+                    Im = null!;
                 }
                 // Get rid of unmanaged resources.
             }
@@ -2104,8 +2100,10 @@ namespace Net.Xmpp.Client
         /// <summary>
         /// Initializes the various XMPP extension modules.
         /// </summary>
-        private void LoadExtensions()
+
+        public XmppClient(XmppIm xmppIm)
         {
+            Im = xmppIm;
             version = Im.LoadExtension<SoftwareVersion>();
             sdisco = Im.LoadExtension<ServiceDiscovery>();
             ecapa = Im.LoadExtension<EntityCapabilities>();
@@ -2116,7 +2114,7 @@ namespace Net.Xmpp.Client
             pep = Im.LoadExtension<Pep>();
             userTune = Im.LoadExtension<UserTune>();
 #if WINDOWSPLATFORM
-            userAvatar = im.LoadExtension<UserAvatar>();
+            userAvatar = Im.LoadExtension<UserAvatar>();
 #endif
             userMood = Im.LoadExtension<UserMood>();
             dataForms = Im.LoadExtension<DataForms>();
@@ -2126,8 +2124,7 @@ namespace Net.Xmpp.Client
             inBandBytestreams = Im.LoadExtension<InBandBytestreams>();
             userActivity = Im.LoadExtension<UserActivity>();
             socks5Bytestreams = Im.LoadExtension<Socks5Bytestreams>();
-            FileTransferSettings = new FileTransferSettings(socks5Bytestreams,
-                siFileTransfer);
+            FileTransferSettings = new FileTransferSettings(socks5Bytestreams, siFileTransfer);
             serverIpCheck = Im.LoadExtension<ServerIpCheck>();
             messageCarbons = Im.LoadExtension<MessageCarbons>();
             inBandRegistration = Im.LoadExtension<InBandRegistration>();

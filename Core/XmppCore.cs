@@ -27,12 +27,12 @@ namespace Net.Xmpp.Core
         /// <summary>
         /// The DNS SRV name records
         /// </summary>
-        private List<SrvRecord> dnsRecordList;
+        private List<SrvRecord>? dnsRecordList;
 
         /// <summary>
         /// The current SRV DNS record to use
         /// </summary>
-        private SrvRecord dnsCurrent;
+        private SrvRecord? dnsCurrent;
 
         /// <summary>
         /// Bool variable indicating whether DNS records are initialised
@@ -42,17 +42,17 @@ namespace Net.Xmpp.Core
         /// <summary>
         /// The TCP connection to the XMPP server.
         /// </summary>
-        private TcpClient client;
+        private TcpClient? client;
 
         /// <summary>
         /// The (network) stream used for sending and receiving XML data.
         /// </summary>
-        private Stream stream;
+        private Stream? stream;
 
         /// <summary>
         /// The parser instance used for parsing incoming XMPP XML-stream data.
         /// </summary>
-        private StreamParser parser;
+        private StreamParser? parser;
 
         /// <summary>
         /// True if the instance has been disposed of.
@@ -72,17 +72,17 @@ namespace Net.Xmpp.Core
         /// <summary>
         /// The hostname of the XMPP server to connect to.
         /// </summary>
-        private string hostname;
+        private string hostname = string.Empty;
 
         /// <summary>
         /// The username with which to authenticate.
         /// </summary>
-        private string username;
+        private string username = string.Empty;
 
         /// <summary>
         /// The password with which to authenticate.
         /// </summary>
-        private string password;
+        private string password = string.Empty;
 
         /// <summary>
         /// The resource to use for binding.
@@ -230,12 +230,13 @@ namespace Net.Xmpp.Core
         /// <summary>
         /// The address of the Xmpp entity.
         /// </summary>
-        public Jid Jid { get; private set; }
+        public Jid? Jid { get; private set; }
 
         /// <summary>
         /// The default language of the XML stream.
         /// </summary>
         public CultureInfo? Language { get; private set; }
+
         /// <summary>
         /// Determines whether the instance is connected to the XMPP server.
         /// </summary>
@@ -653,8 +654,7 @@ namespace Net.Xmpp.Core
             // Wait for event to be signaled by task that processes the incoming
             // XML stream.
             waitHandles[request.Id] = ev;
-            int index = WaitHandle.WaitAny(new WaitHandle[] { ev, cancelIq.Token.WaitHandle },
-                timeOut);
+            int index = WaitHandle.WaitAny(new[] { ev, cancelIq.Token.WaitHandle }, timeOut);
             if (index == WaitHandle.WaitTimeout)
             {
                 //An entity that receives an IQ request of type "get" or "set" MUST reply with an IQ response of type
@@ -665,17 +665,15 @@ namespace Net.Xmpp.Core
                 //Make sure that its a request towards the server and not towards any client
                 var ping = request.Data["ping"];
 
-                if (request.To?.Domain == Jid.Domain && !(request.To.Node?.Length > 0) && (ping?.NamespaceURI == "urn:xmpp:ping"))
+                if (request.To is not null && request.To.Domain == Jid?.Domain && request.To.Node?.Length > 0 && (ping?.NamespaceURI == "urn:xmpp:ping"))
                 {
                     if (Connected)
                     {
                         Connected = false;
                         OnConnect?.Invoke(this, new(ConnectionState.Lost));
                     }
-                    var e = new XmppDisconnectionException("Timeout Disconnection happened at IqRequest");
                     if (!disposed)
-                        Error?.Invoke(this, new(e));
-                    //throw new TimeoutException();
+                        Error?.Invoke(this, new(new XmppDisconnectionException("Timeout Disconnection happened at IqRequest")));
                 }
 
                 //This check is somehow not really needed doue to the IQ must be either set or get
@@ -688,7 +686,7 @@ namespace Net.Xmpp.Core
                 return response;
             // Shouldn't happen.
 
-            throw new InvalidOperationException();
+            throw new TimeoutException();
         }
 
         /// <summary>
@@ -1019,6 +1017,8 @@ namespace Net.Xmpp.Core
             Send(xml);
             while (true)
             {
+                if (parser is null)
+                    throw new ObjectDisposedException(nameof(XmppCore));
                 XmlElement ret = parser.NextElement("challenge", "success", "failure");
                 if (ret.Name == "failure")
                     throw new SaslException("SASL authentication failed.");
@@ -1119,6 +1119,9 @@ namespace Net.Xmpp.Core
         private void Send(string xml)
         {
             xml.ThrowIfNull(nameof(xml));
+            if (stream is null)
+                throw new ObjectDisposedException(nameof(XmppCore));
+
             // XMPP is guaranteed to be UTF-8.
             byte[] buf = Encoding.UTF8.GetBytes(xml);
             lock (writeLock)
@@ -1175,18 +1178,20 @@ namespace Net.Xmpp.Core
             params string[] expected)
         {
             Send(element);
+            if (parser is null)
+                throw new ObjectDisposedException(nameof(XmppCore));
             try
             {
                 return parser.NextElement(expected);
             }
-            catch (XmppDisconnectionException e)
+            catch (XmppDisconnectionException)
             {
                 if (Connected)
                 {
                     Connected = false;
                     OnConnect?.Invoke(this, new(ConnectionState.Lost));
                 }
-                throw e;
+                throw;
             }
         }
 
@@ -1201,6 +1206,9 @@ namespace Net.Xmpp.Core
             {
                 while (true)
                 {
+                    if (parser is null)
+                        throw new ObjectDisposedException(nameof(XmppCore));
+
                     XmlElement elem = parser.NextElement("iq", "message", "presence");
                     // Parse element and dispatch.
                     switch (elem.Name)
@@ -1226,8 +1234,6 @@ namespace Net.Xmpp.Core
 
                         case "presence":
                             stanzaQueue.Add(new Presence(elem));
-                            break;
-                        default:
                             break;
                     }
                 }
@@ -1304,11 +1310,10 @@ namespace Net.Xmpp.Core
         /// <param name="iq">The received IQ response stanza.</param>
         private bool HandleIqResponseBlocking(Iq iq)
         {
-            var id = iq.Id;
             // Signal the event if it's a blocking call.
-            if (id is not null && waitHandles.TryRemove(id, out var ev))
+            if (iq.Id?.Length > 0 && waitHandles.TryRemove(iq.Id, out var ev))
             {
-                iqResponses[id] = iq;
+                iqResponses[iq.Id] = iq;
                 ev.Set();
                 return true;
             }
@@ -1317,10 +1322,9 @@ namespace Net.Xmpp.Core
 
         private bool HandleIqResponse(Iq iq)
         {
-            var id = iq.Id;
-            if (id is not null && iqCallbacks.TryRemove(id, out var cb))
+            if (iq.Id?.Length > 0 && iqCallbacks.TryRemove(iq.Id, out var cb))
             {
-                cb(id, iq);
+                cb(iq.Id, iq);
                 return true;
             }
 

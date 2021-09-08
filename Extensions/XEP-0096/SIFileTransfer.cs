@@ -19,24 +19,22 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// A reference to the 'Stream Initiation' extension.
         /// </summary>
-        private StreamInitiation streamInitiation;
+        private readonly StreamInitiation streamInitiation;
 
         /// <summary>
         /// A reference to the 'Entity Capabilities' extension instance.
         /// </summary>
-        private EntityCapabilities ecapa;
+        private readonly EntityCapabilities ecapa;
 
         /// <summary>
         /// A dictionary of negotiated sessions for file-transfers.
         /// </summary>
-        private readonly ConcurrentDictionary<string, SISession> siSessions =
-            new();
+        private readonly ConcurrentDictionary<string, SISession> siSessions = new();
 
         /// <summary>
         /// A dictionary of file meta-data.
         /// </summary>
-        private readonly ConcurrentDictionary<string, FileMetaData> metaData =
-            new();
+        private readonly ConcurrentDictionary<string, FileMetaData> metaData = new();
 
         /// <summary>
         /// There is no easy way to determine the mime-type of a file
@@ -91,30 +89,6 @@ namespace Net.Xmpp.Extensions
         /// aborted prematurely, either due to cancellation or error.
         /// </summary>
         public event EventHandler<FileTransferAbortedEventArgs>? FileTransferAborted;
-
-        /// <summary>
-        /// Invoked after all extensions have been loaded.
-        /// </summary>
-        public override void Initialize()
-        {
-            streamInitiation = im.GetExtension<StreamInitiation>();
-            // Register the 'file-transfer' profile.
-            streamInitiation.RegisterProfile(
-                "http://jabber.org/protocol/si/profile/file-transfer",
-                OnStreamInitiationRequest
-            );
-            ecapa = im.GetExtension<EntityCapabilities>();
-            // Sign up for the 'BytesTransferred' and 'TransferAborted' events of each
-            // data-stream extension that we support.
-            foreach (var type in supportedMethods)
-            {
-                var ext = im.GetExtension(type);
-                if (ext is not IDataStream dataStream)
-                    throw new XmppException("Invalid data-stream type: " + type);
-                dataStream.BytesTransferred += OnBytesTransferred;
-                dataStream.TransferAborted += OnTransferAborted;
-            }
-        }
 
         /// <summary>
         /// Retrieves the SISession instance with the specified session id and
@@ -293,9 +267,17 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <param name="im">A reference to the XmppIm instance on whose behalf this
         /// instance is created.</param>
-        public SIFileTransfer(XmppIm im)
+        public SIFileTransfer(XmppIm im, StreamInitiation streamInitiation, EntityCapabilities ecapa)
             : base(im)
         {
+            this.streamInitiation = streamInitiation;
+            this.ecapa = ecapa;
+
+            // Register the 'file-transfer' profile.
+            streamInitiation.RegisterProfile(
+                "http://jabber.org/protocol/si/profile/file-transfer",
+                OnStreamInitiationRequest
+            );
         }
 
         /// <summary>
@@ -309,6 +291,18 @@ namespace Net.Xmpp.Extensions
         /// in the IQ response.</param>
         private void OnStreamInitiationRequest(Jid from, XmlElement si, Action<XmlElement> result)
         {
+            // Sign up for the 'BytesTransferred' and 'TransferAborted' events of each
+            // data-stream extension that we support.
+            // Must be done after constructor so SiFileTransfer is registered as loaded
+            foreach (var type in supportedMethods)
+            {
+                var ext = im.LoadExtension(type);
+                if (ext is not IDataStream dataStream)
+                    throw new XmppException("Invalid data-stream type: " + type);
+                dataStream.BytesTransferred += OnBytesTransferred;
+                dataStream.TransferAborted += OnTransferAborted;
+            }
+
             try
             {
                 string method = SelectStreamMethod(si["feature"]);
@@ -424,13 +418,12 @@ namespace Net.Xmpp.Extensions
         private IEnumerable<string> GetStreamMethods()
         {
             ISet<string> set = new HashSet<string>();
-            foreach (Type t in supportedMethods)
+            foreach (var type in supportedMethods)
             {
                 // If forcing IBB, only advertise IBB to the other site.
-                if (ForceInBandBytestreams && t != typeof(InBandBytestreams))
+                if (ForceInBandBytestreams && type != typeof(InBandBytestreams))
                     continue;
-                var ext = im.GetExtension(t);
-                if (ext != null)
+                if (im.LoadExtension(type) is { } ext)
                 {
                     foreach (string ns in ext.Namespaces)
                         set.Add(ns);
@@ -501,8 +494,7 @@ namespace Net.Xmpp.Extensions
         {
             try
             {
-                FileTransfer transfer = new(im.Jid, to, name, size, result.SessionId,
-                    description);
+                FileTransfer transfer = new(im.Jid, to, name, size, result.SessionId, description);
                 // Get the instance of the data-stream extension that the other site has
                 // selected.
                 if (im.GetExtension(result.Method) is not IDataStream ext) return;

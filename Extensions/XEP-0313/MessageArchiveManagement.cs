@@ -101,7 +101,7 @@ namespace Net.Xmpp.Extensions
                 var tcs = new TaskCompletionSource<XmppPage<Message>>();
                 var queryTask = pendingQueries[queryId] = new ArchiveQueryTask(tcs);
 
-                im.IqRequestAsync(Core.IqType.Set, roomId, null, request, null,
+                im.IqRequestCallback(Core.IqType.Set, roomId, null, request, null,
                     (string id, Core.Iq response) =>
                     {
                         if (response.Type == Core.IqType.Error)

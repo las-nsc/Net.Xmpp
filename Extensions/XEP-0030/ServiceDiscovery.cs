@@ -72,8 +72,9 @@ namespace Net.Xmpp.Extensions
             // Construct the response which consists of an 'identity' element and a set of
             // 'feature' elements.
             var ident = Xml.Element("identity").Attr("category", Identity.Category)
-                .Attr("type", Identity.Type)
-                .Attr("name", Identity.Name);
+                .Attr("type", Identity.Type);
+            if (Identity.Name is not null)
+                ident.Attr("name", Identity.Name);
             var xml = Xml.Element("query", "http://jabber.org/protocol/disco#info")
                 .Child(ident);
             foreach (string xmlns in CompileFeatureSet())
@@ -99,7 +100,7 @@ namespace Net.Xmpp.Extensions
         public bool Supports<T>(Jid jid) where T : XmppExtension
         {
             jid.ThrowIfNull(nameof(jid));
-            var ext = im.GetExtension<T>();
+            var ext = im.LoadExtension<T>();
             return ext != null && Supports(jid, ext.Xep);
         }
 
@@ -190,10 +191,8 @@ namespace Net.Xmpp.Extensions
         public ServiceDiscovery(XmppIm im)
             : base(im)
         {
-            Attribute attr = Assembly.GetExecutingAssembly().
-                GetCustomAttribute(typeof(AssemblyProductAttribute));
-            string name = attr != null ? ((AssemblyProductAttribute)attr).Product :
-                "S22.Xmpp";
+            var attr = Assembly.GetCallingAssembly().GetCustomAttribute<AssemblyProductAttribute>();
+            string name = attr != null ? attr.Product : "S22.Xmpp";
             Identity = new Identity("client", "pc", name);
         }
 

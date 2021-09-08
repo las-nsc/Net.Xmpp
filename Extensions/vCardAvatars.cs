@@ -19,12 +19,12 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// A reference to the 'Entity Capabilities' extension instance.
         /// </summary>
-        private EntityCapabilities ecapa;
+        private readonly EntityCapabilities ecapa;
 
         /// <summary>
-		/// A cache of images indexed by their respective SHA-1 hashes.
-		/// </summary>
-		private readonly IDictionary<string, string> cachedImages = new Dictionary<string, string>();
+        /// A cache of images indexed by their respective SHA-1 hashes.
+        /// </summary>
+        private readonly IDictionary<string, string> cachedImages = new Dictionary<string, string>();
 
         /// <summary>
         /// An enumerable collection of XMPP namespaces the extension implements.
@@ -42,14 +42,6 @@ namespace Net.Xmpp.Extensions
         /// extension.
         /// </summary>
         public override Extension Xep => Extension.vCardsAvatars;
-
-        /// <summary>
-        /// Invoked after all extensions have been loaded.
-        /// </summary>
-        public override void Initialize()
-        {
-            ecapa = im.GetExtension<EntityCapabilities>();
-        }
 
         /// <summary>
         /// Invoked when an IQ stanza is being received.
@@ -90,7 +82,7 @@ namespace Net.Xmpp.Extensions
                 base64Data = Convert.ToBase64String(data);
             }
             var xml = Xml.Element("vCard", "vcard-temp").Child(Xml.Element("Photo").Child(Xml.Element("Type").Text(mimeType)).Child(Xml.Element("BINVAL").Text(base64Data)));
-            im.IqRequestAsync(IqType.Set, null, im.Jid, xml, null, (id, iq) =>
+            im.IqRequestCallback(IqType.Set, null, im.Jid, xml, null, (id, iq) =>
             {
                 if (iq.Type == IqType.Result)
                 {
@@ -145,7 +137,7 @@ namespace Net.Xmpp.Extensions
             var xml = Xml.Element("vCard", "vcard-temp");
 
             //var result = im.IqRequest(IqType.Get, jid, im.Jid, xml);
-            im.IqRequestAsync(IqType.Get, jid, im.Jid, xml, null, (id, iq) =>
+            im.IqRequestCallback(IqType.Get, jid, im.Jid, xml, null, (id, iq) =>
             {
                 XmlElement query = iq.Data["vCard"];
                 if (iq.Data["vCard"].NamespaceURI == "vcard-temp")
@@ -197,9 +189,10 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <param name="im">A reference to the XmppIm instance on whose behalf this
         /// instance is created.</param>
-        public vCardAvatars(XmppIm im)
+        public vCardAvatars(XmppIm im, EntityCapabilities ecapa)
             : base(im)
         {
+            this.ecapa = ecapa;
         }
     }
 }

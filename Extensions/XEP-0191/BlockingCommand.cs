@@ -15,7 +15,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// A reference to the 'Entity Capabilities' extension instance.
         /// </summary>
-        private EntityCapabilities ecapa;
+        private readonly EntityCapabilities ecapa;
 
         /// <summary>
         /// An enumerable collection of XMPP namespaces the extension implements.
@@ -34,14 +34,6 @@ namespace Net.Xmpp.Extensions
         /// Determines whether our server supports the 'Blocking Command' extension.
         /// </summary>
         public bool Supported => ecapa.Supports(im.Jid.Domain, Extension.BlockingCommand);
-
-        /// <summary>
-        /// Invoked after all extensions have been loaded.
-        /// </summary>
-        public override void Initialize()
-        {
-            ecapa = im.GetExtension<EntityCapabilities>();
-        }
 
         /// <summary>
         /// Invoked when an IQ stanza is being received.
@@ -197,9 +189,10 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <param name="im">A reference to the XmppIm instance on whose behalf this
         /// instance is created.</param>
-        public BlockingCommand(XmppIm im)
+        public BlockingCommand(XmppIm im, EntityCapabilities ecapa)
             : base(im)
         {
+            this.ecapa = ecapa;
         }
     }
 }

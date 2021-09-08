@@ -30,9 +30,9 @@ namespace Net.Xmpp.Im
         private bool disposed;
 
         /// <summary>
-        /// The set of loaded extensions.
+        /// The loaded extensions.
         /// </summary>
-        private readonly ISet<XmppExtension> extensions = new HashSet<XmppExtension>();
+        private readonly Dictionary<Type, XmppExtension> extensions = new();
 
         /// <summary>
         /// The hostname of the XMPP server to connect to.
@@ -110,7 +110,7 @@ namespace Net.Xmpp.Im
         /// <summary>
         /// The address of the Xmpp entity.
         /// </summary>
-        public Jid Jid => core.Jid;
+        public Jid? Jid => core.Jid;
 
         /// <summary>
         /// The address of the Xmpp entity.
@@ -150,7 +150,7 @@ namespace Net.Xmpp.Im
         /// A callback method to invoke when a Custom Iq Request is received
         /// from another XMPP user.
         /// </summary>
-        public CustomIqRequestDelegate CustomIqDelegate { get; set; }
+        public CustomIqRequestDelegate? CustomIqDelegate { get; set; }
 
         /// <summary>
         /// The event that is raised when a status notification from a contact has been
@@ -277,18 +277,7 @@ namespace Net.Xmpp.Im
         {
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
-            // Call 'Initialize' method of each loaded extension.
-            foreach (XmppExtension ext in extensions)
-            {
-                try
-                {
-                    ext.Initialize();
-                }
-                catch (Exception e)
-                {
-                    throw new XmppException("Initialization of " + ext.Xep + " failed.", e);
-                }
-            }
+
             try
             {
                 core.Connect(resource);
@@ -481,10 +470,9 @@ namespace Net.Xmpp.Im
             // "Stamp" the sender's JID onto the message.
             message.From = Jid;
             // Invoke IOutput<Message> Plugins.
-            foreach (var ext in extensions)
+            foreach (var filter in extensions.Values.OfType<IOutputFilter<Message>>())
             {
-                var filter = ext as IOutputFilter<Message>;
-                filter?.Output(message);
+                filter.Output(message);
             }
             core.SendMessage(message);
         }
@@ -1206,13 +1194,36 @@ namespace Net.Xmpp.Im
         /// </summary>
         /// <typeparam name="T">The type of the extension to load.</typeparam>
         /// <returns>An instance of the loaded extension.</returns>
-        internal T LoadExtension<T>() where T : XmppExtension
+        internal T LoadExtension<T>() where T : XmppExtension => (T)LoadExtension(typeof(T));
+
+        internal XmppExtension LoadExtension(Type type)
         {
+            if (extensions.TryGetValue(type, out var existing))
+                return existing;
+
+            var argData = type.GetConstructors()[0].GetParameters();
+
+            var args = new List<object>();
+
+            foreach (var arg in argData)
+            {
+                if (arg.ParameterType == GetType())
+                {
+                    args.Add(this);
+                }
+                else
+                {
+                    if (!extensions.TryGetValue(arg.ParameterType, out existing) && LoadExtension(arg.ParameterType) is { } loaded)
+                        existing = loaded;
+                    args.Add(existing);
+                }
+            }
+
             // Create instance of extension.
-            var ext = (XmppExtension)Activator.CreateInstance(typeof(T), this);
+            var ext = (XmppExtension)Activator.CreateInstance(type, args.ToArray());
             // Add instance to list of loaded extensions.
-            extensions.Add(ext);
-            return (T)ext;
+            extensions.Add(type, ext);
+            return ext;
         }
 
         /// <summary>
@@ -1224,43 +1235,7 @@ namespace Net.Xmpp.Im
         /// original list of extensions.</returns>
         internal bool UnloadExtension<T>() where T : XmppExtension
         {
-            var ext = GetExtension<T>();
-            return ext != null && extensions.Remove(ext);
-        }
-
-        /// <summary>
-        /// Retrieves the instance of the specified extension.
-        /// </summary>
-        /// <typeparam name="T">The type of the extension to retrieve.</typeparam>
-        /// <returns>The instance of the retrieved extension or null if the
-        /// extension has not been loaded.</returns>
-        internal T? GetExtension<T>() where T : XmppExtension
-        {
-            foreach (var ext in extensions)
-            {
-                if (ext.GetType() == typeof(T))
-                    return (T)ext;
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Retrieves the instance of the extension of the specified type.
-        /// </summary>
-        /// <param name="type">The type of the extension to retrieve.</param>
-        /// <returns>The instance of the retrieved extension or null if no
-        /// matching instance has been found.</returns>
-        /// <exception cref="ArgumentNullException">The type parameter is
-        /// null.</exception>
-        internal XmppExtension? GetExtension(Type type)
-        {
-            type.ThrowIfNull(nameof(type));
-            foreach (var ext in extensions)
-            {
-                if (ext.GetType() == type)
-                    return ext;
-            }
-            return null;
+            return extensions.ContainsKey(typeof(T)) && extensions.Remove(typeof(T));
         }
 
         /// <summary>
@@ -1275,18 +1250,13 @@ namespace Net.Xmpp.Im
         internal XmppExtension? GetExtension(string @namespace)
         {
             @namespace.ThrowIfNull(nameof(@namespace));
-            foreach (var ext in extensions)
-            {
-                if (ext.Namespaces.Contains(@namespace))
-                    return ext;
-            }
-            return null;
+            return extensions.Values.FirstOrDefault(ext => ext.Namespaces.Contains(@namespace));
         }
 
         /// <summary>
         /// Returns an enumerable collection of loaded extensions.
         /// </summary>
-        internal IEnumerable<XmppExtension> Extensions => extensions;
+        internal IEnumerable<XmppExtension> Extensions => extensions.Values;
 
         /// <summary>
         /// Sends the specified presence stanza to the server.
@@ -1303,10 +1273,9 @@ namespace Net.Xmpp.Im
         {
             presence.ThrowIfNull(nameof(presence));
             // Invoke IOutput<Presence> Plugins.
-            foreach (var ext in extensions)
+            foreach (var filter in extensions.Values.OfType<IOutputFilter<Presence>>())
             {
-                var filter = ext as IOutputFilter<Presence>;
-                filter?.Output(presence);
+                filter.Output(presence);
             }
             core.SendPresence(presence);
         }
@@ -1343,10 +1312,9 @@ namespace Net.Xmpp.Im
         {
             Iq iq = new(type, null, to, from, data, language);
             // Invoke IOutput<Iq> Plugins.
-            foreach (var ext in extensions)
+            foreach (var filter in extensions.Values.OfType<IOutputFilter<Iq>>())
             {
-                var filter = ext as IOutputFilter<Iq>;
-                filter?.Output(iq);
+                filter.Output(iq);
             }
             return core.IqRequest(iq, millisecondsTimeout);
         }
@@ -1373,16 +1341,15 @@ namespace Net.Xmpp.Im
         /// connected to a remote host.</exception>
         /// <exception cref="IOException">There was a failure while writing to the
         /// network.</exception>
-        internal string IqRequestAsync(IqType type, Jid? to = null, Jid? from = null,
+        internal string IqRequestCallback(IqType type, Jid? to = null, Jid? from = null,
             XmlElement? data = null, CultureInfo? language = null,
             Action<string, Iq>? callback = null)
         {
             Iq iq = new(type, null, to, from, data, language);
             // Invoke IOutput<Iq> Plugins.
-            foreach (var ext in extensions)
+            foreach (var filter in extensions.Values.OfType<IOutputFilter<Iq>>())
             {
-                var filter = ext as IOutputFilter<Iq>;
-                filter?.Output(iq);
+                filter.Output(iq);
             }
             return core.IqRequest(iq, callback);
         }
@@ -1412,10 +1379,9 @@ namespace Net.Xmpp.Im
             AssertValid(false);
             Iq iq = new(type, id, to, from, data, language);
             // Invoke IOutput<Iq> Plugins.
-            foreach (var ext in extensions)
+            foreach (var filter in extensions.Values.OfType<IOutputFilter<Iq>>())
             {
-                var filter = ext as IOutputFilter<Iq>;
-                filter?.Output(iq);
+                filter.Output(iq);
             }
             core.IqResponse(iq);
         }
@@ -1541,14 +1507,11 @@ namespace Net.Xmpp.Im
         internal void OnIq(Iq iq)
         {
             // Invoke IInput<Iq> Plugins.
-            foreach (var ext in extensions)
+            foreach (var filter in extensions.Values.OfType<IInputFilter<Iq>>())
             {
-                if (ext is IInputFilter<Iq> filter)
-                {
-                    // Swallow IQ stanza?
-                    if (filter.Input(iq))
-                        return;
-                }
+                // Swallow IQ stanza?
+                if (filter.Input(iq))
+                    return;
             }
             var query = iq.Data["query"];
             if (query != null)
@@ -1572,14 +1535,11 @@ namespace Net.Xmpp.Im
         internal void OnPresence(Presence presence)
         {
             // Invoke IInput<Presence> Plugins.
-            foreach (var ext in extensions)
+            foreach (var filter in extensions.Values.OfType<IInputFilter<Presence>>())
             {
-                if (ext is IInputFilter<Presence> filter)
-                {
-                    // Swallow presence stanza?
-                    if (filter.Input(presence))
-                        return;
-                }
+                // Swallow presence stanza?
+                if (filter.Input(presence))
+                    return;
             }
             switch (presence.Type)
             {
@@ -1610,15 +1570,15 @@ namespace Net.Xmpp.Im
         internal void OnMessage(Message message)
         {
             // Invoke IInput<Message> Plugins.
-            foreach (var ext in extensions)
+            foreach (var filter in extensions.Values.OfType<IInputFilter<Message>>())
             {
-                if (ext is IInputFilter<Message> filter)
-                {
-                    // Swallow message?
-                    if (filter.Input(message))
-                        return;
-                }
+                // Swallow message?
+                if (filter.Input(message))
+                    return;
             }
+
+            if (message.From is null)
+                return;
 
             if (message.Type == MessageType.Error)
             {
@@ -1629,6 +1589,7 @@ namespace Net.Xmpp.Im
                 Message?.Invoke(this, new(message.From, message));
             }
         }
+
         /// <summary>
         /// Processes presence stanzas containing availability and status
         /// information.
@@ -1639,16 +1600,14 @@ namespace Net.Xmpp.Im
         private void ProcessStatusNotification(Presence presence)
         {
             bool offline = presence.Type == PresenceType.Unavailable;
-            XmlElement e = presence.Data["show"];
-            Availability availability = offline ? Availability.Offline :
-                Availability.Online;
+            var e = presence.Data["show"];
+            var availability = offline ? Availability.Offline : Availability.Online;
             // If the optional 'show' element has been specified, parse the
             // availability status from it.
             if (!offline && e?.InnerText?.Length > 0)
             {
                 string show = e.InnerText.Capitalize();
-                availability = (Availability)Enum.Parse(
-                    typeof(Availability), show);
+                availability = (Availability)Enum.Parse(typeof(Availability), show);
             }
             sbyte prio = 0;
             // Parse the optional 'priority' element.

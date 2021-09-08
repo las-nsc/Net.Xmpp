@@ -25,22 +25,22 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// A reference to the 'SI File Transfer' XMPP extension.
         /// </summary>
-        private SIFileTransfer siFileTransfer;
+        private readonly SIFileTransfer siFileTransfer;
 
         /// <summary>
         /// A reference to the 'Entity Capabilities' extension instance.
         /// </summary>
-        private EntityCapabilities ecapa;
+        private readonly EntityCapabilities ecapa;
 
         /// <summary>
         /// A reference to the 'Service Discovery' extension instance.
         /// </summary>
-        private ServiceDiscovery sdisco;
+        private readonly ServiceDiscovery sdisco;
 
         /// <summary>
         /// A reference to the 'Server IP Check' extension instance.
         /// </summary>
-        private ServerIpCheck serverIpCheck;
+        private readonly ServerIpCheck serverIpCheck;
 
         /// <summary>
         /// The default port to listen on or connect to if none is specified.
@@ -147,17 +147,6 @@ namespace Net.Xmpp.Extensions
         public event EventHandler<TransferAbortedEventArgs>? TransferAborted;
 
         /// <summary>
-        /// Invoked after all extensions have been loaded.
-        /// </summary>
-        public override void Initialize()
-        {
-            ecapa = im.GetExtension<EntityCapabilities>();
-            siFileTransfer = im.GetExtension<SIFileTransfer>();
-            sdisco = im.GetExtension<ServiceDiscovery>();
-            serverIpCheck = im.GetExtension<ServerIpCheck>();
-        }
-
-        /// <summary>
         /// Invoked when an IQ stanza has been received.
         /// </summary>
         /// <param name="stanza">The stanza which has been received.</param>
@@ -210,9 +199,14 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <param name="im">A reference to the XmppIm instance on whose behalf this
         /// instance is created.</param>
-        public Socks5Bytestreams(XmppIm im)
+        public Socks5Bytestreams(XmppIm im, EntityCapabilities ecapa, SIFileTransfer siFileTransfer, ServiceDiscovery sdisco, ServerIpCheck serverIpCheck)
             : base(im)
         {
+            this.ecapa = ecapa;
+            this.siFileTransfer = siFileTransfer;
+            this.sdisco = sdisco;
+            this.serverIpCheck = serverIpCheck;
+
             StunServer = new DnsEndPoint("stun.l.google.com", 19302);
             ProxyAllowed = true;
             Proxies = new HashSet<Streamhost>();

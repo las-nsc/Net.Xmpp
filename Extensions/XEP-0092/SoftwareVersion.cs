@@ -15,7 +15,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// A reference to the 'Entity Capabilities' extension instance.
         /// </summary>
-        private EntityCapabilities ecapa;
+        private readonly EntityCapabilities ecapa;
 
         /// <summary>
         /// The current software version.
@@ -36,14 +36,6 @@ namespace Net.Xmpp.Extensions
         public override Extension Xep => Extension.SoftwareVersion;
 
         /// <summary>
-        /// Invoked after all extensions have been loaded.
-        /// </summary>
-        public override void Initialize()
-        {
-            ecapa = im.GetExtension<EntityCapabilities>();
-        }
-
-        /// <summary>
         /// Invoked when an IQ stanza is being received.
         /// </summary>
         /// <param name="stanza">The stanza which is being received.</param>
@@ -57,10 +49,11 @@ namespace Net.Xmpp.Extensions
             if (query == null || query.NamespaceURI != "jabber:iq:version")
                 return false;
             // Construct and send a response stanza.
-            var xml = Xml.Element("query", "jabber:iq:version").Child(
-                Xml.Element("name").Text(Version.Name)).Child(
-                Xml.Element("version").Text(Version.Version)).Child(
-                Xml.Element("os").Text(Version.Os));
+            var xml = Xml.Element("query", "jabber:iq:version")
+               .Child(Xml.Element("name").Text(Version.Name))
+               .Child(Xml.Element("version").Text(Version.Version));
+            if (Version.Os != null)
+                xml.Child(Xml.Element("os").Text(Version.Os));
             im.IqResult(stanza, xml);
             // We took care of this IQ request, so intercept it and don't pass it
             // on to other handlers.
@@ -102,7 +95,7 @@ namespace Net.Xmpp.Extensions
                 throw new XmppException("Erroneous server response: " + response);
             if (query["name"] == null || query["version"] == null)
                 throw new XmppException("Missing name or version element: " + response);
-            string os = query["os"]?.InnerText;
+            var os = query["os"]?.InnerText;
             return new VersionInformation(query["name"].InnerText,
                 query["version"].InnerText, os);
         }
@@ -112,9 +105,10 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <param name="im">A reference to the XmppIm instance on whose behalf this
         /// instance is created.</param>
-        public SoftwareVersion(XmppIm im)
+        public SoftwareVersion(XmppIm im, EntityCapabilities ecapa)
             : base(im)
         {
+            this.ecapa = ecapa;
             // Collect name and version attributes from the assembly's metadata.
             Attribute attr = Assembly.GetExecutingAssembly().
                 GetCustomAttribute(typeof(AssemblyProductAttribute));

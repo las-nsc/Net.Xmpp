@@ -1,10 +1,11 @@
-﻿using Net.Xmpp.Core;
-using Net.Xmpp.Extensions.Dataforms;
-using Net.Xmpp.Im;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+
+using Net.Xmpp.Core;
+using Net.Xmpp.Extensions.Dataforms;
+using Net.Xmpp.Im;
 
 namespace Net.Xmpp.Extensions
 {
@@ -16,7 +17,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// A reference to the 'Entity Capabilities' extension instance.
         /// </summary>
-        private EntityCapabilities ecapa;
+        private readonly EntityCapabilities ecapa;
 
         /// <summary>
         /// A dictionary of registered profiles.
@@ -36,14 +37,6 @@ namespace Net.Xmpp.Extensions
         /// extension.
         /// </summary>
         public override Extension Xep => Extension.StreamInitiation;
-
-        /// <summary>
-        /// Invoked after all extensions have been loaded.
-        /// </summary>
-        public override void Initialize()
-        {
-            ecapa = im.GetExtension<EntityCapabilities>();
-        }
 
         /// <summary>
         /// Invoked when an IQ stanza is being received.
@@ -200,7 +193,7 @@ namespace Net.Xmpp.Extensions
             string sid = GenerateSessionId();
             var si = CreateSiElement(sid, mimeType, profile, streamOptions, data);
             // Perform the actual request.
-            im.IqRequestAsync(IqType.Set, to, im.Jid, si, null, (id, iq) =>
+            im.IqRequestCallback(IqType.Set, to, im.Jid, si, null, (id, iq) =>
             {
                 if (cb == null)
                     return;
@@ -240,9 +233,10 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <param name="im">A reference to the XmppIm instance on whose behalf this
         /// instance is created.</param>
-        public StreamInitiation(XmppIm im)
+        public StreamInitiation(XmppIm im, EntityCapabilities ecapa)
             : base(im)
         {
+            this.ecapa = ecapa;
         }
 
         /// <summary>

@@ -25,16 +25,17 @@ namespace Net.Xmpp.Extensions
             List<ArchivedChatId> chats = new();
             foreach (XmlNode node in xml.GetElementsByTagName("chat"))
             {
-                string? with = null;
+                string with;
                 try
                 {
                     with = node.Attributes["with"].InnerText;
                 }
                 catch
                 {
+                    continue;
                 }
 
-                DateTimeOffset start = default(DateTimeOffset);
+                DateTimeOffset start;
                 try
                 {
                     string startText = node.Attributes["start"].InnerText;
@@ -42,6 +43,7 @@ namespace Net.Xmpp.Extensions
                 }
                 catch
                 {
+                    continue;
                 }
 
                 chats.Add(new ArchivedChatId(with, start));
@@ -71,7 +73,7 @@ namespace Net.Xmpp.Extensions
 
             var request = Xml.Element("list", xmlns);
 
-            if (with != null)
+            if (with is not null)
             {
                 request.Attr("with", with.ToString());
             }

@@ -15,7 +15,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// A reference to the 'Entity Capabilities' extension instance.
         /// </summary>
-        private EntityCapabilities ecapa;
+        private readonly EntityCapabilities ecapa;
 
         /// <summary>
         /// An enumerable collection of XMPP namespaces the extension implements.
@@ -29,14 +29,6 @@ namespace Net.Xmpp.Extensions
         /// extension.
         /// </summary>
         public override Extension Xep => Extension.CustomIqExtension;
-
-        /// <summary>
-        /// Invoked after all extensions have been loaded.
-        /// </summary>
-        public override void Initialize()
-        {
-            ecapa = im.GetExtension<EntityCapabilities>();
-        }
 
         /// <summary>
         /// Invoked when an IQ stanza is being received.
@@ -71,7 +63,7 @@ namespace Net.Xmpp.Extensions
             {
                 //call the callback for receiving a relevant stanza
                 //and wait for answer in order provide it
-                response = im.CustomIqDelegate.Invoke(stanza.From, targetDocument.InnerXml);
+                response = im.CustomIqDelegate?.Invoke(stanza.From, targetDocument.InnerXml);
 
                 if (response?.Length > 0)
                 {
@@ -134,7 +126,7 @@ namespace Net.Xmpp.Extensions
             var xml = Xml.Element("customiq", "urn:sharp.xmpp:customiq").Text(request);
 
             //The Request is Async
-            im.IqRequestAsync(IqType.Get, jid, im.Jid, xml, null, (id, iq) =>
+            im.IqRequestCallback(IqType.Get, jid, im.Jid, xml, null, (id, iq) =>
             {
                 //For any reply we execute the callback
                 if (iq.Type == IqType.Error)
@@ -192,9 +184,10 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <param name="im">A reference to the XmppIm instance on whose behalf this
         /// instance is created.</param>
-        public CustomIqExtension(XmppIm im)
+        public CustomIqExtension(XmppIm im, EntityCapabilities ecapa)
             : base(im)
         {
+            this.ecapa = ecapa;
         }
     }
 }

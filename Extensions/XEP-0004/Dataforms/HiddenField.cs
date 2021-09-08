@@ -81,6 +81,7 @@ namespace Net.Xmpp.Extensions.Dataforms
             : base(element)
         {
             AssertType(DataFieldType.Hidden);
+            values = new XmlCollection<string>(element, "value", elem => elem.InnerText);
         }
     }
 }

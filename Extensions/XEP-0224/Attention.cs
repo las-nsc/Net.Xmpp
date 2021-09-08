@@ -1,6 +1,7 @@
-﻿using Net.Xmpp.Im;
-using System;
+﻿using System;
 using System.Collections.Generic;
+
+using Net.Xmpp.Im;
 
 namespace Net.Xmpp.Extensions
 {
@@ -12,7 +13,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// A reference to the 'Entity Capabilities' extension instance.
         /// </summary>
-        private EntityCapabilities ecapa;
+        private readonly EntityCapabilities ecapa;
 
         /// <summary>
         /// An enumerable collection of XMPP namespaces the extension implements.
@@ -28,21 +29,14 @@ namespace Net.Xmpp.Extensions
         public override Extension Xep => Extension.Attention;
 
         /// <summary>
-        /// Invoked after all extensions have been loaded.
-        /// </summary>
-        public override void Initialize()
-        {
-            ecapa = im.GetExtension<EntityCapabilities>();
-        }
-
-        /// <summary>
         /// Initializes a new instance of the Attention class.
         /// </summary>
         /// <param name="im">A reference to the XmppIm instance on whose behalf this
         /// instance is created.</param>
-        public Attention(XmppIm im)
+        public Attention(XmppIm im, EntityCapabilities ecapa)
             : base(im)
         {
+            this.ecapa = ecapa;
         }
 
         /// <summary>

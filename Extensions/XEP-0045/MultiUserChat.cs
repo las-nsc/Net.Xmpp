@@ -30,7 +30,7 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         public override Extension Xep => Extension.MultiUserChat;
 
-        public event EventHandler<Im.MessageEventArgs> SubjectChanged;
+        public event EventHandler<Im.MessageEventArgs>? SubjectChanged;
 
         public event EventHandler<GroupPresenceEventArgs>? PrescenceChanged;
 
@@ -41,11 +41,6 @@ namespace Net.Xmpp.Extensions
         public event EventHandler<GroupErrorEventArgs>? MucErrorResponse;
 
         public RegistrationCallback? VoiceRequested;
-
-        public override void Initialize()
-        {
-            base.Initialize();
-        }
 
         public bool Input(Im.Message stanza)
         {
@@ -96,8 +91,6 @@ namespace Net.Xmpp.Extensions
             {
                 switch (xElement.FirstChild.Value)
                 {
-                    default:
-                        break;
                     case MucNs.NsRequest:
                         // Invoke Voice Request Submission callback/event.
                         // 8.6 Approving Voice Requests
@@ -367,7 +360,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="room">chat room</param>
         /// <param name="nickname">user to kick</param>
         /// <param name="reason">reason for kick</param>
-        public void KickOccupant(Jid room, string nickname, string reason)
+        public void KickOccupant(Jid room, string nickname, string? reason)
         {
             XmlElement item = Xml.Element("item");
             item.Attr("nick", nickname);

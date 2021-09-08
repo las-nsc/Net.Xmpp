@@ -18,12 +18,12 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// A reference to the 'SI File Transfer' XMPP extension.
         /// </summary>
-        private SIFileTransfer siFileTransfer;
+        private readonly SIFileTransfer siFileTransfer;
 
         /// <summary>
         /// A reference to the 'Entity Capabilities' extension instance.
         /// </summary>
-        private EntityCapabilities ecapa;
+        private readonly EntityCapabilities ecapa;
 
         /// <summary>
         /// The block-size defines the maximum size in bytes of each data chunk.
@@ -55,15 +55,6 @@ namespace Net.Xmpp.Extensions
         /// before it completed.
         /// </summary>
         public event EventHandler<TransferAbortedEventArgs>? TransferAborted;
-
-        /// <summary>
-        /// Invoked after all extensions have been loaded.
-        /// </summary>
-        public override void Initialize()
-        {
-            siFileTransfer = im.GetExtension<SIFileTransfer>();
-            ecapa = im.GetExtension<EntityCapabilities>();
-        }
 
         /// <summary>
         /// Invoked when an IQ stanza has been received.
@@ -197,7 +188,8 @@ namespace Net.Xmpp.Extensions
         public void CancelTransfer(SISession session)
         {
             session.ThrowIfNull(nameof(session));
-            siFileTransfer.InvalidateSession(session.Sid);
+            siFileTransfer.ThrowIfNull(nameof(siFileTransfer));
+            siFileTransfer!.InvalidateSession(session.Sid);
             TransferAborted?.Invoke(this, new(session));
         }
 
@@ -206,9 +198,11 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <param name="im">A reference to the XmppIm instance on whose behalf this
         /// instance is created.</param>
-        public InBandBytestreams(XmppIm im)
+        public InBandBytestreams(XmppIm im, SIFileTransfer siFileTransfer, EntityCapabilities ecapa)
             : base(im)
         {
+            this.siFileTransfer = siFileTransfer;
+            this.ecapa = ecapa;
         }
 
         /// <summary>
@@ -359,7 +353,7 @@ namespace Net.Xmpp.Extensions
             var close = Xml.Element("close", "http://jabber.org/protocol/ibb")
                 .Attr("sid", sessionId);
             // We don't care about the other site's response to this.
-            im.IqRequestAsync(IqType.Set, to, im.Jid, close);
+            im.IqRequestCallback(IqType.Set, to, im.Jid, close);
         }
     }
 }

@@ -1,6 +1,7 @@
-﻿using Net.Xmpp.Im;
-using System;
+﻿using System;
 using System.Collections.Generic;
+
+using Net.Xmpp.Im;
 
 namespace Net.Xmpp.Extensions
 {
@@ -14,23 +15,16 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// A reference to the 'Service Discovery' extension instance.
         /// </summary>
-        private ServiceDiscovery sdisco;
+        private readonly ServiceDiscovery sdisco;
 
         public override IEnumerable<string> Namespaces => new string[] { xmlns };
 
         public override Extension Xep => Extension.HTTPUpload;
 
-        public HTTPFileUpload(XmppIm im)
+        public HTTPFileUpload(XmppIm im, ServiceDiscovery sdisco)
             : base(im)
         {
-        }
-
-        /// <summary>
-        /// Invoked after all extensions have been loaded.
-        /// </summary>
-        public override void Initialize()
-        {
-            sdisco = im.GetExtension<ServiceDiscovery>();
+            this.sdisco = sdisco;
         }
 
         /// <summary>
@@ -66,13 +60,13 @@ namespace Net.Xmpp.Extensions
                 }
             }
 
-            if (uploadDomain == null)
+            if (uploadDomain is null)
             {
                 throw new Exception("Service Unavaible");
             }
             string id = Guid.NewGuid().ToString("N");
             SlotRequest request = new(fileName, size, contentType);
-            im.IqRequestAsync(Core.IqType.Get, uploadDomain, null, request.ToXmlElement(), null,
+            im.IqRequestCallback(Core.IqType.Get, uploadDomain, null, request.ToXmlElement(), null,
                 (string result, Core.Iq response) =>
                 {
                     if (response.Type == Core.IqType.Error)

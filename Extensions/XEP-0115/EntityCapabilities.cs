@@ -17,7 +17,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// A reference to the 'Service Discovery' extension instance.
         /// </summary>
-        private ServiceDiscovery sdisco;
+        private readonly ServiceDiscovery sdisco;
 
         /// <summary>
         /// A dictionary for caching the 'ver' hash of each JID.
@@ -50,15 +50,6 @@ namespace Net.Xmpp.Extensions
         /// extension.
         /// </summary>
         public override Extension Xep => Extension.EntityCapabilities;
-
-        /// <summary>
-        /// Invoked after all extensions have been loaded.
-        /// </summary>
-        public override void Initialize()
-        {
-            // Get a reference to the SDisco extension.
-            sdisco = im.GetExtension<ServiceDiscovery>();
-        }
 
         /// <summary>
         /// Invoked when a presence stanza is being received.
@@ -157,8 +148,8 @@ namespace Net.Xmpp.Extensions
         public bool Supports<T>(Jid jid) where T : XmppExtension
         {
             jid.ThrowIfNull(nameof(jid));
-            var ext = im.GetExtension<T>();
-            return ext != null && Supports(jid, ext.Xep);
+            T ext = im.LoadExtension<T>();
+            return Supports(jid, ext.Xep);
         }
 
         /// <summary>
@@ -219,9 +210,10 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <param name="im">A reference to the XmppIm instance on whose behalf this
         /// instance is created.</param>
-        public EntityCapabilities(XmppIm im)
+        public EntityCapabilities(XmppIm im, ServiceDiscovery sdisco)
             : base(im)
         {
+            this.sdisco = sdisco;
         }
 
         /// <summary>

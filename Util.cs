@@ -62,7 +62,7 @@ namespace Net.Xmpp
         /// <param name="name">The name to use when throwing an
         /// exception, if necessary.</param>
         /// <remarks>Courtesy of Jon Skeet.</remarks>
-        internal static void ThrowIfNull<T>(this T data, string name)
+        internal static void ThrowIfNull<T>(this T? data, string name)
             where T : class
         {
             if (data == null)
