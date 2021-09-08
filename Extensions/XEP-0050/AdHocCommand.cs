@@ -10,17 +10,17 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The Jabber ID of the user who can call this command
         /// </summary>
-        public Jid Id { get; set; }
+        public Jid? Id { get; set; }
 
         /// <summary>
         /// The friendly name of the command
         /// </summary>
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
         /// A value that is used to identify the command
         /// </summary>
-        public string Node { get; set; }
+        public string? Node { get; set; }
 
         /// <summary>
         /// The default constructor

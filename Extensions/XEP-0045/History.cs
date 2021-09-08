@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Xml;
+
 using Net.Xmpp.Core;
 
 namespace Net.Xmpp.Extensions
@@ -24,7 +25,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="from"></param>
         /// <param name="maxChars"></param>
         public History(Jid to, Jid from, int maxChars = 0)
-            :base(to, from, null, null, Xml.Element(xTag, MucNs.NsMain))
+            : base(to, from, null, null, Xml.Element(xTag, MucNs.NsMain))
         {
             XElement.Child(Xml.Element(historyTag));
             MaxChars = maxChars;
@@ -51,12 +52,7 @@ namespace Net.Xmpp.Extensions
         public int? MaxChars
         {
             get => GetValueAsInteger(maxCharsAttribute);
-
-            set
-            {
-                string safeValue = SafeNumber(value);
-                ReplaceValue(maxCharsAttribute, safeValue);
-            }
+            set => ReplaceValue(maxCharsAttribute, SafeNumber(value));
         }
 
         /// <summary>
@@ -65,12 +61,7 @@ namespace Net.Xmpp.Extensions
         public int? MaxStanzas
         {
             get => GetValueAsInteger(maxStanzasAttribute);
-
-            set
-            {
-                string safeValue = SafeNumber(value);
-                ReplaceValue(maxStanzasAttribute, safeValue);
-            }
+            set => ReplaceValue(maxStanzasAttribute, SafeNumber(value));
         }
 
         /// <summary>
@@ -79,12 +70,7 @@ namespace Net.Xmpp.Extensions
         public int? Seconds
         {
             get => GetValueAsInteger(secondsAttribute);
-
-            set
-            {
-                string safeValue = SafeNumber(value);
-                ReplaceValue(secondsAttribute, safeValue);
-            }
+            set => ReplaceValue(secondsAttribute, SafeNumber(value));
         }
 
         /// <summary>
@@ -93,7 +79,6 @@ namespace Net.Xmpp.Extensions
         public DateTime? Since
         {
             get => GetValueAsDateTime(sinceAttribute);
-
             set
             {
                 string? safeValue = null;
@@ -114,14 +99,14 @@ namespace Net.Xmpp.Extensions
 
         private XmlElement XElement => element[xTag];
 
-        private XmlElement HistoryElement => GetNode(xTag, historyTag);
+        private XmlElement? HistoryElement => GetNode(xTag, historyTag);
 
         /// <summary>
         /// Prevents the user from entering numbers less than zero.
         /// </summary>
         /// <param name="number">user input.</param>
         /// <returns>null or any number equal to or greater than zero.</returns>
-        private string SafeNumber(int? number)
+        private string? SafeNumber(int? number)
         {
             string? result = null;
 
@@ -136,11 +121,10 @@ namespace Net.Xmpp.Extensions
 
         private int? GetValueAsInteger(string attributeName)
         {
-            XmlElement node = HistoryElement;
-            string v = node?.GetAttribute(attributeName);
+            var v = HistoryElement?.GetAttribute(attributeName);
 
             int? result = null;
-            if (!string.IsNullOrEmpty(v))
+            if (v?.Length > 0)
                 result = int.Parse(v);
 
             return result;
@@ -148,25 +132,24 @@ namespace Net.Xmpp.Extensions
 
         private DateTime? GetValueAsDateTime(string attributeName)
         {
-            XmlElement node = HistoryElement;
-            string v = node?.GetAttribute(attributeName);
+            var v = HistoryElement?.GetAttribute(attributeName);
 
             DateTime? result = null;
-            if (!string.IsNullOrEmpty(v))
+            if (v?.Length > 0)
                 result = DateTime.Parse(v);
 
             return result;
         }
 
-        private void ReplaceValue(string attributeName, string value)
+        private void ReplaceValue(string attributeName, string? value)
         {
             const string zero = "0";
 
-            HistoryElement.RemoveAllAttributes();
-            if (value == null)
-                HistoryElement.SetAttribute(maxCharsAttribute, zero);
+            HistoryElement?.RemoveAllAttributes();
+            if (value is null)
+                HistoryElement?.SetAttribute(maxCharsAttribute, zero);
             else
-                HistoryElement.SetAttribute(attributeName, value);
+                HistoryElement?.SetAttribute(attributeName, value);
         }
     }
 }

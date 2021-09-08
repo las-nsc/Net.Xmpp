@@ -74,7 +74,7 @@ namespace Net.Xmpp.Extensions
             if (items == null)
                 return false;
             string nodeId = items.GetAttribute("node");
-            if (string.IsNullOrEmpty(nodeId))
+            if (!(nodeId?.Length > 0))
                 return false;
             // FIXME: Should we let the callback decide whether the message stanza
             // should be swallowed or passed on?
@@ -222,17 +222,15 @@ namespace Net.Xmpp.Extensions
                 Xml.Element("item").Attr("id", itemId))
             );
             Iq iq = im.IqRequest(IqType.Get, jid, im.Jid, xml);
-            if (iq.Type == IqType.Error)
-                throw Util.ExceptionFromError(iq, "The item could not be retrieved.");
-            var pubsub = iq.Data["pubsub"];
-            if (pubsub == null || pubsub.NamespaceURI != "http://jabber.org/protocol/pubsub")
-                throw new XmppException("Expected 'pubsub' element: " + iq);
-            var items = pubsub["items"];
-            if (items == null || items.GetAttribute("node") != node)
-                throw new XmppException("Expected 'items' element: " + iq);
-            return items["item"] == null || items["item"].GetAttribute("id") != itemId
+            return iq.Type == IqType.Error
+                ? throw Util.ExceptionFromError(iq, "The item could not be retrieved.")
+                : iq.Data["pubsub"] is not { } pubsub || pubsub.NamespaceURI != "http://jabber.org/protocol/pubsub"
+                ? throw new XmppException("Expected 'pubsub' element: " + iq)
+                : pubsub["items"] is not { } items || items.GetAttribute("node") != node
+                ? throw new XmppException("Expected 'items' element: " + iq)
+                : items["item"] is not { } item || item.GetAttribute("id") != itemId
                 ? throw new XmppException("Expected 'item' element: " + items.ToXmlString())
-                : items["item"];
+                : item;
         }
 
         /// <summary>

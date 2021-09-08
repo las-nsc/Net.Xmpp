@@ -73,7 +73,7 @@ namespace Net.Xmpp.Extensions
                 //and wait for answer in order provide it
                 response = im.CustomIqDelegate.Invoke(stanza.From, targetDocument.InnerXml);
 
-                if (!string.IsNullOrEmpty(response))
+                if (response?.Length > 0)
                 {
                     xmlresponse.Text(response);
                 }

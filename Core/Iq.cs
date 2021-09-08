@@ -52,9 +52,9 @@ namespace Net.Xmpp.Core
         /// <param name="data">The content of the stanza.</param>
         /// <param name="language">The language of the XML character data of
         /// the stanza.</param>
-        public Iq(IqType type, string id, Jid? to = null, Jid? from = null,
+        public Iq(IqType type, string? id, Jid? to = null, Jid? from = null,
             XmlElement? data = null, CultureInfo? language = null)
-            : base(null, to, from, id, language, data)
+            : base(null, to, from, id, language, data is null ? new XmlElement[] { } : new[] { data })
         {
             Type = type;
         }

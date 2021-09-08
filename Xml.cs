@@ -85,14 +85,14 @@ namespace Net.Xmpp
             // a prefix, i.e. stream:stream (What it does is probably correct, but just
             // not what we need for XMPP).
             StringBuilder b = new("<" + e.Name);
-            if (!string.IsNullOrEmpty(e.NamespaceURI))
+            if (e.NamespaceURI?.Length > 0)
                 b.Append(" xmlns='" + e.NamespaceURI + "'");
             foreach (XmlAttribute a in e.Attributes)
             {
                 if (a.Name == "xmlns")
                     continue;
                 if (a.Value != null)
-                    b.Append(" " + a.Name + "='" + SecurityElement.Escape(a.Value.ToString())
+                    b.Append(" " + a.Name + "='" + SecurityElement.Escape(a.Value)
                         + "'");
             }
             if (e.IsEmpty)
@@ -102,10 +102,10 @@ namespace Net.Xmpp
                 b.Append(">");
                 foreach (var child in e.ChildNodes)
                 {
-                    if (child is XmlElement)
-                        b.Append(((XmlElement)child).ToXmlString());
-                    else if (child is XmlText)
-                        b.Append(((XmlText)child).InnerText);
+                    if (child is XmlElement node)
+                        b.Append(node.ToXmlString());
+                    else if (child is XmlText text)
+                        b.Append(text.InnerText);
                 }
                 b.Append("</" + e.Name + ">");
             }

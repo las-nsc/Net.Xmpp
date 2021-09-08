@@ -22,7 +22,7 @@ namespace Net.Xmpp.Im
         /// <summary>
         /// The nickname associated with the JID. This may be null.
         /// </summary>
-        public string Name { get; }
+        public string? Name { get; }
 
         /// <summary>
         /// The groups or categories this item is part of.
@@ -67,7 +67,7 @@ namespace Net.Xmpp.Im
         /// <param name="groups">An enumerable collection of groups to categorize
         /// this item in.</param>
         /// <exception cref="ArgumentNullException">The jid parameter is null.</exception>
-        internal RosterItem(Jid jid, string name, SubscriptionState state,
+        internal RosterItem(Jid jid, string? name, SubscriptionState state,
             bool pending, IEnumerable<string> groups)
         {
             jid.ThrowIfNull(nameof(jid));
@@ -77,7 +77,7 @@ namespace Net.Xmpp.Im
             {
                 foreach (string s in groups)
                 {
-                    if (string.IsNullOrEmpty(s))
+                    if (!(s?.Length > 0))
                         continue;
                     this.groups.Add(s);
                 }

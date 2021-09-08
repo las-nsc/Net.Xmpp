@@ -42,7 +42,7 @@ namespace Net.Xmpp.Im
         /// <summary>
         /// A forwarded message that is contained within this message, if there is one present.
         /// </summary>
-        public Message ForwardedMessage { get; protected set; }
+        public Message? ForwardedMessage { get; protected set; }
 
         /// <summary>
         /// A forwarded message that is contained within this message, if there is one present.
@@ -52,7 +52,7 @@ namespace Net.Xmpp.Im
         /// <summary>
         /// The conversation thread this message belongs to.
         /// </summary>
-        public string Thread
+        public string? Thread
         {
             get => element["thread"]?.InnerText;
 
@@ -61,7 +61,7 @@ namespace Net.Xmpp.Im
                 var e = element["thread"];
                 if (e != null)
                 {
-                    if (value == null)
+                    if (value is null)
                         element.RemoveChild(e);
                     else
                         e.InnerText = value;
@@ -77,11 +77,11 @@ namespace Net.Xmpp.Im
         /// <summary>
         /// The subject of the message.
         /// </summary>
-        public string Subject
+        public string? Subject
         {
             get
             {
-                XmlElement bare = GetBare("subject");
+                var bare = GetBare("subject");
                 if (bare != null)
                     return bare.InnerText;
                 string k = AlternateSubjects.Keys.FirstOrDefault();
@@ -90,10 +90,10 @@ namespace Net.Xmpp.Im
 
             set
             {
-                XmlElement bare = GetBare("subject");
+                var bare = GetBare("subject");
                 if (bare != null)
                 {
-                    if (value == null)
+                    if (value is null)
                         element.RemoveChild(bare);
                     else
                         bare.InnerText = value;
@@ -109,11 +109,11 @@ namespace Net.Xmpp.Im
         /// <summary>
         /// The body of the message.
         /// </summary>
-        public string Body
+        public string? Body
         {
             get
             {
-                XmlElement bare = GetBare("body");
+                var bare = GetBare("body");
                 if (bare != null)
                     return bare.InnerText;
                 string k = AlternateBodies.Keys.FirstOrDefault();
@@ -122,10 +122,10 @@ namespace Net.Xmpp.Im
 
             set
             {
-                XmlElement bare = GetBare("body");
+                var bare = GetBare("body");
                 if (bare != null)
                 {
-                    if (value == null)
+                    if (value is null)
                         element.RemoveChild(bare);
                     else
                         bare.InnerText = value;
@@ -277,7 +277,7 @@ namespace Net.Xmpp.Im
         {
             // The 'type' attribute of message-stanzas is optional and if absent
             // a type of 'normal' is assumed.
-            return string.IsNullOrEmpty(value)
+            return !(value?.Length > 0)
                 ? MessageType.Normal
                 : (MessageType)Enum.Parse(typeof(MessageType),
                 value.Capitalize());
@@ -289,12 +289,12 @@ namespace Net.Xmpp.Im
         /// </summary>
         /// <param name="tag">The tag name of the element to retrieve.</param>
         /// <returns>The located element or null if no such element exists.</returns>
-        private XmlElement GetBare(string tag)
+        private XmlElement? GetBare(string tag)
         {
             foreach (XmlElement e in element.GetElementsByTagName(tag))
             {
                 string k = e.GetAttribute("xml:lang");
-                if (string.IsNullOrEmpty(k))
+                if (!(k?.Length > 0))
                     return e;
             }
             return null;

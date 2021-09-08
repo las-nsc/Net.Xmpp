@@ -38,12 +38,12 @@ namespace Net.Xmpp.Extensions
         /// can better understand what is being sent.
         /// </summary>
         /// <remarks>This may be null.</remarks>
-        public string Description { get; }
+        public string? Description { get; }
 
         /// <summary>
         /// An opaque identifier uniquely identifying the file-transfer operation.
         /// </summary>
-        public string SessionId { get; }
+        public string? SessionId { get; }
 
         /// <summary>
         /// Initializes a new instance of the FileTransfer class.
@@ -88,7 +88,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="description">A description of the file.</param>
         /// <exception cref="ArgumentNullException">The session parameter or
         /// the name parameter is null.</exception>
-        internal FileTransfer(SISession session, string name, string description) :
+        internal FileTransfer(SISession session, string name, string? description) :
             this(session.From, session.To, name, session.Size, session.Sid,
             description, session.Count)
         {

@@ -31,7 +31,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// <summary>
         /// The username to authenticate with.
         /// </summary>
-        private string Username
+        private string? Username
         {
             get => Properties.ContainsKey("Username") ?
                     Properties["Username"] as string : null;
@@ -42,7 +42,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// <summary>
         /// The plain-text password to authenticate with.
         /// </summary>
-        private string Password
+        private string? Password
         {
             get => Properties.ContainsKey("Password") ?
                     Properties["Password"] as string : null;
@@ -92,7 +92,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         {
             // Precondition: Ensure username and password are not null and
             // username is not empty.
-            if (string.IsNullOrEmpty(Username) || Password == null)
+            if (!(Username?.Length > 0) || Password == null)
             {
                 throw new SaslException("The username must not be null or empty and " +
                     "the password must not be null.");

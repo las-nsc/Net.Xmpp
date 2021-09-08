@@ -40,18 +40,18 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// JID of the user the invite is intended to be send to.
         /// </summary>
-        public Jid Room
+        public Jid? Room
         {
             get
             {
                 string v = Data["x"].GetAttribute("jid");
 
-                return string.IsNullOrEmpty(v) ? null : new Jid(v);
+                return v?.Length > 0 ? new Jid(v) : null;
             }
 
             set
             {
-                if (value == null)
+                if (value is null)
                     Data["x"].RemoveAttribute("jid");
                 else
                     Data["x"].SetAttribute("jid", value.ToString());
@@ -67,26 +67,26 @@ namespace Net.Xmpp.Extensions
 
             set
             {
-                if (value == null)
+                if (value is null)
                     Data["x"].RemoveAttribute(reasonTag);
                 else
-                    Data["x"].SetAttribute(reasonTag, value.ToString());
+                    Data["x"].SetAttribute(reasonTag, value);
             }
         }
 
         /// <summary>
         /// (Optional) password of the chat room in the invitation.
         /// </summary>
-        public string Password
+        public string? Password
         {
             get => Data["x"].GetAttribute(passwordTag);
 
             set
             {
-                if (value == null)
+                if (value is null)
                     Data["x"].RemoveAttribute(passwordTag);
                 else
-                    Data["x"].SetAttribute(passwordTag, value.ToString());
+                    Data["x"].SetAttribute(passwordTag, value);
             }
         }
 

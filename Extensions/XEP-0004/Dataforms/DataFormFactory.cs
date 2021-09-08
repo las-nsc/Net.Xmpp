@@ -26,28 +26,19 @@ namespace Net.Xmpp.Extensions.Dataforms
             if (element.Name != "x" || element.NamespaceURI != "jabber:x:data")
                 throw new ArgumentException("Invalid root element: " + element.Name);
             string s = element.GetAttribute("type");
-            if (string.IsNullOrEmpty(s))
+            if (!(s?.Length > 0))
                 throw new ArgumentException("Missing 'type' attribute.");
             try
             {
                 DataFormType type = Util.ParseEnum<DataFormType>(s);
-                switch (type)
+                return type switch
                 {
-                    case DataFormType.Form:
-                        return new RequestForm(element);
-
-                    case DataFormType.Submit:
-                        return new SubmitForm(element);
-
-                    case DataFormType.Cancel:
-                        return new CancelForm(element);
-
-                    case DataFormType.Result:
-                        return new ResultForm(element);
-
-                    default:
-                        throw new ArgumentException("Invalid form type: " + type);
-                }
+                    DataFormType.Form => new RequestForm(element),
+                    DataFormType.Submit => new SubmitForm(element),
+                    DataFormType.Cancel => new CancelForm(element),
+                    DataFormType.Result => new ResultForm(element),
+                    _ => throw new ArgumentException("Invalid form type: " + type),
+                };
             }
             catch (Exception e)
             {

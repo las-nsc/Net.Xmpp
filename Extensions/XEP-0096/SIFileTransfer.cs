@@ -72,7 +72,7 @@ namespace Net.Xmpp.Extensions
         /// A callback method to invoke when a request for a file-transfer is received
         /// from another XMPP entity.
         /// </summary>
-        public FileTransferRequest TransferRequest { get; set; }
+        public FileTransferRequest? TransferRequest { get; set; }
 
         /// <summary>
         /// Determines whether the in-band bytestreams method should be used, even if
@@ -127,7 +127,7 @@ namespace Net.Xmpp.Extensions
         /// if no such SISession instance exists.</returns>
         /// <exception cref="ArgumentNullException">The sid parameter or the from
         /// parameter or the to parameter is null.</exception>
-        public SISession GetSession(string sid, Jid from, Jid to)
+        public SISession? GetSession(string sid, Jid from, Jid to)
         {
             sid.ThrowIfNull(nameof(sid));
             from.ThrowIfNull(nameof(from));
@@ -258,7 +258,7 @@ namespace Net.Xmpp.Extensions
             sid.ThrowIfNullOrEmpty("sid");
             from.ThrowIfNull(nameof(from));
             to.ThrowIfNull(nameof(to));
-            SISession session = GetSession(sid, from, to);
+            var session = GetSession(sid, from, to);
             if (session == null)
             {
                 throw new ArgumentException("The specified transfer instance does not represent an active data-transfer operation: " +
@@ -279,8 +279,7 @@ namespace Net.Xmpp.Extensions
         public void CancelFileTransfer(FileTransfer transfer)
         {
             transfer.ThrowIfNull(nameof(transfer));
-            SISession session = GetSession(transfer.SessionId, transfer.From,
-                transfer.To);
+            var session = GetSession(transfer.SessionId, transfer.From, transfer.To);
             if (session == null)
             {
                 throw new ArgumentException("The specified transfer instance does not " +
@@ -315,16 +314,18 @@ namespace Net.Xmpp.Extensions
                 string method = SelectStreamMethod(si["feature"]);
                 // If the session-id is already in use, we cannot process the request.
                 string sid = si.GetAttribute("id");
-                if (string.IsNullOrEmpty(sid) || siSessions.ContainsKey(sid))
+                if (!(sid?.Length > 0) || siSessions.ContainsKey(sid))
+                {
                     result(new XmppError(ErrorType.Cancel, ErrorCondition.Conflict).Data);
+                    return;
+                }
                 // Extract file information and hand to user.
                 var file = si["file"];
-                string desc = file["desc"]?.InnerText,
-                    name = file.GetAttribute("name");
+                var desc = file["desc"]?.InnerText;
+                var name = file.GetAttribute("name");
                 int size = int.Parse(file.GetAttribute("size"));
-                FileTransfer transfer = new(from, im.Jid, name, size,
-                    sid, desc);
-                TransferRequest.Invoke(transfer, (string savePath) =>
+                FileTransfer transfer = new(from, im.Jid, name, size, sid, desc);
+                TransferRequest?.Invoke(transfer, (string savePath) =>
                 {
                     try
                     {
@@ -496,7 +497,7 @@ namespace Net.Xmpp.Extensions
         /// better understand what is being sent.</param>
         /// <remarks>This is called in the context of an arbitrary thread.</remarks>
         private void OnInitiationResult(InitiationResult result, Jid to, string name,
-            Stream stream, long size, string description, Action<bool, FileTransfer> cb)
+            Stream stream, long size, string? description, Action<bool, FileTransfer>? cb)
         {
             try
             {
@@ -504,10 +505,9 @@ namespace Net.Xmpp.Extensions
                     description);
                 // Get the instance of the data-stream extension that the other site has
                 // selected.
-                IDataStream ext = im.GetExtension(result.Method) as IDataStream;
+                if (im.GetExtension(result.Method) is not IDataStream ext) return;
                 // Register the session.
-                SISession session = new(result.SessionId, stream, size, false,
-                    im.Jid, to, ext);
+                SISession session = new(result.SessionId, stream, size, false, im.Jid, to, ext);
                 siSessions.TryAdd(result.SessionId, session);
                 // Store the file's meta data.
                 metaData.TryAdd(result.SessionId, new FileMetaData(name, description));

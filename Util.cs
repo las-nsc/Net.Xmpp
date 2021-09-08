@@ -41,8 +41,7 @@ namespace Net.Xmpp
         /// <returns>An exception of type XmppErrorException if an XmppError instance
         /// could be created from the specified Iq stanza, or an exception of type
         /// XmppException denoting an unrecoverable error.</returns>
-        internal static Exception ExceptionFromError(XmlElement error,
-            string? message = null)
+        internal static Exception ExceptionFromError(XmlElement error, string? message = null)
         {
             try
             {
@@ -204,7 +203,7 @@ namespace Net.Xmpp
                 : throw new ArgumentException("T must be an enumerated type.");
         }
 
-        public static XmlElement ToXmlElement(this XElement source)
+        public static XmlElement? ToXmlElement(this XElement source)
         {
             if (source == null)
             {
@@ -243,7 +242,7 @@ namespace Net.Xmpp
             }
 
             // throw error (using error text or error condition)
-            if (!string.IsNullOrEmpty(error.Text))
+            if (error.Text?.Length > 0)
             {
                 throw new XmppErrorException(error, error.Text);
             }

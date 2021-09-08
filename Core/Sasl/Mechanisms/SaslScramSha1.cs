@@ -28,13 +28,13 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// The salted password. This is needed for client authentication and later
         /// on again for verifying the server signature.
         /// </summary>
-        private byte[] SaltedPassword;
+        private byte[]? SaltedPassword;
 
         /// <summary>
         /// The auth message is part of the authentication exchange and is needed for
         /// authentication as well as for verifying the server signature.
         /// </summary>
-        private string AuthMessage;
+        private string? AuthMessage;
 
         /// <summary>
         /// True if the authentication exchange between client and server
@@ -56,7 +56,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// <summary>
         /// The username to authenticate with.
         /// </summary>
-        private string Username
+        private string? Username
         {
             get => Properties.ContainsKey("Username") ?
                     Properties["Username"] as string : null;
@@ -67,7 +67,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// <summary>
         /// The password to authenticate with.
         /// </summary>
-        private string Password
+        private string? Password
         {
             get => Properties.ContainsKey("Password") ?
                     Properties["Password"] as string : null;
@@ -133,7 +133,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         {
             // Precondition: Ensure username and password are not null and
             // username is not empty.
-            if (string.IsNullOrEmpty(Username) || Password == null)
+            if (!(Username?.Length > 0) || Password == null)
             {
                 throw new SaslException("The username must not be null or empty and " +
                     "the password must not be null.");
@@ -155,8 +155,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         private byte[] ComputeInitialResponse()
         {
             // We don't support channel binding.
-            return Encoding.UTF8.GetBytes("n,,n=" + SaslPrep(Username) + ",r=" +
-                Cnonce);
+            return Encoding.UTF8.GetBytes($"n,,n={SaslPrep(Username)},r={Cnonce}");
         }
 
         /// <summary>
@@ -217,21 +216,24 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// token.</returns>
         private byte[] VerifyServerSignature(byte[] challenge)
         {
+            var fail = Encoding.UTF8.GetBytes("*");
             string s = Encoding.UTF8.GetString(challenge);
             // The server must respond with a "v=signature" message.
             if (!s.StartsWith("v="))
             {
                 // Cancel authentication process.
-                return Encoding.UTF8.GetBytes("*");
+                return fail;
             }
             byte[] serverSignature = Convert.FromBase64String(s.Substring(2));
+            if (SaltedPassword is null || AuthMessage is null)
+                return fail;
             // Verify server's signature.
             byte[] serverKey = HMAC(SaltedPassword, "Server Key"),
                 calculatedSignature = HMAC(serverKey, AuthMessage);
             // If both signatures are equal, server has been authenticated. Otherwise
             // cancel the authentication process.
             return serverSignature.SequenceEqual(calculatedSignature) ?
-                new byte[0] : Encoding.UTF8.GetBytes("*");
+                new byte[0] : fail;
         }
 
         /// <summary>
@@ -271,7 +273,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// <remarks>Hi is, essentially, PBKDF2 with HMAC as the
         /// pseudorandom function (PRF) and with dkLen == output length of
         /// HMAC() == output length of H(). (Refer to RFC 5802, p.6)</remarks>
-        private byte[] Hi(string password, string salt, int count)
+        private byte[] Hi(string? password, string salt, int count)
         {
             // The salt is sent by the server as a base64-encoded string.
             byte[] saltBytes = Convert.FromBase64String(salt);

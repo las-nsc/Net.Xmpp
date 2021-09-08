@@ -320,7 +320,7 @@ namespace Net.Xmpp.Extensions
         /// false.</returns>
         private bool VerifySession(Iq stanza, string sid)
         {
-            if (string.IsNullOrEmpty(sid))
+            if (!(sid?.Length > 0))
                 return false;
             var session = siFileTransfer.GetSession(sid, stanza.From, im.Jid);
             return session != null;
@@ -344,7 +344,7 @@ namespace Net.Xmpp.Extensions
                     string jid = e.GetAttribute("jid"),
                         host = e.GetAttribute("host"), p = e.GetAttribute("port");
                     // The 'port' attribute is optional.
-                    int port = string.IsNullOrEmpty(p) ? defaultPort : int.Parse(p);
+                    int port = !(p?.Length > 0) ? defaultPort : int.Parse(p);
                     list.Add(new Streamhost(jid, host, port));
                 }
                 catch
@@ -419,7 +419,7 @@ namespace Net.Xmpp.Extensions
         /// valid SI session.</exception>
         private void ReceiveData(Iq stanza, string sid, Stream stream)
         {
-            SISession session = siFileTransfer.GetSession(sid, stanza.From, stanza.To);
+            var session = siFileTransfer.GetSession(sid, stanza.From, stanza.To);
             if (session == null)
                 throw new XmppException("Invalid session-id: " + sid);
             long left = session.Size;
@@ -689,7 +689,7 @@ namespace Net.Xmpp.Extensions
             //FIXME
             //http://stackoverflow.com/questions/17868420/networkinterface-getallnetworkinterfaces-returns-interfaces-with-operationalst
             //http://developer.xamarin.com/recipes/ios/network/reachability/detect_if_network_is_available/
-            return netInterfaces == null ? throw new NotImplementedException() : null;
+            return netInterfaces == null ? throw new NotImplementedException() : Enumerable.Empty<IPAddress>();
         }
 
         /// <summary>

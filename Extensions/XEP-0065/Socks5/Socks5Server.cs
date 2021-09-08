@@ -22,12 +22,12 @@ namespace Net.Xmpp.Extensions.Socks5
         /// <summary>
         /// The client connection.
         /// </summary>
-        private TcpClient client;
+        private TcpClient? client;
 
         /// <summary>
         /// The underlying network-stream instance.
         /// </summary>
-        private NetworkStream stream;
+        private NetworkStream? stream;
 
         /// <summary>
         /// Determines whether the instance has been disposed.

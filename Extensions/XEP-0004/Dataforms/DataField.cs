@@ -24,17 +24,17 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// <summary>
         /// A human-readable name for the field.
         /// </summary>
-        public string Label
+        public string? Label
         {
             get
             {
                 var v = element.GetAttribute("label");
-                return string.IsNullOrEmpty(v) ? null : v;
+                return v?.Length > 0 ? v : null;
             }
 
             private set
             {
-                if (value == null)
+                if (value is null)
                     element.RemoveAttribute("label");
                 else
                     element.SetAttribute("label", value);
@@ -45,7 +45,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// A natural-language description of the field, intended for presentation
         /// in a user-agent.
         /// </summary>
-        public string Description
+        public string? Description
         {
             get => element["desc"]?.InnerText;
 
@@ -54,7 +54,7 @@ namespace Net.Xmpp.Extensions.Dataforms
                 var e = element["desc"];
                 if (e != null)
                 {
-                    if (value == null)
+                    if (value is null)
                         element.RemoveChild(e);
                     else
                         e.InnerText = value;
@@ -92,17 +92,17 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// <summary>
         /// The name of the field.
         /// </summary>
-        public string Name
+        public string? Name
         {
             get
             {
                 var v = element.GetAttribute("var");
-                return string.IsNullOrEmpty(v) ? null : v;
+                return v?.Length > 0 ? v : null;
             }
 
             private set
             {
-                if (value == null)
+                if (value is null)
                     element.RemoveAttribute("var");
                 else
                     element.SetAttribute("var", value);
@@ -292,7 +292,7 @@ namespace Net.Xmpp.Extensions.Dataforms
             try
             {
                 string t = element.GetAttribute("type");
-                return string.IsNullOrEmpty(t) ? null : (DataFieldType?)AttributeValueToType(t);
+                return t?.Length > 0 ? (DataFieldType?)AttributeValueToType(t) : null;
             }
             catch (Exception e)
             {

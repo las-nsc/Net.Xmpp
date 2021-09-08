@@ -37,62 +37,54 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// JID of the user the invite is intended to be send to.
         /// </summary>
-        public Jid SendTo
+        public Jid? SendTo
         {
             get
             {
-                XmlElement node = InviteElement;
-                string v = node?.GetAttribute(toAttribute);
-
-                return string.IsNullOrEmpty(v) ? null : new Jid(v);
+                var v = InviteElement?.GetAttribute(toAttribute);
+                return v?.Length > 0 ? new Jid(v) : null;
             }
 
             set
             {
-                if (value == null)
-                    InviteElement.RemoveAttribute(toAttribute);
+                if (value is null)
+                    InviteElement?.RemoveAttribute(toAttribute);
                 else
-                    InviteElement.SetAttribute(toAttribute, value.ToString());
+                    InviteElement?.SetAttribute(toAttribute, value.ToString());
             }
         }
 
         /// <summary>
         /// JID of the user the invite has been sent from.
         /// </summary>
-        public Jid ReceivedFrom
+        public Jid? ReceivedFrom
         {
             get
             {
-                XmlElement node = InviteElement;
-                string v = node?.GetAttribute(fromAttribute);
-
-                return string.IsNullOrEmpty(v) ? null : new Jid(v);
+                var v = InviteElement?.GetAttribute(fromAttribute);
+                return v?.Length > 0 ? new Jid(v) : null;
             }
 
             private set
             {
-                if (value == null)
-                    InviteElement.RemoveAttribute(fromAttribute);
+                if (value is null)
+                    InviteElement?.RemoveAttribute(fromAttribute);
                 else
-                    InviteElement.SetAttribute(fromAttribute, value.ToString());
+                    InviteElement?.SetAttribute(fromAttribute, value.ToString());
             }
         }
 
         /// <summary>
         /// Custom message that may be sent with the invitation.
         /// </summary>
-        public string Reason
+        public string? Reason
         {
-            get
-            {
-                XmlElement invite = ReasonElement;
-                return invite?.InnerText;
-            }
+            get => ReasonElement?.InnerText;
 
             set
             {
-                if (!string.IsNullOrEmpty(value))
-                    ReasonElement.Text(value);
+                if (value?.Length > 0)
+                    ReasonElement?.Text(value);
             }
         }
 
@@ -103,9 +95,9 @@ namespace Net.Xmpp.Extensions
 
         private XmlElement XElement => element[xTag];
 
-        private XmlElement InviteElement => GetNode(xTag, inviteTag);
+        private XmlElement? InviteElement => GetNode(xTag, inviteTag);
 
-        private XmlElement ReasonElement => GetNode(xTag, inviteTag, reasonTag);
+        private XmlElement? ReasonElement => GetNode(xTag, inviteTag, reasonTag);
 
         internal static bool IsElement(Message message)
         {

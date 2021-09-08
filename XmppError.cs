@@ -47,14 +47,14 @@ namespace Net.Xmpp
         /// <summary>
         /// A textual description of the error in more detail. This may be null.
         /// </summary>
-        public string Text
+        public string? Text
         {
             set
             {
                 var text = Data["text"];
                 if (text != null)
                 {
-                    if (value == null)
+                    if (value is null)
                         Data.RemoveChild(text);
                     else
                         text.InnerText = value;
@@ -69,7 +69,7 @@ namespace Net.Xmpp
             get
             {
                 var text = Data["text"];
-                return text != null ? !string.IsNullOrEmpty(text.InnerText) ? text.InnerText : null : null;
+                return text?.InnerText?.Length > 0 ? text.InnerText : null;
             }
         }
 

@@ -19,7 +19,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// <summary>
         /// The title of the data-form.
         /// </summary>
-        public string Title
+        public string? Title
         {
             get => element["title"]?.InnerText;
 
@@ -28,7 +28,7 @@ namespace Net.Xmpp.Extensions.Dataforms
                 var e = element["title"];
                 if (e != null)
                 {
-                    if (value == null)
+                    if (value is null)
                         element.RemoveChild(e);
                     else
                         e.InnerText = value;
@@ -45,7 +45,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// The natural-language instructions to be followed by the
         /// form-submitting entity.
         /// </summary>
-        public string Instructions
+        public string? Instructions
         {
             get => element["instructions"]?.InnerText;
 
@@ -54,7 +54,7 @@ namespace Net.Xmpp.Extensions.Dataforms
                 var e = element["instructions"];
                 if (e != null)
                 {
-                    if (value == null)
+                    if (value is null)
                         element.RemoveChild(e);
                     else
                         e.InnerText = value;

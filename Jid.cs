@@ -18,26 +18,26 @@ namespace Net.Xmpp
         /// <summary>
         /// The node identifier of the JID. This may be null or empty.
         /// </summary>
-        public string Node { get; }
+        public string? Node { get; }
 
         /// <summary>
         /// The resource identifier of the JID. This may be null or empty.
         /// </summary>
-        public string Resource { get; }
+        public string? Resource { get; }
 
         /// <summary>
         /// Determines whether the JID is a 'bare JID', i.e. a JID without resource
         /// identifier.
         /// </summary>
-        public bool IsBareJid => !string.IsNullOrEmpty(Node) &&
-                    !string.IsNullOrEmpty(Domain) && string.IsNullOrEmpty(Resource);
+        public bool IsBareJid => Node?.Length > 0 &&
+                    Domain?.Length > 0 && !(Resource?.Length > 0);
 
         /// <summary>
         /// Determines whether the JID is a 'full JID', i.e. a JID with both a node
         /// and a resource identifier.
         /// </summary>
-        public bool IsFullJid => !string.IsNullOrEmpty(Node) &&
-                    !string.IsNullOrEmpty(Domain) && !string.IsNullOrEmpty(Resource);
+        public bool IsFullJid => Node?.Length > 0 &&
+                    Domain?.Length > 0 && Resource?.Length > 0;
 
         /// <summary>
         /// Initializes a new instance of the JID class.
@@ -73,7 +73,7 @@ namespace Net.Xmpp
         /// <exception cref="ArgumentNullException">The domain parameter is null.</exception>
         /// <exception cref="ArgumentException">The domain parameter is the
         /// empty string.</exception>
-        public Jid(string domain, string node, string? resource = null)
+        public Jid(string domain, string? node, string? resource = null)
         {
             domain.ThrowIfNullOrEmpty("domain");
             Domain = domain;
@@ -108,10 +108,10 @@ namespace Net.Xmpp
         public override string ToString()
         {
             StringBuilder b = new();
-            if (!string.IsNullOrEmpty(Node))
+            if (Node?.Length > 0)
                 b.Append($"{Node}@");
             b.Append(Domain);
-            if (!string.IsNullOrEmpty(Resource))
+            if (Resource?.Length > 0)
                 b.Append($"/{Resource}");
             return b.ToString();
         }

@@ -27,7 +27,7 @@ namespace Net.Xmpp.Extensions
         /// a natural-language description of, or reason for, the activity. This
         /// may be null.
         /// </summary>
-        public string Description { get; }
+        public string? Description { get; }
 
         /// <summary>
         /// Initializes a new instance of the ActivityChangedEventArgs class.

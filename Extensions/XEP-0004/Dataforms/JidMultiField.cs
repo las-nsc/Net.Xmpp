@@ -46,7 +46,7 @@ namespace Net.Xmpp.Extensions.Dataforms
             {
                 foreach (Jid s in values)
                 {
-                    if (s == null)
+                    if (s is null)
                         continue;
                     this.values.Add(s);
                 }

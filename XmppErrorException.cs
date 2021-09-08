@@ -35,7 +35,7 @@ namespace Net.Xmpp
         /// <param name="message">A description of the error. The content of message is intended
         /// to be understood by humans.</param>
         /// <exception cref="ArgumentNullException">The error parameter is null.</exception>
-        public XmppErrorException(XmppError error, string message)
+        public XmppErrorException(XmppError error, string? message)
             : base(message)
         {
             error.ThrowIfNull(nameof(error));

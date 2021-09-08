@@ -32,7 +32,7 @@ namespace Net.Xmpp.Core
         /// The default language of any human-readable XML character send over
         /// that stream.
         /// </summary>
-        public CultureInfo Language { get; private set; }
+        public CultureInfo? Language { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the StreamParser class for the specified
@@ -80,12 +80,10 @@ namespace Net.Xmpp.Core
         {
             // Advance reader to next node.
             reader.Read();
-            if (reader.NodeType == XmlNodeType.EndElement && reader.Name ==
-                "stream:stream")
+            if (reader.NodeType == XmlNodeType.EndElement && reader.Name == "stream:stream")
                 throw new IOException("The server has closed the XML stream.");
             if (reader.NodeType != XmlNodeType.Element)
-                throw new XmlException("Unexpected node: '" + reader.Name +
-                    "' of type " + reader.NodeType);
+                throw new XmlException($"Unexpected node: '{reader.Name}' of type {reader.NodeType}");
             if (!reader.IsStartElement())
                 throw new XmlException("Not a start element: " + reader.Name);
             // We can't use the ReadOuterXml method of reader directly as it places
@@ -151,7 +149,7 @@ namespace Net.Xmpp.Core
                         {
                             // Remember the default language communicated by the server.
                             string lang = reader.GetAttribute("xml:lang");
-                            if (!string.IsNullOrEmpty(lang))
+                            if (lang?.Length > 0)
                                 Language = new CultureInfo(lang);
                             return;
                         }

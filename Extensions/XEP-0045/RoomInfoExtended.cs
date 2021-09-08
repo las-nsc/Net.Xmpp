@@ -40,7 +40,7 @@ namespace Net.Xmpp.Extensions
             occupants = new HashSet<Jid>();
         }
 
-        internal RoomInfoExtended(Jid jid, string name, IEnumerable<DataField> features, IEnumerable<DataField> fields)
+        internal RoomInfoExtended(Jid jid, string? name, IEnumerable<DataField> features, IEnumerable<DataField> fields)
              : base(jid, name)
         {
             Visibility = RoomVisibility.Undefined;
@@ -133,7 +133,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The language of the room.
         /// </summary>
-        public CultureInfo Language { get; protected set; }
+        public CultureInfo? Language { get; protected set; }
 
         /// <summary>
         /// The language of the room.
@@ -199,8 +199,6 @@ namespace Net.Xmpp.Extensions
                     case MucNs.FeatureSemiAnonymous:
                         Anonymity = RoomAnonymity.SemiAnonymous;
                         break;
-                    default:
-                        break;
                 }
             }
         }
@@ -250,8 +248,6 @@ namespace Net.Xmpp.Extensions
                     case MucNs.MaxHistoryFetch:
                         MaxHistoryFetch = ConvertToInteger(f.Values.FirstOrDefault());
                         break;
-                    default:
-                        break;
                 }
 
             InvalidateOccupantsCount(NumberOfOccupants != Occupants.Count());
@@ -262,7 +258,7 @@ namespace Net.Xmpp.Extensions
             return bool.TryParse(value, out bool tmp) && tmp;
         }
 
-        private CultureInfo ConvertToCultureInfo(string value)
+        private CultureInfo? ConvertToCultureInfo(string value)
         {
             CultureInfo? tmp = null;
 

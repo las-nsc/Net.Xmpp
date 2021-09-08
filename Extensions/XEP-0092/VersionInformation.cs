@@ -22,7 +22,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The operating system of the entity.
         /// </summary>
-        public string Os { get; }
+        public string? Os { get; }
 
         /// <summary>
         /// Initializes a new instance of the VersionInformation class.

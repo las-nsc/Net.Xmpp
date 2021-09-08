@@ -17,13 +17,13 @@ namespace Net.Xmpp.Extensions
         public ErrorType ErrorType => Data.ErrorType;
 
         /// <summary>Jid of the chat room.</summary>
-        public Jid By => Data.By;
+        public Jid? By => Data.By;
 
         /// <summary>Your group chat jid.</summary>
-        public Jid From => Data.From;
+        public Jid? From => Data.From;
 
         /// <summary>Your public jid.</summary>
-        public Jid To => Data.To;
+        public Jid? To => Data.To;
 
         /// <summary>
         /// Constructs a GroupErrorEventArgs.

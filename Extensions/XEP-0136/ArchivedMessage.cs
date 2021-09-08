@@ -20,16 +20,16 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The text content of the message
         /// </summary>
-        public string Text { get; set; }
+        public string? Text { get; set; }
 
         /// <summary>
         /// The name of the entity that sent the message
         /// </summary>
-        public string SenderName { get; set; }
+        public string? SenderName { get; set; }
 
         /// <summary>
         /// The (optional) id of the entitiy that sent the message
         /// </summary>
-        public Jid SenderJid { get; set; }
+        public Jid? SenderJid { get; set; }
     }
 }

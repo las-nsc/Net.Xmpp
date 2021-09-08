@@ -21,7 +21,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The name of the XMPP entity.
         /// </summary>
-        public string Name { get; }
+        public string? Name { get; }
 
         /// <summary>
         /// Initializes a new instance of the Identity class.

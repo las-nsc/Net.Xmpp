@@ -21,12 +21,12 @@ namespace Net.Xmpp.Extensions.Dataforms
 
             private set
             {
-                if (element["value"] != null)
+                if (element["value"] is { } node)
                 {
-                    if (value == null)
-                        element.RemoveChild(element["value"]);
+                    if (value is null)
+                        element.RemoveChild(node);
                     else
-                        element["value"].InnerText = value.ToString().ToLower();
+                        node.InnerText = value.ToString().ToLower();
                 }
                 else
                 {

@@ -17,22 +17,22 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// </summary>
         /// <exception cref="XmlException">The value of the underlying XML element
         /// is not a valid JID.</exception>
-        public Jid Jid
+        public Jid? Jid
         {
             get => GetJid();
 
             private set
             {
-                if (element["value"] != null)
+                if (element["value"] is { } node)
                 {
-                    if (value == null)
-                        element.RemoveChild(element["value"]);
+                    if (value is null)
+                        element.RemoveChild(node);
                     else
-                        element["value"].InnerText = value.ToString();
+                        node.InnerText = value.ToString();
                 }
                 else
                 {
-                    if (value != null)
+                    if (value is not null)
                         element.Child(Xml.Element("value").Text(value.ToString()));
                 }
             }
@@ -104,12 +104,12 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// <returns>The gathered or provided JID.</returns>
         /// <exception cref="XmlException">The value of the underlying XML element
         /// is not a valid JID.</exception>
-        private Jid GetJid()
+        private Jid? GetJid()
         {
             XmlElement v = element["value"];
             try
             {
-                return v != null ? new Jid(v.InnerText) : null;
+                return v?.InnerText.Length > 0 ? new Jid(v.InnerText) : null;
             }
             catch (Exception e)
             {

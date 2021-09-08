@@ -15,7 +15,7 @@
             jid.ThrowIfNull(nameof(jid));
             Jid = jid;
 
-            Name = string.IsNullOrWhiteSpace(name) ? jid.Node : name;
+            Name = !(name?.Trim().Length > 0) ? jid.Node : name;
         }
 
         /// <summary>
@@ -26,6 +26,6 @@
         /// <summary>
         /// The name of the room.
         /// </summary>
-        public string Name { get; protected set; }
+        public string? Name { get; protected set; }
     }
 }

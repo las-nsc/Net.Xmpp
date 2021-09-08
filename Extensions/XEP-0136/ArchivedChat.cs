@@ -13,7 +13,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The jid of the entity that the chat was with
         /// </summary>
-        public Jid With { get; }
+        public Jid? With { get; }
 
         /// <summary>
         /// The start time of the chat
@@ -23,7 +23,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The subject of the chat
         /// </summary>
-        public string Subject { get; }
+        public string? Subject { get; }
 
         /// <summary>
         /// The version of this chat collection
@@ -68,7 +68,7 @@ namespace Net.Xmpp.Extensions
         {
             List<ArchivedMessage> messages = new();
 
-            DateTimeOffset startTime = default(DateTimeOffset);
+            DateTimeOffset startTime = default;
             var startAttribute = xml.Attributes["start"];
             if (startAttribute != null)
             {

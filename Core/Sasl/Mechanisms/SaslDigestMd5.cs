@@ -43,7 +43,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// <summary>
         /// The username to authenticate with.
         /// </summary>
-        private string Username
+        private string? Username
         {
             get => Properties.ContainsKey("Username") ?
                     Properties["Username"] as string : null;
@@ -54,7 +54,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// <summary>
         /// The password to authenticate with.
         /// </summary>
-        private string Password
+        private string? Password
         {
             get => Properties.ContainsKey("Password") ?
                     Properties["Password"] as string : null;
@@ -133,7 +133,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         {
             // Precondition: Ensure username and password are not null and
             // username is not empty.
-            if (string.IsNullOrEmpty(Username) || Password == null)
+            if (!(Username?.Length > 0) || Password == null)
             {
                 throw new SaslException("The username must not be null or empty and " +
                     "the password must not be null.");
@@ -241,7 +241,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         private static string MD5(string s, Encoding? encoding = null)
         {
             if (s == null)
-                throw new ArgumentNullException("s");
+                throw new ArgumentNullException(nameof(s));
             if (encoding == null)
                 encoding = Encoding.UTF8;
             byte[] data = encoding.GetBytes(s);

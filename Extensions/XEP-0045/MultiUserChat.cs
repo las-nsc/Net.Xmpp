@@ -40,7 +40,7 @@ namespace Net.Xmpp.Extensions
 
         public event EventHandler<GroupErrorEventArgs>? MucErrorResponse;
 
-        public RegistrationCallback VoiceRequested;
+        public RegistrationCallback? VoiceRequested;
 
         public override void Initialize()
         {
@@ -149,8 +149,8 @@ namespace Net.Xmpp.Extensions
                         var itemJid = item.GetAttribute("jid");
                         var itemAffiliation = item.GetAttribute("affiliation");
                         var itemRole = item.GetAttribute("role");
-                        if (!string.IsNullOrWhiteSpace(itemJid) && !string.IsNullOrWhiteSpace(itemAffiliation) &&
-                                !string.IsNullOrWhiteSpace(itemRole))
+                        if (itemJid?.Trim().Length > 0 && itemAffiliation?.Trim().Length > 0 &&
+                                itemRole?.Trim().Length > 0)
                         {
                             person = new Occupant(
                                item.GetAttribute("jid"),
@@ -163,14 +163,14 @@ namespace Net.Xmpp.Extensions
                     foreach (XmlElement item in xElement.GetElementsByTagName("status"))
                     {
                         string codeAttribute = item.GetAttribute("code");
-                        if (!string.IsNullOrWhiteSpace(codeAttribute))
+                        if (codeAttribute?.Trim().Length > 0)
                         {
                             var code = (MucStatusType)Enum.Parse(typeof(MucStatusType), codeAttribute);
                             statusCodeList.Add(code);
                         }
                     }
 
-                    if (person != null)
+                    if (person != null && stanza.From is not null)
                     {
                         PrescenceChanged?.Invoke(this, new(new(stanza.From.Domain, stanza.From.Node), person, statusCodeList));
                         return true;
@@ -214,7 +214,7 @@ namespace Net.Xmpp.Extensions
         {
             XmlElement elem = Xml.Element("x", MucNs.NsMain);
 
-            if (!string.IsNullOrEmpty(password))
+            if (password?.Length > 0)
                 elem.Child(Xml.Element("password").Text(password));
 
             Jid joinRequest = new(jid.Domain, jid.Node, nickname);
@@ -357,9 +357,8 @@ namespace Net.Xmpp.Extensions
 
         public void ModifyRoomConfig(Jid room, RegistrationCallback callback)
         {
-            RequestForm form = RequestRoomConfigForm(room);
-            SubmitForm submit = callback.Invoke(form);
-            SubmitRoomConfigForm(room, submit);
+            if (RequestRoomConfigForm(room) is { } form)
+                SubmitRoomConfigForm(room, callback.Invoke(form));
         }
 
         /// <summary>
@@ -374,7 +373,7 @@ namespace Net.Xmpp.Extensions
             item.Attr("nick", nickname);
             item.Attr("role", Role.None.ToString());
 
-            if (!string.IsNullOrEmpty(reason))
+            if (reason?.Length > 0)
                 item.Child(Xml.Element("reason").Text(reason));
 
             XmlElement query = Xml.Element("query", MucNs.NsAdmin)
@@ -427,7 +426,7 @@ namespace Net.Xmpp.Extensions
             var item = Xml.Element("destroy")
                     .Attr("jid", room.ToString());
 
-            if (!string.IsNullOrWhiteSpace(reason))
+            if (reason?.Trim().Length > 0)
                 item.Child(Xml.Element("reason").Text(reason));
 
             var queryElement = Xml.Element("query", MucNs.NsOwner)
@@ -437,15 +436,12 @@ namespace Net.Xmpp.Extensions
             return iq.Type == IqType.Result;
         }
 
-        private RequestForm RequestRoomConfigForm(Jid room)
+        private RequestForm? RequestRoomConfigForm(Jid room)
         {
             Iq iq = im.IqRequest(IqType.Get, room, im.Jid, Xml.Element("query", MucNs.NsOwner));
-            if (iq.Type != IqType.Result)
-                throw new NotSupportedException("Could not query features: " + iq);
-
-            // Parse the result.
-            var query = iq.Data["query"];
-            return query == null || query.NamespaceURI != MucNs.NsOwner
+            return iq.Type != IqType.Result
+                ? throw new NotSupportedException("Could not query features: " + iq)
+                : iq.Data["query"] is not { } query || query.NamespaceURI != MucNs.NsOwner
                 ? throw new NotSupportedException("Erroneous response: " + iq)
                 : DataFormFactory.Create(query["x"]) as RequestForm;
         }
@@ -461,7 +457,7 @@ namespace Net.Xmpp.Extensions
                 throw Util.ExceptionFromError(iq, "The configuration changes could not be completed.");
         }
 
-        private bool PostPrivilegeChange(Jid room, Jid user, Affiliation affiliation, string reason, string nickname)
+        private bool PostPrivilegeChange(Jid room, Jid user, Affiliation affiliation, string? reason, string? nickname)
         {
             room.ThrowIfNull(nameof(room));
             user.ThrowIfNull(nameof(user));
@@ -470,11 +466,11 @@ namespace Net.Xmpp.Extensions
                     .Attr("affiliation", affiliation.ToString().ToLower())
                     .Attr("jid", user.ToString());
 
-            if (!string.IsNullOrWhiteSpace(nickname))
+            if (nickname?.Trim().Length > 0)
             {
                 item.Attr("nick", nickname);
             }
-            if (!string.IsNullOrWhiteSpace(reason))
+            if (reason?.Trim().Length > 0)
                 item.Child(Xml.Element("reason").Text(reason));
 
             var queryElement = Xml.Element("query", MucNs.NsAdmin)
@@ -484,7 +480,7 @@ namespace Net.Xmpp.Extensions
             return iq.Type == IqType.Result;
         }
 
-        private bool PostPrivilegeChange(Jid room, string nickname, Role role, string reason)
+        private bool PostPrivilegeChange(Jid room, string nickname, Role role, string? reason)
         {
             room.ThrowIfNull(nameof(room));
             nickname.ThrowIfNull(nameof(nickname));
@@ -493,7 +489,7 @@ namespace Net.Xmpp.Extensions
                     .Attr("role", role.ToString().ToLower())
                     .Attr("nick", nickname);
 
-            if (!string.IsNullOrWhiteSpace(reason))
+            if (reason?.Trim().Length > 0)
                 item.Child(Xml.Element("reason").Text(reason));
 
             var queryElement = Xml.Element("query", MucNs.NsAdmin)
@@ -610,7 +606,7 @@ namespace Net.Xmpp.Extensions
                 string _jid = e.GetAttribute("jid"), node = e.GetAttribute("node"),
                     name = e.GetAttribute("name"), nick = e.GetAttribute("nick"),
                     affiliation = e.GetAttribute("affiliation"), role = e.GetAttribute("role");
-                if (string.IsNullOrEmpty(_jid))
+                if (!(_jid?.Length > 0))
                     continue;
                 try
                 {
@@ -642,11 +638,11 @@ namespace Net.Xmpp.Extensions
             if (query == null || query.NamespaceURI != MucNs.NsRequestInfo)
                 throw new NotSupportedException("Erroneous response: " + iq);
 
-            Identity id = ParseIdentity(query);
+            var id = ParseIdentity(query);
             IEnumerable<DataField> features = ParseFields(query, "feature");
             IEnumerable<DataField> fields = ParseFields(query, "field");
 
-            return new RoomInfoExtended(room, id.Name, features, fields);
+            return new RoomInfoExtended(room, id?.Name, features, fields);
         }
 
         /// <summary>
@@ -654,7 +650,7 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <param name="query">The query result</param>
         /// <returns>The first Identity returned.</returns>
-        private Identity ParseIdentity(XmlElement query)
+        private Identity? ParseIdentity(XmlElement query)
         {
             Identity? result = null;
 
@@ -664,10 +660,9 @@ namespace Net.Xmpp.Extensions
                 string type = e.GetAttribute("type");
                 string name = e.GetAttribute("name");
 
-                if (!string.IsNullOrEmpty(cat) && !string.IsNullOrEmpty(type))
+                if (cat?.Length > 0 && type?.Length > 0)
                 {
-                    result = new Identity(cat, type,
-                        string.IsNullOrEmpty(name) ? null : name);
+                    result = new Identity(cat, type, name?.Length > 0 ? name : null);
                     break;
                 }
             }

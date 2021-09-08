@@ -34,7 +34,7 @@ namespace Net.Xmpp.Extensions
         /// The value of the 'node' attribute of the 'e' element, which should
         /// be an URI according to specification.
         /// </summary>
-        private string nodeUri =>
+        private string NodeUri =>
                 // FIXME: Move this to a resource file or to assembly metadata?
                 "Net.Xmpp";
 
@@ -71,9 +71,10 @@ namespace Net.Xmpp.Extensions
             var c = stanza.Data["c"];
             if (c == null || c.NamespaceURI != "http://jabber.org/protocol/caps")
                 return false;
-            string hash = c.GetAttribute("hash"), ver = c.GetAttribute("ver"),
-                node = c.GetAttribute("node");
-            if (string.IsNullOrEmpty(hash) || string.IsNullOrWhiteSpace(ver))
+            string hash = c.GetAttribute("hash"),
+                   ver = c.GetAttribute("ver"),
+                   node = c.GetAttribute("node");
+            if (!(hash?.Length > 0) || !(ver?.Trim().Length > 0) || stanza.From is null)
                 return false;
             hashes[stanza.From] = ver;
             // Don't swallow the presence stanza.
@@ -88,7 +89,7 @@ namespace Net.Xmpp.Extensions
         {
             var c = Xml.Element("c", "http://jabber.org/protocol/caps")
                 .Attr("hash", "sha-1")
-                .Attr("node", nodeUri)
+                .Attr("node", NodeUri)
                 .Attr("ver", GenerateVerificationString());
             // Add the <c/> element to the presence stanza.
             stanza.Data.Child(c);
@@ -156,8 +157,8 @@ namespace Net.Xmpp.Extensions
         public bool Supports<T>(Jid jid) where T : XmppExtension
         {
             jid.ThrowIfNull(nameof(jid));
-            T ext = im.GetExtension<T>();
-            return Supports(jid, ext.Xep);
+            var ext = im.GetExtension<T>();
+            return ext != null && Supports(jid, ext.Xep);
         }
 
         /// <summary>
@@ -268,7 +269,7 @@ namespace Net.Xmpp.Extensions
         /// matching type could be found.</returns>
         /// <exception cref="ArgumentNullException">The algorithm paramter
         /// is null.</exception>
-        private HashAlgorithm ParseHashAlgorithm(string algorithm)
+        private HashAlgorithm? ParseHashAlgorithm(string algorithm)
         {
             algorithm.ThrowIfNull(nameof(algorithm));
             var dict = new Dictionary<string, Func<HashAlgorithm>>

@@ -51,7 +51,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// <param name="name">The name of the data-field to return.</param>
         /// <returns>The data-field with the specified name or null if no such
         /// data-field exists in the list of data-fields-</returns>
-        public DataField this[string name]
+        public DataField? this[string name]
         {
             get
             {
@@ -80,7 +80,7 @@ namespace Net.Xmpp.Extensions.Dataforms
             item.ThrowIfNull(nameof(item));
             if (IsReadOnly)
                 throw new NotSupportedException("The list is read-only.");
-            if (item.Name != null && Contains(item.Name))
+            if (item.Name.Length > 0 && Contains(item.Name))
                 throw new ArgumentException("A field with the same name already exists.");
             element.Child(item.ToXmlElement());
         }
@@ -98,7 +98,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         {
             item.ThrowIfNull(nameof(item));
             // FIXME: This won't work for 'fixed' items that don't have names.
-            Remove(item.Name);
+            Remove(item!.Name);
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         {
             if (name == null)
                 return;
-            XmlElement e = GetFieldElementByName(name);
+            var e = GetFieldElementByName(name);
             if (e != null)
                 element.RemoveChild(e);
         }
@@ -253,43 +253,22 @@ namespace Net.Xmpp.Extensions.Dataforms
                 // If the element does not have a 'type' attribute, we can only
                 // return a weakly-typed data-field.
                 DataFieldType? type = GetDataFieldType(element);
-                if (!type.HasValue)
-                    return new DataField(element);
-                switch (type.Value)
-                {
-                    case DataFieldType.Boolean:
-                        return new BooleanField(element);
-
-                    case DataFieldType.Fixed:
-                        return new FixedField(element);
-
-                    case DataFieldType.TextSingle:
-                        return new TextField(element);
-
-                    case DataFieldType.TextPrivate:
-                        return new PasswordField(element);
-
-                    case DataFieldType.JidSingle:
-                        return new JidField(element);
-
-                    case DataFieldType.Hidden:
-                        return new HiddenField(element);
-
-                    case DataFieldType.TextMulti:
-                        return new TextMultiField(element);
-
-                    case DataFieldType.JidMulti:
-                        return new JidMultiField(element);
-
-                    case DataFieldType.ListMulti:
-                        return new ListMultiField(element);
-
-                    case DataFieldType.ListSingle:
-                        return new ListField(element);
-
-                    default:
-                        throw new XmlException("Invalid 'type' attribute: " + type);
-                }
+                return !type.HasValue
+                    ? new DataField(element)
+                    : type.Value switch
+                    {
+                        DataFieldType.Boolean => new BooleanField(element),
+                        DataFieldType.Fixed => new FixedField(element),
+                        DataFieldType.TextSingle => new TextField(element),
+                        DataFieldType.TextPrivate => new PasswordField(element),
+                        DataFieldType.JidSingle => new JidField(element),
+                        DataFieldType.Hidden => new HiddenField(element),
+                        DataFieldType.TextMulti => new TextMultiField(element),
+                        DataFieldType.JidMulti => new JidMultiField(element),
+                        DataFieldType.ListMulti => new ListMultiField(element),
+                        DataFieldType.ListSingle => new ListField(element),
+                        _ => throw new XmlException("Invalid 'type' attribute: " + type),
+                    };
             }
             catch (Exception e)
             {
@@ -305,7 +284,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// if no such element exists in the list of data-fields.</returns>
         /// <exception cref="ArgumentNullException">The name parameter is
         /// null.</exception>
-        private XmlElement GetFieldElementByName(string name)
+        private XmlElement? GetFieldElementByName(string name)
         {
             name.ThrowIfNull(nameof(name));
             foreach (XmlElement e in GetFieldElements())
@@ -358,7 +337,7 @@ namespace Net.Xmpp.Extensions.Dataforms
             try
             {
                 string t = element.GetAttribute("type");
-                return string.IsNullOrEmpty(t) ? null : (DataFieldType?)AttributeValueToType(t);
+                return t?.Length > 0 ? (DataFieldType?)AttributeValueToType(t) : null;
             }
             catch (Exception e)
             {

@@ -15,22 +15,18 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// <summary>
         /// The value of the field.
         /// </summary>
-        public string Value
+        public string? Value
         {
-            get
-            {
-                var v = element["value"];
-                return v?.InnerText;
-            }
+            get => element["value"]?.InnerText;
 
             private set
             {
-                if (element["value"] != null)
+                if (element["value"] is { } node)
                 {
-                    if (value == null)
-                        element.RemoveChild(element["value"]);
+                    if (value is null)
+                        element.RemoveChild(node);
                     else
-                        element["value"].InnerText = value;
+                        node.InnerText = value;
                 }
                 else
                 {

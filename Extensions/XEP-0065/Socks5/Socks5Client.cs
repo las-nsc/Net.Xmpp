@@ -32,12 +32,12 @@ namespace Net.Xmpp.Extensions.Socks5
         /// <summary>
         /// The username to authenticate with.
         /// </summary>
-        public string Username { get; set; }
+        public string? Username { get; set; }
 
         /// <summary>
         /// The password to authenticate with.
         /// </summary>
-        public string Password { get; set; }
+        public string? Password { get; set; }
 
         /// <summary>
         /// Performs the specified SOCKS5 request.
@@ -233,9 +233,9 @@ namespace Net.Xmpp.Extensions.Socks5
                 if (disposing)
                 {
                     stream?.Dispose();
-                    stream = null;
+                    stream = null!;
                     client?.Close();
-                    client = null;
+                    client = null!;
                 }
                 // Get rid of unmanaged resources.
             }
@@ -275,7 +275,7 @@ namespace Net.Xmpp.Extensions.Socks5
         private ServerGreeting PerformGreeting()
         {
             var methods = new HashSet<AuthMethod>() { AuthMethod.None };
-            if (!string.IsNullOrEmpty(Username))
+            if (Username?.Length > 0)
                 methods.Add(AuthMethod.Username);
             byte[] bytes = new ClientGreeting(methods).Serialize();
 
@@ -293,6 +293,11 @@ namespace Net.Xmpp.Extensions.Socks5
         /// unexpected data, or authentication failed.</exception>
         private void Authenticate()
         {
+            if (Username is null)
+                throw new ArgumentNullException(nameof(Username));
+            if (Password is null)
+                throw new ArgumentNullException(nameof(Password));
+
             byte[] bytes = new AuthRequest(Username, Password).Serialize();
             stream.Write(bytes, 0, bytes.Length);
             // Read the server's response.

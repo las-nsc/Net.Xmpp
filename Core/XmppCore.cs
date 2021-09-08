@@ -87,7 +87,7 @@ namespace Net.Xmpp.Core
         /// <summary>
         /// The resource to use for binding.
         /// </summary>
-        private string resource;
+        private string? resource;
 
         /// <summary>
         /// Write lock for the network stream.
@@ -220,7 +220,7 @@ namespace Net.Xmpp.Core
         /// A delegate used for verifying the remote Secure Sockets Layer (SSL)
         /// certificate which is used for authentication.
         /// </summary>
-        public RemoteCertificateValidationCallback Validate { get; set; }
+        public RemoteCertificateValidationCallback? Validate { get; set; }
 
         /// <summary>
         /// Determines whether the session with the server is TLS/SSL encrypted.
@@ -235,7 +235,7 @@ namespace Net.Xmpp.Core
         /// <summary>
         /// The default language of the XML stream.
         /// </summary>
-        public CultureInfo Language { get; private set; }
+        public CultureInfo? Language { get; private set; }
         /// <summary>
         /// Determines whether the instance is connected to the XMPP server.
         /// </summary>
@@ -290,11 +290,11 @@ namespace Net.Xmpp.Core
             int port = 5222, bool tls = true, RemoteCertificateValidationCallback? validate = null,
             string serverAdress = "")
         {
-            if (serverAdress?.Length == 0)
+            if (serverAdress.Length == 0)
             {
                 serverAdress = hostname;
             }
-            moveNextSrvDNS(serverAdress);
+            MoveNextSrvDNS(serverAdress);
 
             if (dnsCurrent != null)
             {
@@ -335,12 +335,12 @@ namespace Net.Xmpp.Core
             RemoteCertificateValidationCallback? validate = null,
             string serverAdress = "")
         {
-            if (serverAdress?.Length == 0)
+            if (serverAdress.Length == 0)
             {
                 serverAdress = hostname;
             }
 
-            moveNextSrvDNS(serverAdress);
+            MoveNextSrvDNS(serverAdress);
 
             if (dnsCurrent != null)
             {
@@ -364,7 +364,7 @@ namespace Net.Xmpp.Core
         /// </summary>
         /// <param name="domain">XMPP Domain</param>
         /// <returns>XMPP server hostname for the Domain</returns>
-        private SrvRecord moveNextSrvDNS(string domain)
+        private SrvRecord? MoveNextSrvDNS(string domain)
         {
             domain.ThrowIfNullOrEmpty("domain");
             //If already a lookup has being made return
@@ -665,7 +665,7 @@ namespace Net.Xmpp.Core
                 //Make sure that its a request towards the server and not towards any client
                 var ping = request.Data["ping"];
 
-                if (request.To?.Domain == Jid.Domain && string.IsNullOrEmpty(request.To.Node) && (ping?.NamespaceURI == "urn:xmpp:ping"))
+                if (request.To?.Domain == Jid.Domain && !(request.To.Node?.Length > 0) && (ping?.NamespaceURI == "urn:xmpp:ping"))
                 {
                     if (Connected)
                     {
@@ -843,9 +843,9 @@ namespace Net.Xmpp.Core
                 if (disposing)
                 {
                     parser?.Close();
-                    parser = null;
+                    parser = null!;
                     client?.Close();
-                    client = null;
+                    client = null!;
                 }
                 // Get rid of unmanaged resources.
             }
@@ -891,7 +891,7 @@ namespace Net.Xmpp.Core
                 // TLS is mandatory and user opted out of it.
                 if (feats["starttls"]["required"] != null && !Tls)
                     throw new AuthenticationException("The server requires TLS/SSL.");
-                if (Tls)
+                if (Tls && Validate is not null)
                     feats = StartTls(Hostname, Validate);
             }
             // If no Username has been provided, don't perform authentication.
@@ -1304,9 +1304,9 @@ namespace Net.Xmpp.Core
         /// <param name="iq">The received IQ response stanza.</param>
         private bool HandleIqResponseBlocking(Iq iq)
         {
-            string id = iq.Id;
+            var id = iq.Id;
             // Signal the event if it's a blocking call.
-            if (waitHandles.TryRemove(id, out var ev))
+            if (id is not null && waitHandles.TryRemove(id, out var ev))
             {
                 iqResponses[id] = iq;
                 ev.Set();
@@ -1317,8 +1317,8 @@ namespace Net.Xmpp.Core
 
         private bool HandleIqResponse(Iq iq)
         {
-            string id = iq.Id;
-            if (iqCallbacks.TryRemove(id, out var cb))
+            var id = iq.Id;
+            if (id is not null && iqCallbacks.TryRemove(id, out var cb))
             {
                 cb(id, iq);
                 return true;

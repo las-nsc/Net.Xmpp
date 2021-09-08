@@ -16,17 +16,17 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// <summary>
         /// A human-readable name for the option.
         /// </summary>
-        public string Label
+        public string? Label
         {
             get
             {
                 var v = element.GetAttribute("label");
-                return string.IsNullOrEmpty(v) ? null : v;
+                return v?.Length > 0 ? v : null;
             }
 
             private set
             {
-                if (value == null)
+                if (value is null)
                     element.RemoveAttribute("label");
                 else
                     element.SetAttribute("label", value);
@@ -36,22 +36,18 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// <summary>
         /// The value of the option field.
         /// </summary>
-        public string Value
+        public string? Value
         {
-            get
-            {
-                var v = element["value"];
-                return v?.InnerText;
-            }
+            get => element["value"]?.InnerText;
 
             private set
             {
-                if (element["value"] != null)
+                if (element["value"] is { } node)
                 {
-                    if (value == null)
-                        element.RemoveChild(element["value"]);
+                    if (value is null)
+                        element.RemoveChild(node);
                     else
-                        element["value"].InnerText = value;
+                        node.InnerText = value;
                 }
                 else
                 {

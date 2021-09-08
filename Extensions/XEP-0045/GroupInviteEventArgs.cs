@@ -10,22 +10,22 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// Person who sent the invitation.
         /// </summary>
-        public Jid From { get; }
+        public Jid? From { get; }
 
         /// <summary>
         /// Chat room specified in the invitation.
         /// </summary>
-        public Jid ChatRoom { get; }
+        public Jid? ChatRoom { get; }
 
         /// <summary>
         /// Message contained in the invitation.
         /// </summary>
-        public string Reason { get; }
+        public string? Reason { get; }
 
         /// <summary>
         /// Password (if any).
         /// </summary>
-        public string Password { get; }
+        public string? Password { get; }
 
         /// <summary>
         /// Constructs a GroupInviteEventArgs.

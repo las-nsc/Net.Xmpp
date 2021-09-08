@@ -10,17 +10,17 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The real identifier of the participant.
         /// </summary>
-        public Jid RealJid { get; set; }
+        public Jid? RealJid { get; set; }
 
         /// <summary>
         /// The real identifier of the participant.
         /// </summary>
-        public Jid GroupJid { get; set; }
+        public Jid? GroupJid { get; set; }
 
         /// <summary>
         /// The participants nickname.
         /// </summary>
-        public string Nickname => GroupJid?.Resource;
+        public string? Nickname => GroupJid?.Resource;
 
         /// <summary>
         /// Member level of the participant.
@@ -51,7 +51,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="groupJid"></param>
         /// <param name="affiliation"></param>
         /// <param name="role"></param>
-        public Occupant(Jid groupJid, string affiliation, string role)
+        public Occupant(Jid groupJid, string? affiliation, string? role)
         {
             GroupJid = groupJid;
 

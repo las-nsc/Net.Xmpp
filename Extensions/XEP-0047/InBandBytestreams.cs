@@ -229,7 +229,7 @@ namespace Net.Xmpp.Extensions
             if (siFileTransfer.GetSession(sessionId, stanza.From, im.Jid) == null)
                 throw new XmppException("Invalid session-id.");
             string s = stanza.Data["open"].GetAttribute("stanza");
-            if (!string.IsNullOrEmpty(s) && s != "iq")
+            if (s?.Length > 0 && s != "iq")
                 throw new XmppException("Only IQ stanzas are supported.");
         }
 
@@ -245,8 +245,7 @@ namespace Net.Xmpp.Extensions
         {
             sessionId.ThrowIfNull(nameof(sessionId));
             stanza.ThrowIfNull(nameof(stanza));
-            SISession session = siFileTransfer.GetSession(sessionId,
-                stanza.From, stanza.To);
+            var session = siFileTransfer.GetSession(sessionId, stanza.From, stanza.To);
             // We don't allow the other site to close a session that we opened.
             if (session != null)
             {
@@ -281,7 +280,7 @@ namespace Net.Xmpp.Extensions
             var data = stanza.Data["data"];
             if (data == null)
                 throw new ArgumentException("Invalid stanza, missing data element.");
-            SISession session = siFileTransfer.GetSession(sessionId, stanza.From, im.Jid);
+            var session = siFileTransfer.GetSession(sessionId, stanza.From, im.Jid);
             if (session == null)
                 throw new ArgumentException("Invalid session-id.");
             string base64 = data.InnerText;

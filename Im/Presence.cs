@@ -80,7 +80,7 @@ namespace Net.Xmpp.Im
         {
             // The 'type' attribute of presence-stanzas is optional and if absent
             // availability is assumed.
-            return string.IsNullOrEmpty(value)
+            return !(value?.Length > 0)
                 ? PresenceType.Available
                 : (PresenceType)Enum.Parse(typeof(PresenceType),
                 value.Capitalize());

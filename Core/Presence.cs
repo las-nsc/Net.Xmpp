@@ -19,7 +19,7 @@ namespace Net.Xmpp.Core
         /// <param name="language">The language of the XML character data of
         /// the stanza.</param>
         public Presence(Jid? to = null, Jid? from = null, string? id = null,
-            CultureInfo? language = null, params XmlElement[] data)
+            CultureInfo? language = null, params XmlElement[]? data)
             : base(null, to, from, id, language, data)
         {
         }

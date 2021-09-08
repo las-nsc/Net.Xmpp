@@ -28,7 +28,7 @@ namespace Net.Xmpp.Extensions
         {
             FileName = file;
             Size = size;
-            ContentType = string.IsNullOrWhiteSpace(contentType) ? System.Net.Mime.MediaTypeNames.Application.Octet : contentType;
+            ContentType = !(contentType?.Trim().Length > 0) ? System.Net.Mime.MediaTypeNames.Application.Octet : contentType;
         }
 
         /// <summary>

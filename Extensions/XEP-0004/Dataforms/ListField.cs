@@ -26,26 +26,22 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// <summary>
         /// The selected value.
         /// </summary>
-        public string Value
+        public string? Value
         {
-            get
-            {
-                var v = element["value"];
-                return v?.InnerText;
-            }
+            get => element["value"]?.InnerText;
 
             private set
             {
-                if (element["value"] != null)
+                if (element["value"] is { } node)
                 {
-                    if (value == null)
-                        element.RemoveChild(element["value"]);
+                    if (value is null)
+                        element.RemoveChild(node);
                     else
-                        element["value"].InnerText = value;
+                        node.InnerText = value;
                 }
                 else
                 {
-                    if (value != null)
+                    if (value is not null)
                         element.Child(Xml.Element("value").Text(value));
                 }
             }
@@ -125,7 +121,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         private Option OptionFromElement(XmlElement element)
         {
             element.ThrowIfNull(nameof(element));
-            string label = element.GetAttribute("label");
+            var label = element.GetAttribute("label");
             if (label?.Length == 0)
                 label = null;
             if (element["value"] == null)

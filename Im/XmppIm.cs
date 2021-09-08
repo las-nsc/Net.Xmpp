@@ -44,7 +44,6 @@ namespace Net.Xmpp.Im
         public string Hostname
         {
             get => core.Hostname;
-
             set => core.Hostname = value;
         }
 
@@ -56,7 +55,6 @@ namespace Net.Xmpp.Im
         public int Port
         {
             get => core.Port;
-
             set => core.Port = value;
         }
 
@@ -71,7 +69,6 @@ namespace Net.Xmpp.Im
         public string Username
         {
             get => core.Username;
-
             set => core.Username = value;
         }
 
@@ -83,7 +80,6 @@ namespace Net.Xmpp.Im
         public string Password
         {
             get => core.Password;
-
             set => core.Password = value;
         }
 
@@ -93,7 +89,6 @@ namespace Net.Xmpp.Im
         public bool Tls
         {
             get => core.Tls;
-
             set => core.Tls = value;
         }
 
@@ -101,10 +96,9 @@ namespace Net.Xmpp.Im
         /// A delegate used for verifying the remote Secure Sockets Layer (SSL)
         /// certificate which is used for authentication.
         /// </summary>
-        public RemoteCertificateValidationCallback Validate
+        public RemoteCertificateValidationCallback? Validate
         {
             get => core.Validate;
-
             set => core.Validate = value;
         }
 
@@ -124,7 +118,6 @@ namespace Net.Xmpp.Im
         public int DefaultTimeOut
         {
             get => core.MillisecondsDefaultTimeout;
-
             set => core.MillisecondsDefaultTimeout = value;
         }
 
@@ -134,7 +127,6 @@ namespace Net.Xmpp.Im
         public bool DebugStanzas
         {
             get => core.DebugStanzas;
-
             set => core.DebugStanzas = value;
         }
 
@@ -152,7 +144,7 @@ namespace Net.Xmpp.Im
         /// A callback method to invoke when a request for a subscription is received
         /// from another XMPP user.
         /// </summary>
-        public SubscriptionRequest SubscriptionRequest { get; set; }
+        public SubscriptionRequest? SubscriptionRequest { get; set; }
 
         /// <summary>
         /// A callback method to invoke when a Custom Iq Request is received
@@ -281,7 +273,7 @@ namespace Net.Xmpp.Im
         /// <exception cref="XmppException">An XMPP error occurred while negotiating the
         /// XML stream with the server, or resource binding failed, or the initialization
         /// of an XMPP extension failed.</exception>
-        public Roster Connect(string? resource = null)
+        public Roster? Connect(string? resource = null)
         {
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -775,7 +767,7 @@ namespace Net.Xmpp.Im
             AssertValid();
             item.ThrowIfNull(nameof(item));
             var xml = Xml.Element("item").Attr("jid", item.Jid.ToString());
-            if (!string.IsNullOrEmpty(item.Name))
+            if (item.Name?.Length > 0)
                 xml.Attr("name", item.Name);
             foreach (string group in item.Groups)
                 xml.Child(Xml.Element("group").Text(group));
@@ -870,7 +862,7 @@ namespace Net.Xmpp.Im
             foreach (XmlElement list in query.GetElementsByTagName("list"))
             {
                 string name = list.GetAttribute("name");
-                if (!string.IsNullOrEmpty(name))
+                if (name?.Length > 0)
                     lists.Add(GetPrivacyList(name));
             }
             return lists;
@@ -1044,7 +1036,7 @@ namespace Net.Xmpp.Im
         /// error condition.</exception>
         /// <exception cref="XmppException">The server returned invalid data or another
         /// unspecified XMPP error occurred.</exception>
-        public string GetActivePrivacyList()
+        public string? GetActivePrivacyList()
         {
             AssertValid();
             Iq iq = IqRequest(IqType.Get, null, Jid,
@@ -1058,7 +1050,7 @@ namespace Net.Xmpp.Im
             if (active == null)
                 return null;
             string name = active.GetAttribute("name");
-            return string.IsNullOrEmpty(name) ? null : name;
+            return name?.Length > 0 ? name : null;
         }
 
         /// <summary>
@@ -1113,7 +1105,7 @@ namespace Net.Xmpp.Im
         /// error condition.</exception>
         /// <exception cref="XmppException">The server returned invalid data or another
         /// unspecified XMPP error occurred.</exception>
-        public string GetDefaultPrivacyList()
+        public string? GetDefaultPrivacyList()
         {
             AssertValid();
             Iq iq = IqRequest(IqType.Get, null, Jid,
@@ -1127,7 +1119,7 @@ namespace Net.Xmpp.Im
             if (active == null)
                 return null;
             string name = active.GetAttribute("name");
-            return string.IsNullOrEmpty(name) ? null : name;
+            return name?.Length > 0 ? name : null;
         }
 
         /// <summary>
@@ -1203,7 +1195,7 @@ namespace Net.Xmpp.Im
                 if (disposing)
                 {
                     core?.Close();
-                    core = null;
+                    core = null!;
                 }
                 // Get rid of unmanaged resources.
             }
@@ -1217,8 +1209,7 @@ namespace Net.Xmpp.Im
         internal T LoadExtension<T>() where T : XmppExtension
         {
             // Create instance of extension.
-            XmppExtension ext = Activator.CreateInstance(typeof(T), this)
-                as XmppExtension;
+            var ext = (XmppExtension)Activator.CreateInstance(typeof(T), this);
             // Add instance to list of loaded extensions.
             extensions.Add(ext);
             return (T)ext;
@@ -1233,7 +1224,7 @@ namespace Net.Xmpp.Im
         /// original list of extensions.</returns>
         internal bool UnloadExtension<T>() where T : XmppExtension
         {
-            XmppExtension ext = GetExtension<T>();
+            var ext = GetExtension<T>();
             return ext != null && extensions.Remove(ext);
         }
 
@@ -1243,7 +1234,7 @@ namespace Net.Xmpp.Im
         /// <typeparam name="T">The type of the extension to retrieve.</typeparam>
         /// <returns>The instance of the retrieved extension or null if the
         /// extension has not been loaded.</returns>
-        internal T GetExtension<T>() where T : XmppExtension
+        internal T? GetExtension<T>() where T : XmppExtension
         {
             foreach (var ext in extensions)
             {
@@ -1261,7 +1252,7 @@ namespace Net.Xmpp.Im
         /// matching instance has been found.</returns>
         /// <exception cref="ArgumentNullException">The type parameter is
         /// null.</exception>
-        internal XmppExtension GetExtension(Type type)
+        internal XmppExtension? GetExtension(Type type)
         {
             type.ThrowIfNull(nameof(type));
             foreach (var ext in extensions)
@@ -1281,7 +1272,7 @@ namespace Net.Xmpp.Im
         /// namespace, or null if no such extension exists.</returns>
         /// <exception cref="ArgumentNullException">The namespace parameter is
         /// null.</exception>
-        internal XmppExtension GetExtension(string @namespace)
+        internal XmppExtension? GetExtension(string @namespace)
         {
             @namespace.ThrowIfNull(nameof(@namespace));
             foreach (var ext in extensions)
@@ -1653,7 +1644,7 @@ namespace Net.Xmpp.Im
                 Availability.Online;
             // If the optional 'show' element has been specified, parse the
             // availability status from it.
-            if (!offline && e != null && !string.IsNullOrEmpty(e.InnerText))
+            if (!offline && e?.InnerText?.Length > 0)
             {
                 string show = e.InnerText.Capitalize();
                 availability = (Availability)Enum.Parse(
@@ -1662,25 +1653,27 @@ namespace Net.Xmpp.Im
             sbyte prio = 0;
             // Parse the optional 'priority' element.
             e = presence.Data["priority"];
-            if (e != null && !string.IsNullOrEmpty(e.InnerText))
+            if (e?.InnerText?.Length > 0)
                 prio = sbyte.Parse(e.InnerText);
             // Parse optional 'status' element(s).
-            string lang = presence.Data.GetAttribute("xml:lang");
+            var langDef = presence.Data.GetAttribute("xml:lang");
             var dict = new Dictionary<string, string>();
-            if (string.IsNullOrEmpty(lang))
-                lang = core.Language.Name;
+            if (!(langDef?.Length > 0))
+                langDef = core.Language?.Name;
             foreach (XmlNode node in presence.Data.GetElementsByTagName("status"))
             {
                 if (node is not XmlElement element)
                     continue;
-                string l = element.GetAttribute("xml:lang");
-                if (string.IsNullOrEmpty(l))
-                    l = lang;
-                dict.Add(l, element.InnerText);
+                var lang = element.GetAttribute("xml:lang");
+                if (!(lang?.Length > 0))
+                    lang = langDef;
+                if (lang is not null)
+                    dict.Add(lang, element.InnerText);
             }
             Status status = new(availability, dict, prio);
             // Raise Status event.
-            Status?.Invoke(this, new(presence.From, status));
+            if (presence.From is not null)
+                Status?.Invoke(this, new(presence.From, status));
         }
 
         /// <summary>
@@ -1692,7 +1685,8 @@ namespace Net.Xmpp.Im
         /// <param name="presence">The presence stanza to process.</param>
         private void ProcessSubscriptionRequest(Presence presence)
         {
-            SubscriptionRequest?.Invoke(presence.From);
+            if (presence.From is not null)
+                SubscriptionRequest?.Invoke(presence.From);
         }
 
         /// <summary>
@@ -1701,7 +1695,8 @@ namespace Net.Xmpp.Im
         /// <param name="presence">The presence stanza to process.</param>
         private void ProcessUnsubscribeRequest(Presence presence)
         {
-            Unsubscribed?.Invoke(this, new(presence.From));
+            if (presence.From is not null)
+                Unsubscribed?.Invoke(this, new(presence.From));
         }
 
         /// <summary>
@@ -1741,9 +1736,9 @@ namespace Net.Xmpp.Im
             foreach (XmlElement item in query.GetElementsByTagName("item"))
             {
                 string jid = item.GetAttribute("jid");
-                if (string.IsNullOrEmpty(jid))
+                if (!(jid?.Length > 0))
                     continue;
-                string name = item.GetAttribute("name");
+                var name = item.GetAttribute("name");
                 if (name?.Length == 0)
                     name = null;
                 List<string> groups = new();
@@ -1773,16 +1768,15 @@ namespace Net.Xmpp.Im
                 { "both", SubscriptionState.Both }
             };
             // Ensure roster push is from a trusted source.
-            bool trusted = iq.From == null || iq.From == Jid || iq.From
-                == Jid.GetBareJid();
+            bool trusted = iq.From is null || iq.From == Jid || iq.From == Jid.GetBareJid();
             var items = iq.Data["query"].GetElementsByTagName("item");
             // Push _should_ contain exactly 1 item.
             if (trusted && items.Count > 0 && items.Item(0) is XmlElement item)
             {
                 string jid = item.GetAttribute("jid");
-                if (!string.IsNullOrEmpty(jid))
+                if (jid?.Length > 0)
                 {
-                    string name = item.GetAttribute("name");
+                    var name = item.GetAttribute("name");
                     if (name?.Length == 0)
                         name = null;
                     List<string> groups = new();
@@ -1835,9 +1829,9 @@ namespace Net.Xmpp.Im
                 { "from", SubscriptionState.From },
                 { "both", SubscriptionState.Both }
             };
-            if (!string.IsNullOrEmpty(type))
+            if (type?.Length > 0)
             {
-                if (string.IsNullOrEmpty(value))
+                if (!(value?.Length > 0))
                     throw new ArgumentException("Missing value attribute.");
                 switch (type)
                 {

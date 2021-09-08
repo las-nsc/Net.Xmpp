@@ -92,7 +92,7 @@ namespace Net.Xmpp.Im
                 foreach (XmlElement e in element.GetElementsByTagName(tag))
                 {
                     string k = e.GetAttribute(this.key);
-                    if (!string.IsNullOrEmpty(k))
+                    if (k?.Length > 0)
                         set.Add(k);
                 }
                 return set;
@@ -110,7 +110,7 @@ namespace Net.Xmpp.Im
         public bool Remove(string key)
         {
             key.ThrowIfNull(nameof(key));
-            XmlElement e = GetElement(key);
+            var e = GetElement(key);
             if (e != null)
                 element.RemoveChild(e);
             return e != null;
@@ -130,8 +130,8 @@ namespace Net.Xmpp.Im
         public bool TryGetValue(string key, out string value)
         {
             key.ThrowIfNull(nameof(key));
-            XmlElement e = GetElement(key);
-            value = (e?.InnerText);
+            var e = GetElement(key);
+            value = e?.InnerText!;
             return e != null;
         }
 
@@ -146,7 +146,7 @@ namespace Net.Xmpp.Im
                 foreach (XmlElement e in element.GetElementsByTagName(tag))
                 {
                     string k = e.GetAttribute(this.key);
-                    if (!string.IsNullOrEmpty(k))
+                    if (k?.Length > 0)
                         set.Add(e.InnerText);
                 }
                 return set;
@@ -172,7 +172,7 @@ namespace Net.Xmpp.Im
                     if (k == key)
                         return e.InnerText;
                 }
-                return null;
+                throw new KeyNotFoundException();
             }
 
             set
@@ -180,11 +180,18 @@ namespace Net.Xmpp.Im
                 key.ThrowIfNull(nameof(key));
                 if (element.IsReadOnly)
                     throw new NotSupportedException("The dictionary is read-only.");
-                XmlElement e = GetElement(key);
-                if (e != null)
-                    e.InnerText = value;
+
+                if (GetElement(key) is { } e)
+                {
+                    if (value is null)
+                        element.RemoveChild(e);
+                    else
+                        e.InnerText = value;
+                }
                 else
+                {
                     element.Child(Xml.Element(tag).Attr(this.key, key).Text(value));
+                }
             }
         }
 
@@ -215,7 +222,7 @@ namespace Net.Xmpp.Im
             foreach (XmlElement e in element.GetElementsByTagName(tag))
             {
                 string k = e.GetAttribute(key);
-                if (!string.IsNullOrEmpty(k))
+                if (k?.Length > 0)
                     set.Add(e);
             }
             foreach (var e in set)
@@ -231,7 +238,7 @@ namespace Net.Xmpp.Im
         /// item is null.</exception>
         public bool Contains(KeyValuePair<string, string> item)
         {
-            XmlElement e = GetElement(item.Key);
+            var e = GetElement(item.Key);
             return e != null && e.InnerText == item.Value;
         }
 
@@ -284,7 +291,7 @@ namespace Net.Xmpp.Im
         /// item is null.</exception>
         public bool Remove(KeyValuePair<string, string> item)
         {
-            XmlElement e = GetElement(item.Key);
+            var e = GetElement(item.Key);
             if (e != null && e.InnerText == item.Value)
             {
                 element.RemoveChild(e);
@@ -325,7 +332,7 @@ namespace Net.Xmpp.Im
         /// <returns>The XML element with an attribute value equal to the
         /// specified key or null if no such element exists.</returns>
         /// <exception cref="ArgumentNullException">The key parameter is null.</exception>
-        private XmlElement GetElement(string key)
+        private XmlElement? GetElement(string key)
         {
             key.ThrowIfNull(nameof(key));
             foreach (XmlElement e in element.GetElementsByTagName(tag))

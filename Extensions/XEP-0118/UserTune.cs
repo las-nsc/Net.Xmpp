@@ -1,7 +1,8 @@
-﻿using Net.Xmpp.Im;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Xml;
+
+using Net.Xmpp.Im;
 
 namespace Net.Xmpp.Extensions
 {
@@ -49,7 +50,7 @@ namespace Net.Xmpp.Extensions
         public override void Initialize()
         {
             pep = im.GetExtension<Pep>();
-            pep.Subscribe("http://jabber.org/protocol/tune", onTune);
+            pep.Subscribe("http://jabber.org/protocol/tune", OnTune);
         }
 
         /// <summary>
@@ -83,19 +84,19 @@ namespace Net.Xmpp.Extensions
             length.ThrowIfOutOfRange(0, short.MaxValue);
             rating.ThrowIfOutOfRange(0, 10);
             var tune = Xml.Element("tune", "http://jabber.org/protocol/tune");
-            if (!string.IsNullOrEmpty(title))
+            if (title?.Length > 0)
                 tune.Child(Xml.Element("title").Text(title));
-            if (!string.IsNullOrEmpty(artist))
+            if (artist?.Length > 0)
                 tune.Child(Xml.Element("artist").Text(artist));
-            if (!string.IsNullOrEmpty(track))
+            if (track?.Length > 0)
                 tune.Child(Xml.Element("track").Text(track));
             if (length > 0)
                 tune.Child(Xml.Element("length").Text(length.ToString()));
             if (rating > 0)
                 tune.Child(Xml.Element("rating").Text(rating.ToString()));
-            if (!string.IsNullOrEmpty(source))
+            if (source?.Length > 0)
                 tune.Child(Xml.Element("source").Text(source));
-            if (!string.IsNullOrEmpty(uri))
+            if (uri?.Length > 0)
                 tune.Child(Xml.Element("uri").Text(uri));
             pep.Publish("http://jabber.org/protocol/tune", null, tune);
         }
@@ -140,7 +141,7 @@ namespace Net.Xmpp.Extensions
         /// information.</param>
         /// <param name="item">The 'item' Xml element of the pubsub publish
         /// event.</param>
-        private void onTune(Jid jid, XmlElement item)
+        private void OnTune(Jid jid, XmlElement item)
         {
             if (item == null || item["tune"] == null)
                 return;
@@ -148,7 +149,7 @@ namespace Net.Xmpp.Extensions
             if (tune.IsEmpty)
             {
                 // Raise the 'Tune' event without information.
-                Tune?.Invoke(this, new (jid));
+                Tune?.Invoke(this, new(jid));
                 return;
             }
             // Parse 'tune' element.
@@ -162,7 +163,7 @@ namespace Net.Xmpp.Extensions
                 GetField(tune, "title"), GetField(tune, "artist"), GetField(tune, "track"),
                 length, rating, GetField(tune, "source"), GetField(tune, "uri"));
             // Raise the 'Tune' event.
-            Tune?.Invoke(this, new (jid, info));
+            Tune?.Invoke(this, new(jid, info));
         }
 
         /// <summary>
@@ -172,7 +173,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="name">The name of the element whose inner text to
         /// retrieve.</param>
         /// <returns>The inner text of the specified element or null.</returns>
-        private string GetField(XmlElement tune, string name)
+        private string? GetField(XmlElement tune, string name)
         {
             return tune[name]?.InnerText;
         }

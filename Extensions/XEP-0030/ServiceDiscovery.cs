@@ -99,8 +99,8 @@ namespace Net.Xmpp.Extensions
         public bool Supports<T>(Jid jid) where T : XmppExtension
         {
             jid.ThrowIfNull(nameof(jid));
-            T ext = im.GetExtension<T>();
-            return Supports(jid, ext.Xep);
+            var ext = im.GetExtension<T>();
+            return ext != null && Supports(jid, ext.Xep);
         }
 
         /// <summary>
@@ -273,11 +273,10 @@ namespace Net.Xmpp.Extensions
             {
                 string cat = e.GetAttribute("category"), type = e.GetAttribute("type"),
                     name = e.GetAttribute("name");
-                if (string.IsNullOrEmpty(cat) || string.IsNullOrEmpty(type))
+                if (!(cat?.Length > 0) || !(type?.Length > 0))
                     continue;
 
-                idents.Add(new Identity(cat, type,
-                    string.IsNullOrEmpty(name) ? null : name));
+                idents.Add(new Identity(cat, type, name?.Length > 0 ? name : null));
             }
 
             return idents;
@@ -309,13 +308,12 @@ namespace Net.Xmpp.Extensions
             {
                 string _jid = e.GetAttribute("jid"), node = e.GetAttribute("node"),
                     name = e.GetAttribute("name");
-                if (string.IsNullOrEmpty(_jid))
+                if (!(_jid?.Length > 0))
                     continue;
                 try
                 {
                     Jid itemJid = new(_jid);
-                    items.Add(new XmppItem(itemJid, string.IsNullOrEmpty(node) ? null : node,
-                        string.IsNullOrEmpty(name) ? null : name));
+                    items.Add(new XmppItem(itemJid, node?.Length > 0 ? node : null, name?.Length > 0 ? name : null));
                 }
                 catch (ArgumentException)
                 {

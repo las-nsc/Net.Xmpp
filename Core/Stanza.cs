@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -25,17 +26,16 @@ namespace Net.Xmpp.Core
         /// <summary>
         /// Specifies the JID of the intended recipient for the stanza.
         /// </summary>
-        public Jid To
+        public Jid? To
         {
             get
             {
                 string v = element.GetAttribute("to");
-                return string.IsNullOrEmpty(v) ? null : new Jid(v);
+                return v?.Length > 0 ? new Jid(v) : null;
             }
-
             set
             {
-                if (value == null)
+                if (value is null)
                     element.RemoveAttribute("to");
                 else
                     element.SetAttribute("to", value.ToString());
@@ -46,17 +46,16 @@ namespace Net.Xmpp.Core
         /// Specifies the JID of the sender. If this is null, the stanza was generated
         /// by the client's server.
         /// </summary>
-        public Jid From
+        public Jid? From
         {
             get
             {
                 string v = element.GetAttribute("from");
-                return string.IsNullOrEmpty(v) ? null : new Jid(v);
+                return v?.Length > 0 ? new Jid(v) : null;
             }
-
             set
             {
-                if (value == null)
+                if (value is null)
                     element.RemoveAttribute("from");
                 else
                     element.SetAttribute("from", value.ToString());
@@ -66,17 +65,16 @@ namespace Net.Xmpp.Core
         /// <summary>
         /// The ID of the stanza, which may be used for internal tracking of stanzas.
         /// </summary>
-        public string Id
+        public string? Id
         {
             get
             {
                 var v = element.GetAttribute("id");
-                return string.IsNullOrEmpty(v) ? null : v;
+                return v?.Length > 0 ? v : null;
             }
-
             set
             {
-                if (value == null)
+                if (value is null)
                     element.RemoveAttribute("id");
                 else
                     element.SetAttribute("id", value);
@@ -87,17 +85,17 @@ namespace Net.Xmpp.Core
         /// The language of the XML character data if the stanza contains data that is
         /// intended to be presented to a human user.
         /// </summary>
-        public CultureInfo Language
+        public CultureInfo? Language
         {
             get
             {
                 string v = element.GetAttribute("xml:lang");
-                return string.IsNullOrEmpty(v) ? null : new CultureInfo(v);
+                return v?.Length > 0 ? new CultureInfo(v) : null;
             }
 
             set
             {
-                if (value == null)
+                if (value is null)
                     element.RemoveAttribute("xml:lang");
                 else
                     element.SetAttribute("xml:lang", value.Name);
@@ -124,16 +122,16 @@ namespace Net.Xmpp.Core
         /// <param name="language">The language of the XML character data of
         /// the stanza.</param>
         /// <param name="data">The content of the stanza.</param>
-        public Stanza(string? @namespace = null, Jid? to = null,
+        protected Stanza(string? @namespace = null, Jid? to = null,
             Jid? from = null, string? id = null, CultureInfo? language = null,
-            params XmlElement[] data)
+            params XmlElement[]? data)
         {
             element = Xml.Element(RootElementName, @namespace);
             To = to;
             From = from;
             Id = id;
             Language = language;
-            foreach (XmlElement e in data)
+            foreach (var e in data ?? Enumerable.Empty<XmlElement>())
             {
                 if (e != null)
                     element.Child(e);
@@ -176,7 +174,7 @@ namespace Net.Xmpp.Core
         /// </summary>
         /// <param name="nodeList">Tree of element name tags.</param>
         /// <returns>null or with the requested xml element.</returns>
-        protected XmlElement GetNode(params string[] nodeList)
+        protected XmlElement? GetNode(params string[] nodeList)
         {
             return GetNode(element, 0, nodeList);
         }
@@ -188,7 +186,7 @@ namespace Net.Xmpp.Core
         /// <param name="depth">Current depth in the node list.</param>
         /// <param name="nodeList">Tree of element name tags.</param>
         /// <returns>null or with the requested xml element.</returns>
-        private XmlElement GetNode(XmlElement node, int depth, params string[] nodeList)
+        private XmlElement? GetNode(XmlElement node, int depth, params string[] nodeList)
         {
             XmlElement child = node[nodeList[depth]];
             return child == null || depth == nodeList.Length - 1 ? child : GetNode(child, depth + 1, nodeList);

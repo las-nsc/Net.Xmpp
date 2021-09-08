@@ -1,6 +1,7 @@
-﻿using Net.Xmpp.Extensions.Socks5;
-using System;
+﻿using System;
 using System.Security.Cryptography;
+
+using Net.Xmpp.Extensions.Socks5;
 
 namespace Net.Xmpp.Extensions.Stun
 {
@@ -56,7 +57,7 @@ namespace Net.Xmpp.Extensions.Stun
         /// 12 bytes.</remarks>
         /// <exception cref="ArgumentException">The length of the id parameter is
         /// not equal to 12.</exception>
-        public BindingRequest(byte[] id = null)
+        public BindingRequest(byte[]? id = null)
         {
             if (id != null)
             {
