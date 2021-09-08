@@ -125,7 +125,7 @@ namespace Net.Xmpp.Core
         /// </summary>
         private CancellationTokenSource cancelDispatch = new();
 
-        internal event EventHandler<ConnectEventArgs> OnConnect;
+        internal event EventHandler<ConnectEventArgs>? OnConnect;
 
         /// <summary>
         /// The hostname of the XMPP server to connect to.
@@ -249,22 +249,22 @@ namespace Net.Xmpp.Core
         /// <summary>
         /// The event that is raised when an unrecoverable error condition occurs.
         /// </summary>
-        public event EventHandler<ErrorEventArgs> Error;
+        public event EventHandler<ErrorEventArgs>? Error;
 
         /// <summary>
         /// The event that is raised when an IQ-request stanza has been received.
         /// </summary>
-        public event EventHandler<IqEventArgs> Iq;
+        public event EventHandler<IqEventArgs>? Iq;
 
         /// <summary>
         /// The event that is raised when a Message stanza has been received.
         /// </summary>
-        public event EventHandler<MessageEventArgs> Message;
+        public event EventHandler<MessageEventArgs>? Message;
 
         /// <summary>
         /// The event that is raised when a Presence stanza has been received.
         /// </summary>
-        public event EventHandler<PresenceEventArgs> Presence;
+        public event EventHandler<PresenceEventArgs>? Presence;
 
         /// <summary>
         /// Initializes a new instance of the XmppCore class.
@@ -443,7 +443,7 @@ namespace Net.Xmpp.Core
                 SetupConnection(this.resource);
                 // We are connected.
                 Connected = true;
-                OnConnect?.Raise(this, new ConnectEventArgs(ConnectionState.Connected));
+                OnConnect?.Invoke(this, new(ConnectionState.Connected));
                 // Set up the listener and dispatcher tasks.
                 Task.Factory.StartNew(ReadXmlStream, TaskCreationOptions.LongRunning);
                 Task.Factory.StartNew(DispatchEvents, TaskCreationOptions.LongRunning);
@@ -670,11 +670,11 @@ namespace Net.Xmpp.Core
                     if (Connected)
                     {
                         Connected = false;
-                        OnConnect?.Raise(this, new ConnectEventArgs(ConnectionState.Lost));
+                        OnConnect?.Invoke(this, new(ConnectionState.Lost));
                     }
                     var e = new XmppDisconnectionException("Timeout Disconnection happened at IqRequest");
                     if (!disposed)
-                        Error.Raise(this, new ErrorEventArgs(e));
+                        Error?.Invoke(this, new(e));
                     //throw new TimeoutException();
                 }
 
@@ -1136,7 +1136,7 @@ namespace Net.Xmpp.Core
                     if (Connected)
                     {
                         Connected = false;
-                        OnConnect?.Raise(this, new ConnectEventArgs(ConnectionState.Lost));
+                        OnConnect?.Invoke(this, new(ConnectionState.Lost));
                     }
                     throw new XmppDisconnectionException(e.Message, e);
                 }
@@ -1184,7 +1184,7 @@ namespace Net.Xmpp.Core
                 if (Connected)
                 {
                     Connected = false;
-                    OnConnect?.Raise(this, new ConnectEventArgs(ConnectionState.Lost));
+                    OnConnect?.Invoke(this, new(ConnectionState.Lost));
                 }
                 throw e;
             }
@@ -1246,13 +1246,13 @@ namespace Net.Xmpp.Core
                     if (Connected)
                     {
                         Connected = false;
-                        OnConnect?.Raise(this, new ConnectEventArgs(ConnectionState.Lost));
+                        OnConnect?.Invoke(this, new(ConnectionState.Lost));
                     }
                     e = new XmppDisconnectionException(e.ToString());
                 }
                 // Raise the error event.
                 if (!disposed)
-                    Error.Raise(this, new ErrorEventArgs(e));
+                    Error?.Invoke(this, new(e));
             }
         }
 
@@ -1273,13 +1273,13 @@ namespace Net.Xmpp.Core
                     switch (stanza)
                     {
                         case Iq iq when !(iq.IsResponse && HandleIqResponse(iq)):
-                            Iq.Raise(this, new IqEventArgs(iq));
+                            Iq?.Invoke(this, new(iq));
                             break;
                         case Message message:
-                            Message.Raise(this, new MessageEventArgs(message));
+                            Message?.Invoke(this, new(message));
                             break;
                         case Presence presence:
-                            Presence.Raise(this, new PresenceEventArgs(presence));
+                            Presence?.Invoke(this, new(presence));
                             break;
                     }
                 }
@@ -1346,7 +1346,7 @@ namespace Net.Xmpp.Core
                 return;
             Connected = false;
             Authenticated = false;
-            OnConnect?.Raise(this, new ConnectEventArgs(ConnectionState.Disconnected));
+            OnConnect?.Invoke(this, new(ConnectionState.Disconnected));
             // Close the XML stream.
             Send("</stream:stream>");
         }

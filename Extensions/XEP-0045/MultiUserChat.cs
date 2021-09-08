@@ -32,13 +32,13 @@ namespace Net.Xmpp.Extensions
 
         public event EventHandler<Im.MessageEventArgs> SubjectChanged;
 
-        public event EventHandler<GroupPresenceEventArgs> PrescenceChanged;
+        public event EventHandler<GroupPresenceEventArgs>? PrescenceChanged;
 
-        public event EventHandler<GroupInviteEventArgs> InviteReceived;
+        public event EventHandler<GroupInviteEventArgs>? InviteReceived;
 
-        public event EventHandler<GroupInviteDeclinedEventArgs> InviteWasDeclined;
+        public event EventHandler<GroupInviteDeclinedEventArgs>? InviteWasDeclined;
 
-        public event EventHandler<GroupErrorEventArgs> MucErrorResponse;
+        public event EventHandler<GroupErrorEventArgs>? MucErrorResponse;
 
         public RegistrationCallback VoiceRequested;
 
@@ -53,7 +53,7 @@ namespace Net.Xmpp.Extensions
             {
                 // Unable to send a message... many reasons
                 var error = new MucError(stanza);
-                MucErrorResponse?.Raise(this, new GroupErrorEventArgs(error));
+                MucErrorResponse?.Invoke(this, new(error));
                 return true;
             }
 
@@ -61,7 +61,7 @@ namespace Net.Xmpp.Extensions
             {
                 // Incoming chat room invite
                 var invite = new Invite(stanza);
-                InviteReceived.Raise(this, new GroupInviteEventArgs(invite));
+                InviteReceived?.Invoke(this, new(invite));
                 return true;
             }
 
@@ -69,7 +69,7 @@ namespace Net.Xmpp.Extensions
             {
                 // Incoming chat room invite
                 var invite = new DirectInvite(stanza);
-                InviteReceived.Raise(this, new GroupInviteEventArgs(invite));
+                InviteReceived?.Invoke(this, new(invite));
                 return true;
             }
 
@@ -77,14 +77,14 @@ namespace Net.Xmpp.Extensions
             {
                 // Chat room invite was declined
                 var invite = new InviteDeclined(stanza);
-                InviteWasDeclined.Raise(this, new GroupInviteDeclinedEventArgs(invite));
+                InviteWasDeclined?.Invoke(this, new(invite));
                 return true;
             }
 
             if (stanza.Subject != null)
             {
                 // Subject change
-                SubjectChanged.Raise(this, new Im.MessageEventArgs(stanza.From, stanza));
+                SubjectChanged?.Invoke(this, new(stanza.From, stanza));
                 return true;
             }
 
@@ -103,7 +103,7 @@ namespace Net.Xmpp.Extensions
                         // 8.6 Approving Voice Requests
                         if (VoiceRequested != null)
                         {
-                            SubmitForm form = VoiceRequested.Invoke(new RequestForm(xElement));
+                            SubmitForm form = VoiceRequested.Invoke(new(xElement));
                             var message = new Core.Message(stanza.From, im.Jid, form.ToXmlElement());
                             SendMessage(message);
                             return true;
@@ -129,7 +129,7 @@ namespace Net.Xmpp.Extensions
             {
                 // Unable to join - No nickname specified / Duplicate nickname exists ... etc
                 var error = new MucError(stanza);
-                MucErrorResponse?.Raise(this, new GroupErrorEventArgs(error));
+                MucErrorResponse?.Invoke(this, new(error));
                 return true;
             }
 
@@ -172,7 +172,7 @@ namespace Net.Xmpp.Extensions
 
                     if (person != null)
                     {
-                        PrescenceChanged.Raise(this, new GroupPresenceEventArgs(new Jid(stanza.From.Domain, stanza.From.Node), person, statusCodeList));
+                        PrescenceChanged?.Invoke(this, new(new(stanza.From.Domain, stanza.From.Node), person, statusCodeList));
                         return true;
                     }
                 }

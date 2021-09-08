@@ -4,6 +4,7 @@
     <AssemblyName>Net.Xmpp</AssemblyName>
     <TargetFramework>net45</TargetFramework>
     <LangVersion>9.0</LangVersion>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Client\Examples.xml">

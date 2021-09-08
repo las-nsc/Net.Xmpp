@@ -57,21 +57,6 @@ namespace Net.Xmpp
         }
 
         /// <summary>
-        /// Raises the event. Ensures the event is only raised, if it is not null.
-        /// </summary>
-        /// <typeparam name="T">Extends System.EventHandler class</typeparam>
-        /// <param name="event">Extends System.EventHandler class</param>
-        /// <param name="sender">The sender of the event</param>
-        /// <param name="args">The event arguments associated with this event</param>
-        internal static void Raise<T>(this EventHandler<T> @event, object sender, T args)
-            where T : EventArgs
-        {
-            EventHandler<T> handler = @event;
-            if (handler != null)
-                handler(sender, args);
-        }
-
-        /// <summary>
         /// Throws an ArgumentNullException if the given data item is null.
         /// </summary>
         /// <param name="data">The item to check for nullity.</param>

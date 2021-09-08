@@ -138,13 +138,13 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The event that is raised whenever bytes have been transferred.
         /// </summary>
-        public event EventHandler<BytesTransferredEventArgs> BytesTransferred;
+        public event EventHandler<BytesTransferredEventArgs>? BytesTransferred;
 
         /// <summary>
         /// The event that is raised when an on-going transfer was aborted
         /// before it completed.
         /// </summary>
-        public event EventHandler<TransferAbortedEventArgs> TransferAborted;
+        public event EventHandler<TransferAbortedEventArgs>? TransferAborted;
 
         /// <summary>
         /// Invoked after all extensions have been loaded.
@@ -218,7 +218,7 @@ namespace Net.Xmpp.Extensions
             Proxies = new HashSet<Streamhost>();
             UseUPnP = false;
 #if WINDOWSPLATFORM
-			UseUPnP = true;
+            UseUPnP = true;
 #endif
         }
 
@@ -274,7 +274,7 @@ namespace Net.Xmpp.Extensions
             catch (Exception)
             {
                 // Raise the 'TransferAborted' event.
-                TransferAborted.Raise(this, new TransferAbortedEventArgs(session));
+                TransferAborted?.Invoke(this, new(session));
                 // Invalidate the session.
                 siFileTransfer.InvalidateSession(session.Sid);
             }
@@ -435,7 +435,7 @@ namespace Net.Xmpp.Extensions
                     session.Stream.Write(buffer, 0, read);
                     // Update the byte count and raise the 'BytesTransferred' event.
                     session.Count += read;
-                    BytesTransferred.Raise(this, new BytesTransferredEventArgs(session));
+                    BytesTransferred?.Invoke(this, new(session));
                 }
             }
             catch (ObjectDisposedException)
@@ -450,7 +450,7 @@ namespace Net.Xmpp.Extensions
                 // If not all bytes have been transferred, the data-transfer must have
                 // been aborted prematurely.
                 if (session.Count < session.Size)
-                    TransferAborted.Raise(this, new TransferAbortedEventArgs(session));
+                    TransferAborted?.Invoke(this, new(session));
             }
         }
 
@@ -548,11 +548,11 @@ namespace Net.Xmpp.Extensions
             {
 #if WINDOWSPLATFORM
                 try {
-					foreach (var address in UPnP.GetExternalAddresses())
-						set.Add(address);
-				} catch (Exception) {
-					// Fall through in case any device querying goes wrong.
-				}
+                    foreach (var address in UPnP.GetExternalAddresses())
+                        set.Add(address);
+                } catch (Exception) {
+                    // Fall through in case any device querying goes wrong.
+                }
 #endif
             }
             // Finally, perform a STUN query.
@@ -722,14 +722,14 @@ namespace Net.Xmpp.Extensions
                 // Check if we might need to forward the server port.
 #if WINDOWSPLATFORM
                 if (externalAddresses.Any(addr => BehindNAT(addr)) && UseUPnP) {
-					try {
-						UPnP.ForwardPort(socks5Server.Port, ProtocolType.Tcp,
-							"XMPP SOCKS5 File-transfer");
-					} catch (InvalidOperationException) {
-						// If automatic port forwarding failed for whatever reason, just
-						// go on normally. The user can still configure forwarding manually.
-					}
-				}
+                    try {
+                        UPnP.ForwardPort(socks5Server.Port, ProtocolType.Tcp,
+                            "XMPP SOCKS5 File-transfer");
+                    } catch (InvalidOperationException) {
+                        // If automatic port forwarding failed for whatever reason, just
+                        // go on normally. The user can still configure forwarding manually.
+                    }
+                }
 #endif
             }
             catch (NotSupportedException)
@@ -943,7 +943,7 @@ namespace Net.Xmpp.Extensions
                     left -= read;
                     // Update the byte count and raise the 'BytesTransferred' event.
                     session.Count += read;
-                    BytesTransferred.Raise(this, new BytesTransferredEventArgs(session));
+                    BytesTransferred?.Invoke(this, new(session));
                 }
             }
             catch (ObjectDisposedException)
@@ -958,7 +958,7 @@ namespace Net.Xmpp.Extensions
                 // If not all bytes have been transferred, the data-transfer must have
                 // been aborted prematurely.
                 if (session.Count < session.Size)
-                    TransferAborted.Raise(this, new TransferAbortedEventArgs(session));
+                    TransferAborted?.Invoke(this, new(session));
             }
         }
     }

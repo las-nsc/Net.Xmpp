@@ -84,13 +84,13 @@ namespace Net.Xmpp.Extensions
         /// The event that is raised periodically for every file-transfer to
         /// inform subscribers of the progress of the respective transfer operation.
         /// </summary>
-        public event EventHandler<FileTransferProgressEventArgs> FileTransferProgress;
+        public event EventHandler<FileTransferProgressEventArgs>? FileTransferProgress;
 
         /// <summary>
         /// The event that is raised when an on-going file-transfer has been
         /// aborted prematurely, either due to cancellation or error.
         /// </summary>
-        public event EventHandler<FileTransferAbortedEventArgs> FileTransferAborted;
+        public event EventHandler<FileTransferAbortedEventArgs>? FileTransferAborted;
 
         /// <summary>
         /// Invoked after all extensions have been loaded.
@@ -109,9 +109,8 @@ namespace Net.Xmpp.Extensions
             foreach (var type in supportedMethods)
             {
                 var ext = im.GetExtension(type);
-                if (ext is null or not IDataStream)
+                if (ext is not IDataStream dataStream)
                     throw new XmppException("Invalid data-stream type: " + type);
-                IDataStream dataStream = ext as IDataStream;
                 dataStream.BytesTransferred += OnBytesTransferred;
                 dataStream.TransferAborted += OnTransferAborted;
             }
@@ -259,13 +258,11 @@ namespace Net.Xmpp.Extensions
             sid.ThrowIfNullOrEmpty("sid");
             from.ThrowIfNull(nameof(from));
             to.ThrowIfNull(nameof(to));
-            SISession session = GetSession(sid, from,
-                to);
+            SISession session = GetSession(sid, from, to);
             if (session == null)
             {
-                throw new ArgumentException(string.Format("The specified transfer instance does not " +
-                    "represent an active data-transfer operation.:sid {0}, file {1}, from {2}, to {3}",
-                    session.Sid, session.Stream.ToString(), session.From, session.To));
+                throw new ArgumentException("The specified transfer instance does not represent an active data-transfer operation: " +
+                    $"sid {sid}, from {from}, to {to}");
             }
 
             session.Extension.CancelTransfer(session);
@@ -398,7 +395,9 @@ namespace Net.Xmpp.Extensions
         {
             // See if we support any of the advertised stream-methods.
             DataForm form = FeatureNegotiation.Parse(feature);
-            ListField field = form.Fields["stream-method"] as ListField;
+            if (form.Fields["stream-method"] is not ListField field)
+                throw new ArgumentNullException("stream-method");
+
             // Order of preference: Socks5, Ibb.
             string[] methods = new string[] {
                 "http://jabber.org/protocol/bytestreams",
@@ -547,8 +546,7 @@ namespace Net.Xmpp.Extensions
             if (metaData.TryGetValue(e.Session.Sid, out FileMetaData meta))
             {
                 // Raise the 'FileTransferProgress' event.
-                FileTransferProgress.Raise(this, new FileTransferProgressEventArgs(
-                    new FileTransfer(e.Session, meta.Name, meta.Description)));
+                FileTransferProgress?.Invoke(this, new(new(e.Session, meta.Name, meta.Description)));
             }
         }
 
@@ -564,8 +562,7 @@ namespace Net.Xmpp.Extensions
             if (metaData.TryGetValue(e.Session.Sid, out FileMetaData meta))
             {
                 // Raise the 'FileTransferAborted' event.
-                FileTransferAborted.Raise(this, new FileTransferAbortedEventArgs(
-                    new FileTransfer(e.Session, meta.Name, meta.Description)));
+                FileTransferAborted?.Invoke(this, new(new(e.Session, meta.Name, meta.Description)));
             }
         }
     }

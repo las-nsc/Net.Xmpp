@@ -93,10 +93,10 @@ namespace Net.Xmpp.Client
         private MultiUserChat groupChat;
 
 #if WINDOWSPLATFORM
-		/// <summary>
-		/// Provides access to the 'User Avatar' XMPP extension functionality.
-		/// </summary>
-		UserAvatar userAvatar;
+        /// <summary>
+        /// Provides access to the 'User Avatar' XMPP extension functionality.
+        /// </summary>
+        UserAvatar userAvatar;
 #endif
 
         /// <summary>
@@ -258,7 +258,7 @@ namespace Net.Xmpp.Client
         /// <summary>
         /// The event that is raised when a connection state changed.
         /// </summary>
-        public event EventHandler<ConnectEventArgs> OnConnect
+        public event EventHandler<ConnectEventArgs>? OnConnect
         {
             add => Im.OnConnect += value;
             remove => Im.OnConnect -= value;
@@ -321,7 +321,7 @@ namespace Net.Xmpp.Client
         /// <summary>
         /// The event that is raised when a status notification has been received.
         /// </summary>
-        public event EventHandler<StatusEventArgs> StatusChanged
+        public event EventHandler<StatusEventArgs>? StatusChanged
         {
             add => Im.Status += value;
             remove => Im.Status -= value;
@@ -330,7 +330,7 @@ namespace Net.Xmpp.Client
         /// <summary>
         /// The event that is raised when a mood notification has been received.
         /// </summary>
-        public event EventHandler<MoodChangedEventArgs> MoodChanged
+        public event EventHandler<MoodChangedEventArgs>? MoodChanged
         {
             add => userMood.MoodChanged += value;
             remove => userMood.MoodChanged -= value;
@@ -339,26 +339,26 @@ namespace Net.Xmpp.Client
         /// <summary>
         /// The event that is raised when an activity notification has been received.
         /// </summary>
-        public event EventHandler<ActivityChangedEventArgs> ActivityChanged
+        public event EventHandler<ActivityChangedEventArgs>? ActivityChanged
         {
             add => userActivity.ActivityChanged += value;
             remove => userActivity.ActivityChanged -= value;
         }
 
 #if WINDOWSPLATFORM
-		/// <summary>
-		/// The event that is raised when a contact has updated his or her avatar.
-		/// </summary>
-		public event EventHandler<AvatarChangedEventArgs> AvatarChanged {
-			add => userAvatar.AvatarChanged += value;
-			remove => userAvatar.AvatarChanged -= value;
-		}
+        /// <summary>
+        /// The event that is raised when a contact has updated his or her avatar.
+        /// </summary>
+        public event EventHandler<AvatarChangedEventArgs>? AvatarChanged {
+            add => userAvatar.AvatarChanged += value;
+            remove => userAvatar.AvatarChanged -= value;
+        }
 #endif
 
         /// <summary>
         /// The event that is raised when a contact has published tune information.
         /// </summary>
-        public event EventHandler<TuneEventArgs> Tune
+        public event EventHandler<TuneEventArgs>? Tune
         {
             add => userTune.Tune += value;
             remove => userTune.Tune -= value;
@@ -367,7 +367,7 @@ namespace Net.Xmpp.Client
         /// <summary>
         /// The event that is raised when a chat message is received.
         /// </summary>
-        public event EventHandler<MessageEventArgs> Message
+        public event EventHandler<MessageEventArgs>? Message
         {
             add => Im.Message += value;
             remove => Im.Message -= value;
@@ -376,7 +376,7 @@ namespace Net.Xmpp.Client
         /// <summary>
         /// The event that is raised when an error message is received.
         /// </summary>
-        public event EventHandler<MessageEventArgs> ErrorMessage
+        public event EventHandler<MessageEventArgs>? ErrorMessage
         {
             add => Im.ErrorMessage += value;
             remove => Im.ErrorMessage -= value;
@@ -385,7 +385,7 @@ namespace Net.Xmpp.Client
         /// <summary>
         /// The event that is raised when the subject is changed in a group chat.
         /// </summary>
-        public event EventHandler<MessageEventArgs> GroupChatSubjectChanged
+        public event EventHandler<MessageEventArgs>? GroupChatSubjectChanged
         {
             add => groupChat.SubjectChanged += value;
             remove => groupChat.SubjectChanged -= value;
@@ -403,7 +403,7 @@ namespace Net.Xmpp.Client
         /// <summary>
         /// The event that is raised when a participant's presence is changed in a group chat.
         /// </summary>
-        public event EventHandler<GroupPresenceEventArgs> GroupPresenceChanged
+        public event EventHandler<GroupPresenceEventArgs>? GroupPresenceChanged
         {
             add => groupChat.PrescenceChanged += value;
             remove => groupChat.PrescenceChanged -= value;
@@ -412,7 +412,7 @@ namespace Net.Xmpp.Client
         /// <summary>
         /// The event that is raised when an invite to a group chat is received.
         /// </summary>
-        public event EventHandler<GroupInviteEventArgs> GroupInviteReceived
+        public event EventHandler<GroupInviteEventArgs>? GroupInviteReceived
         {
             add => groupChat.InviteReceived += value;
             remove => groupChat.InviteReceived -= value;
@@ -421,7 +421,7 @@ namespace Net.Xmpp.Client
         /// <summary>
         /// The event that is raised when an invite to a group chat is declined.
         /// </summary>
-        public event EventHandler<GroupInviteDeclinedEventArgs> GroupInviteDeclined
+        public event EventHandler<GroupInviteDeclinedEventArgs>? GroupInviteDeclined
         {
             add => groupChat.InviteWasDeclined += value;
             remove => groupChat.InviteWasDeclined -= value;
@@ -430,7 +430,7 @@ namespace Net.Xmpp.Client
         /// <summary>
         /// The event that is raised when the server responds with an error in relation to a group chat.
         /// </summary>
-        public event EventHandler<GroupErrorEventArgs> GroupMucError
+        public event EventHandler<GroupErrorEventArgs>? GroupMucError
         {
             add => groupChat.MucErrorResponse += value;
             remove => groupChat.MucErrorResponse -= value;
@@ -440,7 +440,7 @@ namespace Net.Xmpp.Client
         /// The event that is raised periodically for every file-transfer operation to
         /// inform subscribers of the progress of the operation.
         /// </summary>
-        public event EventHandler<FileTransferProgressEventArgs> FileTransferProgress
+        public event EventHandler<FileTransferProgressEventArgs>? FileTransferProgress
         {
             add => siFileTransfer.FileTransferProgress += value;
             remove => siFileTransfer.FileTransferProgress -= value;
@@ -450,7 +450,7 @@ namespace Net.Xmpp.Client
         /// The event that is raised when an on-going file-transfer has been aborted
         /// prematurely, either due to cancellation or error.
         /// </summary>
-        public event EventHandler<FileTransferAbortedEventArgs> FileTransferAborted
+        public event EventHandler<FileTransferAbortedEventArgs>? FileTransferAborted
         {
             add => siFileTransfer.FileTransferAborted += value;
             remove => siFileTransfer.FileTransferAborted -= value;
@@ -460,7 +460,7 @@ namespace Net.Xmpp.Client
         /// The event that is raised when the chat-state of an XMPP entity has
         /// changed.
         /// </summary>
-        public event EventHandler<ChatStateChangedEventArgs> ChatStateChanged
+        public event EventHandler<ChatStateChangedEventArgs>? ChatStateChanged
         {
             add => chatStateNotifications.ChatStateChanged += value;
             remove => chatStateNotifications.ChatStateChanged -= value;
@@ -470,7 +470,7 @@ namespace Net.Xmpp.Client
         /// The event that is raised when the roster of the user has been updated,
         /// i.e. a contact has been added, removed or updated.
         /// </summary>
-        public event EventHandler<RosterUpdatedEventArgs> RosterUpdated
+        public event EventHandler<RosterUpdatedEventArgs>? RosterUpdated
         {
             add => Im.RosterUpdated += value;
             remove => Im.RosterUpdated -= value;
@@ -480,7 +480,7 @@ namespace Net.Xmpp.Client
         /// The event that is raised when a user or resource has unsubscribed from
         /// receiving presence notifications of the JID associated with this instance.
         /// </summary>
-        public event EventHandler<UnsubscribedEventArgs> Unsubscribed
+        public event EventHandler<UnsubscribedEventArgs>? Unsubscribed
         {
             add => Im.Unsubscribed += value;
             remove => Im.Unsubscribed -= value;
@@ -490,7 +490,7 @@ namespace Net.Xmpp.Client
         /// The event that is raised when a subscription request made by the JID
         /// associated with this instance has been approved.
         /// </summary>
-        public event EventHandler<SubscriptionApprovedEventArgs> SubscriptionApproved
+        public event EventHandler<SubscriptionApprovedEventArgs>? SubscriptionApproved
         {
             add => Im.SubscriptionApproved += value;
             remove => Im.SubscriptionApproved -= value;
@@ -500,7 +500,7 @@ namespace Net.Xmpp.Client
         /// The event that is raised when a subscription request made by the JID
         /// associated with this instance has been refused.
         /// </summary>
-        public event EventHandler<SubscriptionRefusedEventArgs> SubscriptionRefused
+        public event EventHandler<SubscriptionRefusedEventArgs>? SubscriptionRefused
         {
             add => Im.SubscriptionRefused += value;
             remove => Im.SubscriptionRefused -= value;
@@ -978,11 +978,11 @@ namespace Net.Xmpp.Client
         /// The following file types are supported:
         ///  BMP, GIF, JPEG, PNG and TIFF.
         /// </remarks>
-		public void SetAvatar(string filePath) {
-			AssertValid();
-			filePath.ThrowIfNull(nameof(filePath));
-			userAvatar.Publish(filePath);
-		}
+        public void SetAvatar(string filePath) {
+            AssertValid();
+            filePath.ThrowIfNull(nameof(filePath));
+            userAvatar.Publish(filePath);
+        }
 #endif
 
         /// <summary>
@@ -1665,12 +1665,8 @@ namespace Net.Xmpp.Client
                 ISet<JidPrivacyRule> set = new HashSet<JidPrivacyRule>();
                 foreach (var rule in privacyList)
                 {
-                    if (rule is JidPrivacyRule)
-                    {
-                        var jidRule = rule as JidPrivacyRule;
-                        if (jidRule.Jid == jid && !jidRule.Allow)
-                            set.Add(jidRule);
-                    }
+                    if (rule is JidPrivacyRule jidRule && jidRule.Jid == jid && !jidRule.Allow)
+                        set.Add(jidRule);
                 }
                 foreach (var rule in set)
                     privacyList.Remove(rule);
@@ -2120,7 +2116,7 @@ namespace Net.Xmpp.Client
             pep = Im.LoadExtension<Pep>();
             userTune = Im.LoadExtension<UserTune>();
 #if WINDOWSPLATFORM
-			userAvatar = im.LoadExtension<UserAvatar>();
+            userAvatar = im.LoadExtension<UserAvatar>();
 #endif
             userMood = Im.LoadExtension<UserMood>();
             dataForms = Im.LoadExtension<DataForms>();

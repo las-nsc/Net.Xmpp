@@ -1,6 +1,7 @@
-﻿using Net.Xmpp.Im;
-using System;
+﻿using System;
 using System.Collections.Generic;
+
+using Net.Xmpp.Im;
 
 namespace Net.Xmpp.Extensions
 {
@@ -26,7 +27,7 @@ namespace Net.Xmpp.Extensions
         /// The event that is raised when the chat-state of an XMPP entity has
         /// changed.
         /// </summary>
-        public event EventHandler<ChatStateChangedEventArgs> ChatStateChanged;
+        public event EventHandler<ChatStateChangedEventArgs>? ChatStateChanged;
 
         /// <summary>
         /// Invoked when a message stanza has been received.
@@ -43,8 +44,7 @@ namespace Net.Xmpp.Extensions
                 if (stanza.Data[name]?.NamespaceURI ==
                     "http://jabber.org/protocol/chatstates")
                 {
-                    ChatStateChanged.Raise(this,
-                        new ChatStateChangedEventArgs(stanza.From, state));
+                    ChatStateChanged?.Invoke(this, new(stanza.From, state));
                 }
             }
             // Pass the message on to the next handler.

@@ -1,8 +1,9 @@
-﻿using Net.Xmpp.Im;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
+
+using Net.Xmpp.Im;
 
 namespace Net.Xmpp.Extensions
 {
@@ -14,7 +15,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// A reference to the 'Personal Eventing Protocol' extension instance.
         /// </summary>
-        private Pep pep;
+        private readonly Pep pep;
 
         /// <summary>
         /// An enumerable collection of XMPP namespaces the extension implements.
@@ -42,16 +43,7 @@ namespace Net.Xmpp.Extensions
         /// The event that is raised when another XMPP entity has published mood
         /// information.
         /// </summary>
-        public event EventHandler<MoodChangedEventArgs> MoodChanged;
-
-        /// <summary>
-        /// Invoked after all extensions have been loaded.
-        /// </summary>
-        public override void Initialize()
-        {
-            pep = im.GetExtension<Pep>();
-            pep.Subscribe("http://jabber.org/protocol/mood", onMood);
-        }
+        public event EventHandler<MoodChangedEventArgs>? MoodChanged;
 
         /// <summary>
         /// Sets the user's mood to the specified mood value.
@@ -74,9 +66,11 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <param name="im">A reference to the XmppIm instance on whose behalf this
         /// instance is created.</param>
-        public UserMood(XmppIm im)
+        public UserMood(XmppIm im, Pep pep)
             : base(im)
         {
+            this.pep = pep;
+            pep.Subscribe("http://jabber.org/protocol/mood", onMood);
         }
 
         /// <summary>
@@ -109,7 +103,7 @@ namespace Net.Xmpp.Extensions
             string text = moodElement["text"]?.InnerText;
             // Raise the 'MoodChanged' event.
             if (mood.HasValue)
-                MoodChanged.Raise(this, new MoodChangedEventArgs(jid, mood.Value, text));
+                MoodChanged?.Invoke(this, new(jid, mood.Value, text));
         }
 
         /// <summary>

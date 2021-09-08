@@ -1,8 +1,9 @@
-﻿using Net.Xmpp.Im;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
+
+using Net.Xmpp.Im;
 
 namespace Net.Xmpp.Extensions
 {
@@ -14,7 +15,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// A reference to the 'Personal Eventing Protocol' extension instance.
         /// </summary>
-        private Pep pep;
+        private readonly Pep pep;
 
         /// <summary>
         /// An enumerable collection of XMPP namespaces the extension implements.
@@ -42,16 +43,7 @@ namespace Net.Xmpp.Extensions
         /// The event that is raised when another XMPP entity has published activity
         /// information.
         /// </summary>
-        public event EventHandler<ActivityChangedEventArgs> ActivityChanged;
-
-        /// <summary>
-        /// Invoked after all extensions have been loaded.
-        /// </summary>
-        public override void Initialize()
-        {
-            pep = im.GetExtension<Pep>();
-            pep.Subscribe("http://jabber.org/protocol/activity", onActivity);
-        }
+        public event EventHandler<ActivityChangedEventArgs>? ActivityChanged;
 
         /// <summary>
         /// Sets the user's activity to the specified activity value(s).
@@ -80,9 +72,11 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <param name="im">A reference to the XmppIm instance on whose behalf this
         /// instance is created.</param>
-        public UserActivity(XmppIm im)
+        public UserActivity(XmppIm im, Pep pep)
             : base(im)
         {
+            this.pep = pep;
+            pep.Subscribe("http://jabber.org/protocol/activity", onActivity);
         }
 
         /// <summary>
@@ -131,8 +125,7 @@ namespace Net.Xmpp.Extensions
             // Raise the 'ActivityChanged' event.
             if (activity.HasValue)
             {
-                ActivityChanged.Raise(this, new ActivityChangedEventArgs(jid,
-                    activity.Value, specific, text));
+                ActivityChanged?.Invoke(this, new(jid, activity.Value, specific, text));
             }
         }
 

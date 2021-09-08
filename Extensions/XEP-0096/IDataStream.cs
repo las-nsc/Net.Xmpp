@@ -38,12 +38,12 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The event that is raised whenever bytes have been transferred.
         /// </summary>
-        event EventHandler<BytesTransferredEventArgs> BytesTransferred;
+        event EventHandler<BytesTransferredEventArgs>? BytesTransferred;
 
         /// <summary>
         /// The event that is raised when an on-going transfer was aborted
         /// before it completed.
         /// </summary>
-        event EventHandler<TransferAbortedEventArgs> TransferAborted;
+        event EventHandler<TransferAbortedEventArgs>? TransferAborted;
     }
 }

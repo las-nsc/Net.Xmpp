@@ -1,8 +1,9 @@
-﻿using Net.Xmpp.Core;
-using Net.Xmpp.Im;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+
+using Net.Xmpp.Core;
+using Net.Xmpp.Im;
 
 namespace Net.Xmpp.Extensions
 {
@@ -47,13 +48,13 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The event that is raised whenever bytes have been transferred.
         /// </summary>
-        public event EventHandler<BytesTransferredEventArgs> BytesTransferred;
+        public event EventHandler<BytesTransferredEventArgs>? BytesTransferred;
 
         /// <summary>
         /// The event that is raised when an on-going transfer was aborted
         /// before it completed.
         /// </summary>
-        public event EventHandler<TransferAbortedEventArgs> TransferAborted;
+        public event EventHandler<TransferAbortedEventArgs>? TransferAborted;
 
         /// <summary>
         /// Invoked after all extensions have been loaded.
@@ -163,7 +164,7 @@ namespace Net.Xmpp.Extensions
                         throw Util.ExceptionFromError(response);
                     session.Count += read;
                     // Raise the 'BytesTransferred' event.
-                    BytesTransferred.Raise(this, new BytesTransferredEventArgs(session));
+                    BytesTransferred?.Invoke(this, new(session));
                 }
             }
             catch (ObjectDisposedException)
@@ -175,7 +176,7 @@ namespace Net.Xmpp.Extensions
             {
                 // The IQ response is of type 'error', the other site has cancelled
                 // the transfer.
-                TransferAborted.Raise(this, new TransferAbortedEventArgs(session));
+                TransferAborted?.Invoke(this, new(session));
                 // Rethrow.
                 throw;
             }
@@ -197,7 +198,7 @@ namespace Net.Xmpp.Extensions
         {
             session.ThrowIfNull(nameof(session));
             siFileTransfer.InvalidateSession(session.Sid);
-            TransferAborted.Raise(this, new TransferAbortedEventArgs(session));
+            TransferAborted?.Invoke(this, new(session));
         }
 
         /// <summary>
@@ -253,7 +254,7 @@ namespace Net.Xmpp.Extensions
                 // Had all bytes been received when we got the 'close' request?
                 // Otherwise, the other site cancelled the transfer prematurely.
                 if (session.Count < session.Size)
-                    TransferAborted.Raise(this, new TransferAbortedEventArgs(session));
+                    TransferAborted?.Invoke(this, new(session));
             }
         }
 
@@ -296,7 +297,7 @@ namespace Net.Xmpp.Extensions
             }
             // Update the byte count and raise the 'BytesTransferred' event.
             session.Count += bytes.Length;
-            BytesTransferred.Raise(this, new BytesTransferredEventArgs(session));
+            BytesTransferred?.Invoke(this, new(session));
         }
 
         /// <summary>

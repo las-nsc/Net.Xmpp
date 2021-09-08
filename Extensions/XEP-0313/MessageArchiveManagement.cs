@@ -58,7 +58,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="roomId">Optional filter to only return messages if they match the supplied JID</param>
         /// <param name="start">Optional filter to only return messages whose timestamp is equal to or later than the given timestamp.</param>
         /// <param name="end">Optional filter to only return messages whose timestamp is equal to or earlier than the timestamp given in the 'end' field.</param>
-        internal Task<XmppPage<Message>> GetArchivedMessages(XmppPageRequest pageRequest, Jid with = null, Jid roomId = null, DateTimeOffset? start = null, DateTimeOffset? end = null)
+        internal Task<XmppPage<Message>> GetArchivedMessages(XmppPageRequest pageRequest, Jid? with = null, Jid? roomId = null, DateTimeOffset? start = null, DateTimeOffset? end = null)
         {
             Core.Iq iq = im.IqRequest(Core.IqType.Get, null, im.Jid, Xml.Element("query", xmlns));
             if (iq.Type == Core.IqType.Result)
@@ -82,7 +82,7 @@ namespace Net.Xmpp.Extensions
                     {
                         filterForm.Fields.Add(campo);
                     }
-                    if (campo.Name == "with" && with != null)
+                    if (campo.Name == "with" && with is not null)
                     {
                         filterForm.AddUntypedValue("with", with);
                     }

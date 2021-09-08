@@ -41,7 +41,7 @@ namespace Net.Xmpp.Extensions
         /// The event that is raised when another XMPP entity has published tune
         /// information.
         /// </summary>
-        public event EventHandler<TuneEventArgs> Tune;
+        public event EventHandler<TuneEventArgs>? Tune;
 
         /// <summary>
         /// Invoked after all extensions have been loaded.
@@ -148,7 +148,7 @@ namespace Net.Xmpp.Extensions
             if (tune.IsEmpty)
             {
                 // Raise the 'Tune' event without information.
-                Tune.Raise(this, new TuneEventArgs(jid));
+                Tune?.Invoke(this, new (jid));
                 return;
             }
             // Parse 'tune' element.
@@ -162,7 +162,7 @@ namespace Net.Xmpp.Extensions
                 GetField(tune, "title"), GetField(tune, "artist"), GetField(tune, "track"),
                 length, rating, GetField(tune, "source"), GetField(tune, "uri"));
             // Raise the 'Tune' event.
-            Tune.Raise(this, new TuneEventArgs(jid, info));
+            Tune?.Invoke(this, new (jid, info));
         }
 
         /// <summary>

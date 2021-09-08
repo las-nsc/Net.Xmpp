@@ -164,51 +164,51 @@ namespace Net.Xmpp.Im
         /// The event that is raised when a status notification from a contact has been
         /// received.
         /// </summary>
-        public event EventHandler<StatusEventArgs> Status;
+        public event EventHandler<StatusEventArgs>? Status;
 
         /// <summary>
         /// The event that is raised when a chat message is received.
         /// </summary>
-        public event EventHandler<MessageEventArgs> Message;
+        public event EventHandler<MessageEventArgs>? Message;
 
         /// <summary>
         /// The event that is raised when a connection state changed.
         /// </summary>
-        public event EventHandler<ConnectEventArgs> OnConnect;
+        public event EventHandler<ConnectEventArgs>? OnConnect;
 
         /// <summary>
         /// The event that is raised when an error message is received.
         /// </summary>
-        public event EventHandler<MessageEventArgs> ErrorMessage;
+        public event EventHandler<MessageEventArgs>? ErrorMessage;
 
         /// <summary>
         /// The event that is raised when a subscription request made by the JID
         /// associated with this instance has been approved.
         /// </summary>
-        public event EventHandler<SubscriptionApprovedEventArgs> SubscriptionApproved;
+        public event EventHandler<SubscriptionApprovedEventArgs>? SubscriptionApproved;
 
         /// <summary>
         /// The event that is raised when a subscription request made by the JID
         /// associated with this instance has been refused.
         /// </summary>
-        public event EventHandler<SubscriptionRefusedEventArgs> SubscriptionRefused;
+        public event EventHandler<SubscriptionRefusedEventArgs>? SubscriptionRefused;
 
         /// <summary>
         /// The event that is raised when a user or resource has unsubscribed from
         /// receiving presence notifications of the JID associated with this instance.
         /// </summary>
-        public event EventHandler<UnsubscribedEventArgs> Unsubscribed;
+        public event EventHandler<UnsubscribedEventArgs>? Unsubscribed;
 
         /// <summary>
         /// The event that is raised when the roster of the user has been updated,
         /// i.e. a contact has been added, removed or updated.
         /// </summary>
-        public event EventHandler<RosterUpdatedEventArgs> RosterUpdated;
+        public event EventHandler<RosterUpdatedEventArgs>? RosterUpdated;
 
         /// <summary>
         /// The event that is raised when an unrecoverable error condition occurs.
         /// </summary>
-        public event EventHandler<ErrorEventArgs> Error;
+        public event EventHandler<ErrorEventArgs>? Error;
 
         /// <summary>
         /// Initializes a new instance of the XmppIm.
@@ -1001,21 +1001,18 @@ namespace Net.Xmpp.Im
                     item.Child(Xml.Element("presence-in"));
                 if (rule.Granularity.HasFlag(PrivacyGranularity.PresenceOut))
                     item.Child(Xml.Element("presence-out"));
-                if (rule is JidPrivacyRule)
+                if (rule is JidPrivacyRule jidRule)
                 {
-                    JidPrivacyRule jidRule = rule as JidPrivacyRule;
                     item.Attr("type", "jid");
                     item.Attr("value", jidRule.Jid.ToString());
                 }
-                else if (rule is GroupPrivacyRule)
+                else if (rule is GroupPrivacyRule groupRule)
                 {
-                    GroupPrivacyRule groupRule = rule as GroupPrivacyRule;
                     item.Attr("type", "group");
                     item.Attr("value", groupRule.Group);
                 }
-                else if (rule is SubscriptionPrivacyRule)
+                else if (rule is SubscriptionPrivacyRule subRule)
                 {
-                    SubscriptionPrivacyRule subRule = rule as SubscriptionPrivacyRule;
                     item.Attr("type", "subscription");
                     item.Attr("value", subRule.SubscriptionState.ToString()
                         .ToLowerInvariant());
@@ -1509,7 +1506,7 @@ namespace Net.Xmpp.Im
                 // FIXME: Raise Error event if constructor raises exception?
                 OnPresence(new Presence(e.Stanza));
             core.Message += (sender, e) => OnMessage(new Message(e.Stanza));
-            core.Error += (sender, e) => Error.Raise(sender, new ErrorEventArgs(e.Exception));
+            core.Error += (sender, e) => Error?.Invoke(sender, new(e.Exception));
             core.OnConnect += (sender, e) =>
             {
                 ConnectionState state = ConnectionState.Disconnected;
@@ -1522,7 +1519,7 @@ namespace Net.Xmpp.Im
                     state = ConnectionState.Lost;
                 }
 
-                OnConnect?.Raise(sender, new ConnectEventArgs(state));
+                OnConnect?.Invoke(sender, new(state));
             };
         }
 
@@ -1634,11 +1631,11 @@ namespace Net.Xmpp.Im
 
             if (message.Type == MessageType.Error)
             {
-                ErrorMessage.Raise(this, new MessageEventArgs(message.From, message));
+                ErrorMessage?.Invoke(this, new(message.From, message));
             }
             else if (message.Data["body"] != null)
             {
-                Message.Raise(this, new MessageEventArgs(message.From, message));
+                Message?.Invoke(this, new(message.From, message));
             }
         }
         /// <summary>
@@ -1683,7 +1680,7 @@ namespace Net.Xmpp.Im
             }
             Status status = new(availability, dict, prio);
             // Raise Status event.
-            Status.Raise(this, new StatusEventArgs(presence.From, status));
+            Status?.Invoke(this, new(presence.From, status));
         }
 
         /// <summary>
@@ -1704,8 +1701,7 @@ namespace Net.Xmpp.Im
         /// <param name="presence">The presence stanza to process.</param>
         private void ProcessUnsubscribeRequest(Presence presence)
         {
-            Unsubscribed.Raise(this,
-                new UnsubscribedEventArgs(presence.From));
+            Unsubscribed?.Invoke(this, new(presence.From));
         }
 
         /// <summary>
@@ -1718,13 +1714,11 @@ namespace Net.Xmpp.Im
             bool approved = presence.Type == PresenceType.Subscribed;
             if (approved)
             {
-                SubscriptionApproved.Raise(this,
-                    new SubscriptionApprovedEventArgs(presence.From));
+                SubscriptionApproved?.Invoke(this, new(presence.From));
             }
             else
             {
-                SubscriptionRefused.Raise(this,
-                 new SubscriptionRefusedEventArgs(presence.From));
+                SubscriptionRefused?.Invoke(this, new(presence.From));
             }
         }
 
@@ -1783,9 +1777,8 @@ namespace Net.Xmpp.Im
                 == Jid.GetBareJid();
             var items = iq.Data["query"].GetElementsByTagName("item");
             // Push _should_ contain exactly 1 item.
-            if (trusted && items.Count > 0)
+            if (trusted && items.Count > 0 && items.Item(0) is XmlElement item)
             {
-                XmlElement item = items.Item(0) as XmlElement;
                 string jid = item.GetAttribute("jid");
                 if (!string.IsNullOrEmpty(jid))
                 {
@@ -1801,7 +1794,7 @@ namespace Net.Xmpp.Im
                         state = states[s];
                     string ask = item.GetAttribute("ask");
                     RosterItem ri = new(jid, name, state, ask == "subscribe", groups);
-                    RosterUpdated.Raise(this, new RosterUpdatedEventArgs(ri, s == "remove"));
+                    RosterUpdated?.Invoke(this, new(ri, s == "remove"));
                 }
                 // Acknowledge IQ request.
                 IqResult(iq);
