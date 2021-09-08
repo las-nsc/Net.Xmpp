@@ -76,7 +76,7 @@ namespace Net.Xmpp.Extensions
             : base(im)
         {
             this.pep = pep;
-            pep.Subscribe("http://jabber.org/protocol/activity", onActivity);
+            pep.Subscribe("http://jabber.org/protocol/activity", OnActivity);
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Net.Xmpp.Extensions
         /// activity information.</param>
         /// <param name="item">The 'item' Xml element of the pubsub publish
         /// event.</param>
-        private void onActivity(Jid jid, XmlElement item)
+        private void OnActivity(Jid jid, XmlElement item)
         {
             if (item == null || item["activity"] == null)
                 return;
@@ -121,7 +121,7 @@ namespace Net.Xmpp.Extensions
                         specific = (SpecificActivity)v;
                 }
             }
-            string text = activityElement["text"]?.InnerText;
+            var text = activityElement["text"]?.InnerText;
             // Raise the 'ActivityChanged' event.
             if (activity.HasValue)
             {

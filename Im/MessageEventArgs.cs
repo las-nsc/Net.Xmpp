@@ -22,11 +22,11 @@ namespace Net.Xmpp.Im
         /// </summary>
         /// <exception cref="ArgumentNullException">The jid parameter or the message
         /// parameter is null.</exception>
-        public MessageEventArgs(Jid jid, Message message)
+        public MessageEventArgs(Jid from, Message message)
         {
-            jid.ThrowIfNull(nameof(jid));
+            from.ThrowIfNull(nameof(from));
             message.ThrowIfNull(nameof(message));
-            Jid = jid;
+            Jid = from;
             Message = message;
         }
     }

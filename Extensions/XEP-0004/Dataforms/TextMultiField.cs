@@ -80,6 +80,7 @@ namespace Net.Xmpp.Extensions.Dataforms
             : base(element)
         {
             AssertType(DataFieldType.TextMulti);
+            values = new XmlCollection<string>(element, "value", e => e.InnerText);
         }
     }
 }

@@ -220,7 +220,7 @@ namespace Net.Xmpp.Extensions
         {
             sessionId.ThrowIfNull(nameof(sessionId));
             stanza.ThrowIfNull(nameof(stanza));
-            if (siFileTransfer.GetSession(sessionId, stanza.From, im.Jid) == null)
+            if (stanza.From is null || siFileTransfer.GetSession(sessionId, stanza.From, im.Jid) == null)
                 throw new XmppException("Invalid session-id.");
             string s = stanza.Data["open"].GetAttribute("stanza");
             if (s?.Length > 0 && s != "iq")
@@ -239,7 +239,9 @@ namespace Net.Xmpp.Extensions
         {
             sessionId.ThrowIfNull(nameof(sessionId));
             stanza.ThrowIfNull(nameof(stanza));
-            var session = siFileTransfer.GetSession(sessionId, stanza.From, stanza.To);
+            stanza.From.ThrowIfNull(nameof(stanza.From));
+            stanza.To.ThrowIfNull(nameof(stanza.To));
+            var session = siFileTransfer.GetSession(sessionId, stanza.From!, stanza.To!);
             // We don't allow the other site to close a session that we opened.
             if (session != null)
             {
@@ -272,7 +274,7 @@ namespace Net.Xmpp.Extensions
             sessionId.ThrowIfNull(nameof(sessionId));
             stanza.ThrowIfNull(nameof(stanza));
             var data = stanza.Data["data"];
-            if (data == null)
+            if (data == null || stanza.From is null)
                 throw new ArgumentException("Invalid stanza, missing data element.");
             var session = siFileTransfer.GetSession(sessionId, stanza.From, im.Jid);
             if (session == null)

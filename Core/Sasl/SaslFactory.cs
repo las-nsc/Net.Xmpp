@@ -35,8 +35,7 @@ namespace Net.Xmpp.Core.Sasl
                     "is not registered with Sasl.SaslFactory.");
             }
             Type t = Mechanisms[name];
-            object o = Activator.CreateInstance(t, true);
-            return o as SaslMechanism;
+            return (SaslMechanism)Activator.CreateInstance(t, true);
         }
 
         /// <summary>

@@ -159,7 +159,7 @@ namespace Net.Xmpp
         /// <param name="s">The string to check for nullity and emptiness.</param>
         /// <param name="name">The name to use when throwing an
         /// exception, if necessary.</param>
-        internal static void ThrowIfNullOrEmpty(this string s, string name)
+        internal static void ThrowIfNullOrEmpty(this string? s, string name)
         {
             if (s == null)
                 throw new ArgumentNullException(name);

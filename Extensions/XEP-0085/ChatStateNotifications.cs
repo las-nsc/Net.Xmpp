@@ -10,12 +10,14 @@ namespace Net.Xmpp.Extensions
     /// </summary>
     internal class ChatStateNotifications : XmppExtension, IInputFilter<Message>
     {
+        private const string chatStatesNS = "http://jabber.org/protocol/chatstates";
+
         /// <summary>
         /// An enumerable collection of XMPP namespaces the extension implements.
         /// </summary>
         /// <remarks>This is used for compiling the list of supported extensions
         /// advertised by the 'Service Discovery' extension.</remarks>
-        public override IEnumerable<string> Namespaces => new string[] { "http://jabber.org/protocol/chatstates" };
+        public override IEnumerable<string> Namespaces => new string[] { chatStatesNS };
 
         /// <summary>
         /// The named constant of the Extension enumeration that corresponds to this
@@ -41,8 +43,7 @@ namespace Net.Xmpp.Extensions
             foreach (ChatState state in Enum.GetValues(typeof(ChatState)))
             {
                 string name = state.ToString().ToLowerInvariant();
-                if (stanza.Data[name]?.NamespaceURI ==
-                    "http://jabber.org/protocol/chatstates")
+                if (stanza.Data[name]?.NamespaceURI == chatStatesNS && stanza.From is not null)
                 {
                     ChatStateChanged?.Invoke(this, new(stanza.From, state));
                 }
@@ -66,7 +67,7 @@ namespace Net.Xmpp.Extensions
             Message m = new(jid);
             m.Type = MessageType.Chat;
             m.Data.Child(Xml.Element(state.ToString().ToLowerInvariant(),
-                "http://jabber.org/protocol/chatstates"));
+                chatStatesNS));
             im.SendMessage(m);
         }
 

@@ -46,7 +46,7 @@ namespace Net.Xmpp.Extensions
         /// on to the next handler.</returns>
         public bool Input(Iq stanza)
         {
-            if (stanza.Type != IqType.Set)
+            if (stanza.Type != IqType.Set || stanza.From is null || stanza.Id is null)
                 return false;
             var si = stanza.Data["si"];
             if (si == null || si.NamespaceURI != "http://jabber.org/protocol/si")
@@ -171,9 +171,9 @@ namespace Net.Xmpp.Extensions
         /// <exception cref="NotSupportedException">The XMPP entity with
         /// the specified JID does not support the 'Stream Initiation' XMPP
         /// extension.</exception>
-        public string InitiateStreamAsync(Jid to, string mimeType, string profile,
+        public string InitiateStream(Jid to, string mimeType, string profile,
             IEnumerable<string> streamOptions, XmlElement? data = null,
-            Action<InitiationResult, Iq>? cb = null)
+            Action<InitiationResult?, Iq>? cb = null)
         {
             to.ThrowIfNull(nameof(to));
             mimeType.ThrowIfNull(nameof(mimeType));

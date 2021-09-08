@@ -11,7 +11,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The artist or performer of the song or piece.
         /// </summary>
-        public string Artist { get; }
+        public string? Artist { get; }
 
         /// <summary>
         /// The duration of the song or piece in seconds.
@@ -28,24 +28,24 @@ namespace Net.Xmpp.Extensions
         /// The collection (e.g., album) or other source (e.g., a band website
         /// that hosts streams or audio files).
         /// </summary>
-        public string Source { get; }
+        public string? Source { get; }
 
         /// <summary>
         /// The title of the song or piece.
         /// </summary>
-        public string Title { get; }
+        public string? Title { get; }
 
         /// <summary>
         /// A unique identifier for the tune; e.g., the track number within
         /// a collection.
         /// </summary>
-        public string Track { get; }
+        public string? Track { get; }
 
         /// <summary>
         /// A URI or URL pointing to information about the song, collection,
         /// or artist.
         /// </summary>
-        public string Uri { get; }
+        public string? Uri { get; }
 
         /// <summary>
         /// Initializes a new instance of the TuneInformation class.

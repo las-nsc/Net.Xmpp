@@ -28,11 +28,6 @@ namespace Net.Xmpp.Extensions
         private readonly SIFileTransfer siFileTransfer;
 
         /// <summary>
-        /// A reference to the 'Entity Capabilities' extension instance.
-        /// </summary>
-        private readonly EntityCapabilities ecapa;
-
-        /// <summary>
         /// A reference to the 'Service Discovery' extension instance.
         /// </summary>
         private readonly ServiceDiscovery sdisco;
@@ -199,10 +194,9 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <param name="im">A reference to the XmppIm instance on whose behalf this
         /// instance is created.</param>
-        public Socks5Bytestreams(XmppIm im, EntityCapabilities ecapa, SIFileTransfer siFileTransfer, ServiceDiscovery sdisco, ServerIpCheck serverIpCheck)
+        public Socks5Bytestreams(XmppIm im, SIFileTransfer siFileTransfer, ServiceDiscovery sdisco, ServerIpCheck serverIpCheck)
             : base(im)
         {
-            this.ecapa = ecapa;
             this.siFileTransfer = siFileTransfer;
             this.sdisco = sdisco;
             this.serverIpCheck = serverIpCheck;
@@ -314,7 +308,7 @@ namespace Net.Xmpp.Extensions
         /// false.</returns>
         private bool VerifySession(Iq stanza, string sid)
         {
-            if (!(sid?.Length > 0))
+            if (!(sid?.Length > 0) || stanza.From is null)
                 return false;
             var session = siFileTransfer.GetSession(sid, stanza.From, im.Jid);
             return session != null;
@@ -413,7 +407,9 @@ namespace Net.Xmpp.Extensions
         /// valid SI session.</exception>
         private void ReceiveData(Iq stanza, string sid, Stream stream)
         {
-            var session = siFileTransfer.GetSession(sid, stanza.From, stanza.To);
+            stanza.From.ThrowIfNull(nameof(stanza.From));
+            stanza.To.ThrowIfNull(nameof(stanza.To));
+            var session = siFileTransfer.GetSession(sid, stanza.From!, stanza.To!);
             if (session == null)
                 throw new XmppException("Invalid session-id: " + sid);
             long left = session.Size;

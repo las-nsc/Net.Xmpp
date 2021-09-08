@@ -20,7 +20,7 @@ namespace Net.Xmpp.Core
         /// the stanza.</param>
         public Message(Jid? to = null, Jid? from = null, XmlElement? data = null,
             string? id = null, CultureInfo? language = null)
-            : base(null, to, from, id, language, data)
+            : base(null, to, from, id, language, data is null ? new XmlElement[] { } : new[] { data })
         {
         }
 

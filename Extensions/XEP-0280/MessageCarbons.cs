@@ -20,23 +20,19 @@ namespace Net.Xmpp.Extensions
         public void EnableCarbons(bool enable = true)
         {
             if (!ecapa.Supports(im.Jid.Domain, Extension.MessageCarbons))
-            {
-                throw new NotSupportedException("The XMPP server does not support " +
-                    "the 'Message Carbons' extension.");
-            }
+                throw new NotSupportedException("The XMPP server does not support the 'Message Carbons' extension.");
+
             var iq = im.IqRequest(IqType.Set, null, im.Jid,
                 Xml.Element(enable ? "enable" : "disable", _namespaces[0]));
             if (iq.Type == IqType.Error)
-                throw Util.ExceptionFromError(iq, "Message Carbons could not " +
-                    "be enabled.");
+                throw Util.ExceptionFromError(iq, "Message Carbons could not be enabled.");
         }
 
         public bool Input(Message stanza)
         {
-            if (stanza.CarbonMessage)
+            if (stanza.CarbonMessage && stanza.ForwardedMessage != null)
             {
-                this.im.OnMessage(stanza.ForwardedMessage);
-
+                im.OnMessage(stanza.ForwardedMessage);
                 return true;
             }
 

@@ -70,7 +70,7 @@ namespace Net.Xmpp.Extensions
             : base(im)
         {
             this.pep = pep;
-            pep.Subscribe("http://jabber.org/protocol/mood", onMood);
+            pep.Subscribe("http://jabber.org/protocol/mood", OnMood);
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace Net.Xmpp.Extensions
         /// mood information.</param>
         /// <param name="item">The 'item' Xml element of the pubsub publish
         /// event.</param>
-        private void onMood(Jid jid, XmlElement item)
+        private void OnMood(Jid jid, XmlElement item)
         {
             if (item == null || item["mood"] == null)
                 return;
@@ -100,7 +100,7 @@ namespace Net.Xmpp.Extensions
                         mood = (Mood)v;
                 }
             }
-            string text = moodElement["text"]?.InnerText;
+            var text = moodElement["text"]?.InnerText;
             // Raise the 'MoodChanged' event.
             if (mood.HasValue)
                 MoodChanged?.Invoke(this, new(jid, mood.Value, text));

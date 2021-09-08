@@ -14,10 +14,10 @@ namespace Net.Xmpp.Core
         /// </summary>
         /// <param name="to">The JID of the intended recipient for the stanza.</param>
         /// <param name="from">The JID of the sender.</param>
-        /// <param name="data">The content of the stanza.</param>
         /// <param name="id">The ID of the Presence stanza.</param>
         /// <param name="language">The language of the XML character data of
         /// the stanza.</param>
+        /// <param name="data">The content of the stanza.</param>
         public Presence(Jid? to = null, Jid? from = null, string? id = null,
             CultureInfo? language = null, params XmlElement[]? data)
             : base(null, to, from, id, language, data)

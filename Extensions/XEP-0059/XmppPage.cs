@@ -14,12 +14,12 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// The id of the first item in this page
         /// </summary>
-        public string First { get; protected set; }
+        public string? First { get; protected set; }
 
         /// <summary>
         /// The id of the last item in this page
         /// </summary>
-        public string Last { get; protected set; }
+        public string? Last { get; protected set; }
 
         /// <summary>
         /// The total number of items in the result set.

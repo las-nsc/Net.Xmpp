@@ -16,6 +16,7 @@ using ARSoft.Tools.Net.Dns;
 
 namespace Net.Xmpp.Core
 {
+
     using Sasl;
 
     /// <summary>
@@ -42,12 +43,12 @@ namespace Net.Xmpp.Core
         /// <summary>
         /// The TCP connection to the XMPP server.
         /// </summary>
-        private TcpClient? client;
+        private TcpClient client;
 
         /// <summary>
         /// The (network) stream used for sending and receiving XML data.
         /// </summary>
-        private Stream? stream;
+        private Stream stream;
 
         /// <summary>
         /// The parser instance used for parsing incoming XMPP XML-stream data.
@@ -230,7 +231,7 @@ namespace Net.Xmpp.Core
         /// <summary>
         /// The address of the Xmpp entity.
         /// </summary>
-        public Jid? Jid { get; private set; }
+        public Jid Jid { get; private set; }
 
         /// <summary>
         /// The default language of the XML stream.
@@ -281,6 +282,8 @@ namespace Net.Xmpp.Core
         /// Layer (SSL) certificate which is used for authentication. Can be null if not
         /// needed.</param>
         /// <param name="serverAdress">Adress if hostname is diferrent from resolution name</param>
+        /// <param name="resource">The resource identifier to bind with. If this is null,
+        /// it is assigned by the server.</param>
         /// <exception cref="ArgumentNullException">The hostname parameter or the
         /// username parameter or the password parameter is null.</exception>
         /// <exception cref="ArgumentException">The hostname parameter or the username
@@ -289,12 +292,11 @@ namespace Net.Xmpp.Core
         /// is not a valid port number.</exception>
         public XmppCore(string hostname, string username, string password,
             int port = 5222, bool tls = true, RemoteCertificateValidationCallback? validate = null,
-            string serverAdress = "")
+            string serverAdress = "", string? resource = null)
         {
             if (serverAdress.Length == 0)
-            {
                 serverAdress = hostname;
-            }
+
             MoveNextSrvDNS(serverAdress);
 
             if (dnsCurrent != null)
@@ -313,50 +315,8 @@ namespace Net.Xmpp.Core
             Password = password;
             Tls = tls;
             Validate = validate;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the XmppCore class.
-        /// </summary>
-        /// <param name="hostname">The hostname of the XMPP server to connect to.</param>
-        /// <param name="port">The port number of the XMPP service of the server.</param>
-        /// <param name="tls">If true the session will be TLS/SSL-encrypted if the server
-        /// supports TLS/SSL-encryption.</param>
-        /// <param name="validate">A delegate used for verifying the remote Secure Sockets
-        /// Layer (SSL) certificate which is used for authentication. Can be null if not
-        /// needed.</param>
-        /// <param name="serverAdress">Adress if hostname is diferrent from resolution name</param>
-        /// <exception cref="ArgumentNullException">The hostname parameter is
-        /// null.</exception>
-        /// <exception cref="ArgumentException">The hostname parameter is the empty
-        /// string.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">The value of the port parameter
-        /// is not a valid port number.</exception>
-        public XmppCore(string hostname, int port = 5222, bool tls = true,
-            RemoteCertificateValidationCallback? validate = null,
-            string serverAdress = "")
-        {
-            if (serverAdress.Length == 0)
-            {
-                serverAdress = hostname;
-            }
-
-            MoveNextSrvDNS(serverAdress);
-
-            if (dnsCurrent != null)
-            {
-                ServerAdress = dnsCurrent.Target.ToString();
-                Hostname = hostname;
-                Port = dnsCurrent.Port;
-            }
-            else
-            {
-                ServerAdress = serverAdress;
-                Hostname = hostname;
-                Port = port;
-            }
-            Tls = tls;
-            Validate = validate;
+            this.resource = resource;
+            Jid = Connect(out client, out stream);
         }
 
         /// <summary>
@@ -431,17 +391,22 @@ namespace Net.Xmpp.Core
         /// disposed.</exception>
         /// <remarks>If a username has been supplied, this method automatically performs
         /// authentication.</remarks>
-        public void Connect(string? resource = null)
+        public void Connect(string? resource)
         {
-            if (disposed)
-                throw new ObjectDisposedException(GetType().FullName);
             this.resource = resource;
+            Jid = Connect(out client, out stream);
+        }
+
+        private Jid Connect(out TcpClient client, out Stream stream)
+        {
+            Jid jid;
             try
             {
                 client = new TcpClient(ServerAdress, Port) { NoDelay = true };
                 stream = client.GetStream();
                 // Sets up the connection which includes TLS and possibly SASL negotiation.
-                SetupConnection(this.resource);
+
+                jid = SetupConnection();
                 // We are connected.
                 Connected = true;
                 OnConnect?.Invoke(this, new(ConnectionState.Connected));
@@ -453,6 +418,7 @@ namespace Net.Xmpp.Core
             {
                 throw new XmppException("The XML stream could not be negotiated.", e);
             }
+            return jid;
         }
 
         /// <summary>
@@ -490,7 +456,7 @@ namespace Net.Xmpp.Core
             Username = username;
             Password = password;
             Disconnect();
-            Connect(this.resource);
+            Jid = Connect(out client, out stream);
         }
 
         public void Reconnect()
@@ -499,7 +465,7 @@ namespace Net.Xmpp.Core
             Username.ThrowIfNull(nameof(username));
             Password.ThrowIfNull(nameof(password));
             Disconnect();
-            Connect(this.resource);
+            Jid = Connect(out client, out stream);
         }
 
         /// <summary>
@@ -562,8 +528,7 @@ namespace Net.Xmpp.Core
         public void SendPresence(Jid? to = null, Jid? from = null, string? id = null,
             CultureInfo? language = null, params XmlElement[] data)
         {
-            AssertValid();
-            Send(new Presence(to, from, id, language, data));
+            SendPresence(new(to, from, id, language, data));
         }
 
         /// <summary>
@@ -870,8 +835,6 @@ namespace Net.Xmpp.Core
         /// <summary>
         /// Negotiates an XML stream over which XML stanzas can be sent.
         /// </summary>
-        /// <param name="resource">The resource identifier to bind with. If this is null,
-        /// it is assigned by the server.</param>
         /// <exception cref="XmppException">The resource binding process failed.</exception>
         /// <exception cref="XmlException">Invalid or unexpected XML data has been
         /// received from the XMPP server.</exception>
@@ -879,10 +842,10 @@ namespace Net.Xmpp.Core
         /// trying to establish a secure connection, or the provided credentials were
         /// rejected by the server, or the server requires TLS/SSL and TLS has been
         /// turned off.</exception>
-        private void SetupConnection(string? resource = null)
+        private Jid SetupConnection()
         {
             // Request the initial stream.
-            XmlElement feats = InitiateStream(Hostname);
+            var feats = InitiateStream(Hostname);
             // Server supports TLS/SSL via STARTTLS.
             if (feats["starttls"] != null)
             {
@@ -892,10 +855,6 @@ namespace Net.Xmpp.Core
                 if (Tls && Validate is not null)
                     feats = StartTls(Hostname, Validate);
             }
-            // If no Username has been provided, don't perform authentication.
-            if (Username == null)
-                return;
-            // Construct a list of SASL mechanisms supported by the server.
             var m = feats["mechanisms"];
             if (m?.HasChildNodes != true)
                 throw new AuthenticationException("No SASL mechanisms advertised.");
@@ -906,19 +865,18 @@ namespace Net.Xmpp.Core
                 list.Add(mech.InnerText);
                 mech = mech.NextSibling;
             }
+            Jid jid;
             // Continue with SASL authentication.
             try
             {
                 feats = Authenticate(list, Username, Password, Hostname);
-                // FIXME: How is the client's JID constructed if the server does not support
-                // resource binding?
-                if (feats["bind"] != null)
-                    Jid = BindResource(resource);
+                jid = BindResource(resource);
             }
             catch (SaslException e)
             {
                 throw new AuthenticationException("Authentication failed.", e);
             }
+            return jid;
         }
 
         /// <summary>

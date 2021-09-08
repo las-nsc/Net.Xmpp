@@ -76,7 +76,7 @@ namespace Net.Xmpp.Extensions
                 return true;
             }
 
-            if (stanza.Subject != null)
+            if (stanza.Subject != null && stanza.From is not null)
             {
                 // Subject change
                 SubjectChanged?.Invoke(this, new(stanza.From, stanza));
@@ -381,8 +381,8 @@ namespace Net.Xmpp.Extensions
         /// Asks the chat service to invite the specified user to the chat room you specify.
         /// </summary>
         /// <param name="to">user you intend to invite to chat room.</param>
-        /// <param name="message">message you want to send to the user.</param>
         /// <param name="room">Jid of the chat room.</param>
+        /// <param name="message">message you want to send to the user.</param>
         /// <param name="password">Password if any.</param>
         public void SendInvite(Jid to, Jid room, string message, string? password = null)
         {

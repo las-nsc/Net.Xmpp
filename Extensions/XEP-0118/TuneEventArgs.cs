@@ -21,7 +21,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// Contains information about the music to which a user is listening.
         /// </summary>
-        public TuneInformation Information { get; }
+        public TuneInformation? Information { get; }
 
         /// <summary>
         /// Initializes a new instance of the TuneEventArgs class.

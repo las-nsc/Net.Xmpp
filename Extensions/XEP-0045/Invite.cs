@@ -21,9 +21,9 @@ namespace Net.Xmpp.Extensions
         /// Initialises a group chat invite.
         /// </summary>
         /// <param name="to">User you intend to invite to chat room.</param>
-        /// /// <param name="from">User sending the invitation.</param>
-        /// <param name="reason">Message included with the invitation.</param>
+        /// <param name="from">User sending the invitation.</param>
         /// <param name="room">Jid of the chat room.</param>
+        /// <param name="reason">Message included with the invitation.</param>
         /// <param name="password">(optional) Password.</param>
         public Invite(Jid to, Jid from, Jid room, string reason, string? password = null)
             : base(room, from, Xml.Element(xTag, MucNs.NsUser))

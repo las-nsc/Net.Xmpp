@@ -70,7 +70,7 @@ namespace Net.Xmpp.Extensions
                 return false;
             // FIXME: Should we let the callback decide whether the message stanza
             // should be swallowed or passed on?
-            if (callbacks.ContainsKey(nodeId))
+            if (callbacks.ContainsKey(nodeId) && stanza.From is not null)
             {
                 callbacks[nodeId].Invoke(stanza.From, items["item"]);
                 return true;

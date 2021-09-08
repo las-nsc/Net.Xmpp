@@ -38,7 +38,7 @@ namespace Net.Xmpp.Core.Sasl
         /// A map of mechanism-specific properties which are needed by the
         /// authentication mechanism to compute it's challenge-responses.
         /// </summary>
-        public Dictionary<string, object?> Properties { get; } = new();
+        public Dictionary<string, object> Properties { get; } = new();
 
         /// <summary>
         /// Computes the client response to a challenge sent by the server.

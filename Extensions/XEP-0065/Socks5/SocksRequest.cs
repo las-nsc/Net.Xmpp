@@ -47,9 +47,9 @@ namespace Net.Xmpp.Extensions.Socks5
         public byte[] Serialize()
         {
             byte[] dest;
-            if (Destination is IPAddress)
+            if (Destination is IPAddress ip)
             {
-                dest = (Destination as IPAddress)?.GetAddressBytes();
+                dest = ip.GetAddressBytes();
             }
             else
             {
@@ -105,7 +105,7 @@ namespace Net.Xmpp.Extensions.Socks5
                     break;
             }
             ushort port = r.ReadUInt16(true);
-            return atyp == ATyp.Domain ? new SocksRequest(command, domain, port) : new SocksRequest(command, addr, port);
+            return atyp == ATyp.Domain ? new SocksRequest(command, domain!, port) : new SocksRequest(command, addr!, port);
         }
 
         /// <summary>

@@ -41,7 +41,7 @@ namespace Net.Xmpp.Extensions.Dataforms
             string? description = null, params Jid[] values)
             : base(DataFieldType.TextMulti, name, required, label, description)
         {
-            this.values = new XmlCollection<Jid>(element, "value", e => new Jid(element.InnerText));
+            this.values = new XmlCollection<Jid>(element, "value", e => new Jid(e.InnerText));
             if (values != null)
             {
                 foreach (Jid s in values)
@@ -81,6 +81,7 @@ namespace Net.Xmpp.Extensions.Dataforms
             : base(element)
         {
             AssertType(DataFieldType.JidMulti);
+            values = new XmlCollection<Jid>(element, "value", e => new Jid(e.InnerText));
             // FIXME: Assert existing values are valid JIDs?
         }
     }

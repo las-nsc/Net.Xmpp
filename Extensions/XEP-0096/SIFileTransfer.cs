@@ -22,11 +22,6 @@ namespace Net.Xmpp.Extensions
         private readonly StreamInitiation streamInitiation;
 
         /// <summary>
-        /// A reference to the 'Entity Capabilities' extension instance.
-        /// </summary>
-        private readonly EntityCapabilities ecapa;
-
-        /// <summary>
         /// A dictionary of negotiated sessions for file-transfers.
         /// </summary>
         private readonly ConcurrentDictionary<string, SISession> siSessions = new();
@@ -132,10 +127,10 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <param name="to">The JID of the XMPP user to offer the file to.</param>
         /// <param name="path">The path of the file to transfer.</param>
-        /// <param name="cb">a callback method invoked once the other site has
-        /// accepted or rejected the file-transfer request.</param>
         /// <param name="description">A description of the file so the receiver can
         /// better understand what is being sent.</param>
+        /// <param name="cb">a callback method invoked once the other site has
+        /// accepted or rejected the file-transfer request.</param>
         /// <returns>Sid of file transfer</returns>
         /// <exception cref="ArgumentNullException">The to parameter or the path
         /// parameter is null.</exception>
@@ -180,10 +175,10 @@ namespace Net.Xmpp.Extensions
         /// <param name="name">The name of the file, as offered to the XMPP user
         /// with the specified JID.</param>
         /// <param name="size">The number of bytes to transfer.</param>
-        /// <param name="cb">A callback method invoked once the other site has
-        /// accepted or rejected the file-transfer request.</param>
         /// <param name="description">A description of the file so the receiver can
         /// better understand what is being sent.</param>
+        /// <param name="cb">A callback method invoked once the other site has
+        /// accepted or rejected the file-transfer request.</param>
         /// <returns>Sid of file transfer</returns>
         /// <exception cref="ArgumentNullException">The to parameter or the stream
         /// parameter or the name parameter is null.</exception>
@@ -220,8 +215,8 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// Cancels the specified file-transfer.
         /// </summary>
-        /// <param name="from">From Jid</param>
         /// <param name="sid">Sid</param>
+        /// <param name="from">From Jid</param>
         /// <param name="to">To Jid</param>
         /// <exception cref="ArgumentNullException">The transfer parameter is
         /// null.</exception>
@@ -253,7 +248,8 @@ namespace Net.Xmpp.Extensions
         public void CancelFileTransfer(FileTransfer transfer)
         {
             transfer.ThrowIfNull(nameof(transfer));
-            var session = GetSession(transfer.SessionId, transfer.From, transfer.To);
+            transfer.SessionId.ThrowIfNull(nameof(transfer.SessionId));
+            var session = GetSession(transfer.SessionId!, transfer.From, transfer.To);
             if (session == null)
             {
                 throw new ArgumentException("The specified transfer instance does not " +
@@ -267,11 +263,10 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <param name="im">A reference to the XmppIm instance on whose behalf this
         /// instance is created.</param>
-        public SIFileTransfer(XmppIm im, StreamInitiation streamInitiation, EntityCapabilities ecapa)
+        public SIFileTransfer(XmppIm im, StreamInitiation streamInitiation)
             : base(im)
         {
             this.streamInitiation = streamInitiation;
-            this.ecapa = ecapa;
 
             // Register the 'file-transfer' profile.
             streamInitiation.RegisterProfile(
@@ -328,11 +323,11 @@ namespace Net.Xmpp.Extensions
                         {
                             result(new XmppError(ErrorType.Cancel, ErrorCondition.NotAcceptable).Data);
                         }
-                        else
+                        else if (im.GetExtension(method) is IDataStream dataStream)
                         {
                             // Create an SI session instance.
                             SISession session = new(sid, File.OpenWrite(savePath),
-                                size, true, from, im.Jid, im.GetExtension(method) as IDataStream);
+                                size, true, from, im.Jid, dataStream);
                             siSessions.TryAdd(sid, session);
                             // Store the file's meta data.
                             metaData.TryAdd(sid, new FileMetaData(name, desc));
@@ -456,7 +451,7 @@ namespace Net.Xmpp.Extensions
         /// <exception cref="XmppException">The server returned invalid data or another
         /// unspecified XMPP error occurred.</exception>
         private string InitiateStream(Jid to, string name, long size,
-            string? description = null, Action<InitiationResult, Iq>? cb = null)
+            string? description = null, Action<InitiationResult?, Iq>? cb = null)
         {
             // Construct the 'file' element which is mandatory for the SI file-transfer
             // profile.
@@ -469,7 +464,7 @@ namespace Net.Xmpp.Extensions
             // Collect namespaces of stream-methods that we can offer the other site.
             var methods = GetStreamMethods();
             // Try to initiate an XMPP data-stream.
-            return streamInitiation.InitiateStreamAsync(to, mimeType,
+            return streamInitiation.InitiateStream(to, mimeType,
                 "http://jabber.org/protocol/si/profile/file-transfer", methods, file, cb);
         }
 
@@ -480,20 +475,23 @@ namespace Net.Xmpp.Extensions
         /// <param name="result">The result of the stream-initiation operation. If
         /// this parameter is null, stream-initiation failed.</param>
         /// <param name="to">The JID of the XMPP user to offer the file to.</param>
-        /// <param name="stream">The stream to read the file-data from.</param>
         /// <param name="name">The name of the file, as offered to the XMPP user
         /// with the specified JID.</param>
+        /// <param name="stream">The stream to read the file-data from.</param>
         /// <param name="size">The number of bytes to transfer.</param>
-        /// <param name="cb">A callback method invoked once the other site has
-        /// accepted or rejected the file-transfer request.</param>
         /// <param name="description">A description of the file so the receiver can
         /// better understand what is being sent.</param>
+        /// <param name="cb">A callback method invoked once the other site has
+        /// accepted or rejected the file-transfer request.</param>
         /// <remarks>This is called in the context of an arbitrary thread.</remarks>
-        private void OnInitiationResult(InitiationResult result, Jid to, string name,
+        private void OnInitiationResult(InitiationResult? result, Jid to, string name,
             Stream stream, long size, string? description, Action<bool, FileTransfer>? cb)
         {
             try
             {
+                if (result is null)
+                    throw new ArgumentNullException(nameof(result));
+
                 FileTransfer transfer = new(im.Jid, to, name, size, result.SessionId, description);
                 // Get the instance of the data-stream extension that the other site has
                 // selected.
@@ -518,8 +516,7 @@ namespace Net.Xmpp.Extensions
             }
             catch
             {
-                FileTransfer transfer = new(im.Jid, to, name, size, null,
-                    description);
+                FileTransfer transfer = new(im.Jid, to, name, size, null, description);
                 // Something went wrong. Invoke user-provided callback to let them know
                 // the file-transfer can't be performed.
                 cb?.Invoke(false, transfer);

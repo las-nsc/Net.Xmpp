@@ -21,16 +21,16 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// Initializes a new instance of the ChatStateChangedEventArgs class.
         /// </summary>
-        /// <param name="jid">The JID of the XMPP entity that published the
+        /// <param name="from">The JID of the XMPP entity that published the
         /// chat-state.</param>
         /// <param name="state">The chat-state of the XMPP entity with the specified
         /// JID.</param>
         /// <exception cref="ArgumentNullException">The jid parameter is
         /// null.</exception>
-        public ChatStateChangedEventArgs(Jid jid, ChatState state)
+        public ChatStateChangedEventArgs(Jid from, ChatState state)
         {
-            jid.ThrowIfNull(nameof(jid));
-            Jid = jid;
+            from.ThrowIfNull(nameof(from));
+            Jid = from;
             ChatState = state;
         }
     }

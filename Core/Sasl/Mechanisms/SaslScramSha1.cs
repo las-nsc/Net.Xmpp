@@ -56,10 +56,11 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// <summary>
         /// The username to authenticate with.
         /// </summary>
-        private string? Username
+        private string Username
         {
-            get => Properties.ContainsKey("Username") ?
-                    Properties["Username"] as string : null;
+            get => Properties.ContainsKey("Username")
+                ? (string)Properties["Username"]
+                : throw new ArgumentNullException(nameof(Username));
 
             set => Properties["Username"] = value;
         }
@@ -67,10 +68,11 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// <summary>
         /// The password to authenticate with.
         /// </summary>
-        private string? Password
+        private string Password
         {
-            get => Properties.ContainsKey("Password") ?
-                    Properties["Password"] as string : null;
+            get => Properties.ContainsKey("Password")
+                ? (string)Properties["Password"]
+                : throw new ArgumentNullException(nameof(Password));
 
             set => Properties["Password"] = value;
         }
@@ -114,7 +116,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         public SaslScramSha1(string username, string password)
         {
             username.ThrowIfNull(nameof(username));
-            if (username?.Length == 0)
+            if (username.Length == 0)
                 throw new ArgumentException("The username must not be empty.");
             password.ThrowIfNull(nameof(password));
 

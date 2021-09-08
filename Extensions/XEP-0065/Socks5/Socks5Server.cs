@@ -114,9 +114,10 @@ namespace Net.Xmpp.Extensions.Socks5
         public void Reply(SocksReply reply)
         {
             reply.ThrowIfNull(nameof(reply));
+            stream.ThrowIfNull(nameof(stream));
             AssertValid();
             var bytes = reply.Serialize();
-            stream.Write(bytes, 0, bytes.Length);
+            stream!.Write(bytes, 0, bytes.Length);
         }
 
         /// <summary>
@@ -128,7 +129,8 @@ namespace Net.Xmpp.Extensions.Socks5
         public NetworkStream GetStream()
         {
             AssertValid();
-            return stream;
+            stream.ThrowIfNull(nameof(stream));
+            return stream!;
         }
 
         /// <summary>
@@ -200,7 +202,8 @@ namespace Net.Xmpp.Extensions.Socks5
         /// operation timed out.</exception>
         private void InitializeConnection()
         {
-            stream = client.GetStream();
+            client.ThrowIfNull(nameof(client));
+            stream = client!.GetStream();
             // Read the client's greeting message.
             PerformGreeting();
         }
@@ -214,6 +217,7 @@ namespace Net.Xmpp.Extensions.Socks5
         /// operation timed out.</exception>
         private void PerformGreeting()
         {
+            stream.ThrowIfNull(nameof(stream));
             ByteBuilder b = new();
             using (var r = new BinaryReader(stream, Encoding.UTF8, true))
             {
@@ -231,7 +235,7 @@ namespace Net.Xmpp.Extensions.Socks5
             }
             // Send back our greeting response.
             var response = new ServerGreeting(AuthMethod.None).Serialize();
-            stream.Write(response, 0, response.Length);
+            stream!.Write(response, 0, response.Length);
         }
 
         /// <summary>

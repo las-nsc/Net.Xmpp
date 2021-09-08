@@ -14,7 +14,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// A reference to the 'Personal Eventing Protocol' extension instance.
         /// </summary>
-        private Pep pep;
+        private readonly Pep pep;
 
         /// <summary>
         /// An enumerable collection of XMPP namespaces the extension implements.

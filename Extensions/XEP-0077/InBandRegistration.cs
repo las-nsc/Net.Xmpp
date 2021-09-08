@@ -15,11 +15,6 @@ namespace Net.Xmpp.Extensions
     internal class InBandRegistration : XmppExtension
     {
         /// <summary>
-        /// A reference to the 'Entity Capabilities' extension instance.
-        /// </summary>
-        private readonly EntityCapabilities ecapa;
-
-        /// <summary>
         /// A reference to the 'Bits of Binary' extension instance.
         /// </summary>
         private readonly BitsOfBinary bob;
@@ -55,13 +50,10 @@ namespace Net.Xmpp.Extensions
         public void Register(RegistrationCallback callback)
         {
             callback.ThrowIfNull(nameof(callback));
-            Iq iq = im.IqRequest(IqType.Get, null, null,
-                Xml.Element("query", "jabber:iq:register"));
+            Iq iq = im.IqRequest(IqType.Get, null, null, Xml.Element("query", "jabber:iq:register"));
             if (iq.Type == IqType.Error)
-                throw new NotSupportedException("The XMPP server does not support the " +
-                    "'In-Band Registration' extension.");
-            var query = iq.Data["query"];
-            if (query == null || query.NamespaceURI != "jabber:iq:register")
+                throw new NotSupportedException("The XMPP server does not support the 'In-Band Registration' extension.");
+            if (iq.Data["query"] is not { } query || query.NamespaceURI != "jabber:iq:register")
                 throw new XmppException("Erroneous server response: " + iq);
             if (query["registered"] != null)
                 throw new XmppException("The XMPP entity is already registered.");
@@ -71,28 +63,28 @@ namespace Net.Xmpp.Extensions
                 BobData bobData = BobData.Parse(data);
                 bob.Add(bobData);
             }
-            RequestForm? form = null;
+
             bool xdata = query["x"] != null;
-            form = xdata ? DataFormFactory.Create(query["x"]) as RequestForm : CreateDataForm(query);
+            var form = xdata ? (RequestForm)DataFormFactory.Create(query["x"]) : CreateDataForm(query);
             // Hand the data-form to the caller to have it filled-out.
             var submit = callback.Invoke(form);
             // Construct the response element.
             var xml = Xml.Element("query", "jabber:iq:register");
             // Convert the data-form back to traditional fields if needed.
             if (xdata)
+            {
                 xml.Child(submit.ToXmlElement());
+            }
             else
             {
                 foreach (var field in submit.Fields)
                 {
-                    xml.Child(Xml.Element(field.Name).Text(
-                        field.Values.FirstOrDefault()));
+                    xml.Child(Xml.Element(field.Name).Text(field.Values.FirstOrDefault()));
                 }
             }
             iq = im.IqRequest(IqType.Set, null, null, xml);
             if (iq.Type == IqType.Error)
-                throw Util.ExceptionFromError(iq, "The registration could not be " +
-                    "completed.");
+                throw Util.ExceptionFromError(iq, "The registration could not be completed.");
             // Reconnect.
         }
 
@@ -127,10 +119,9 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         /// <param name="im">A reference to the XmppIm instance on whose behalf this
         /// instance is created.</param>
-        public InBandRegistration(XmppIm im, EntityCapabilities ecapa, BitsOfBinary bob)
+        public InBandRegistration(XmppIm im, BitsOfBinary bob)
             : base(im)
         {
-            this.ecapa = ecapa;
             this.bob = bob;
         }
 

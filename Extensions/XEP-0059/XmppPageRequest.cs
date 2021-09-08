@@ -12,12 +12,12 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// Request items that immediately follow the given 'After' id
         /// </summary>
-        public string After { get; set; }
+        public string? After { get; set; }
 
         /// <summary>
         /// Request items that immediately precede the given 'Before' id
         /// </summary>
-        public string Before { get; set; }
+        public string? Before { get; set; }
 
         /// <summary>
         /// The maximum number of items to return

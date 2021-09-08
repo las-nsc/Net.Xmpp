@@ -23,7 +23,7 @@ namespace Net.Xmpp.Extensions
         /// The 'si' data element with any additional data which may be required by
         /// an SI profile.
         /// </summary>
-        public XmlElement Data { get; }
+        public XmlElement? Data { get; }
 
         /// <summary>
         /// Initializes a new instance of the InitiationResult class.

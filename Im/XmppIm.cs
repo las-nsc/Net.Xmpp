@@ -110,7 +110,7 @@ namespace Net.Xmpp.Im
         /// <summary>
         /// The address of the Xmpp entity.
         /// </summary>
-        public Jid? Jid => core.Jid;
+        public Jid Jid => core.Jid;
 
         /// <summary>
         /// The address of the Xmpp entity.
@@ -224,73 +224,18 @@ namespace Net.Xmpp.Im
         /// is not a valid port number.</exception>
         public XmppIm(string hostname, string username, string password,
             int port = 5222, bool tls = true, RemoteCertificateValidationCallback? validate = null,
-            string serverAdress = "")
+            string serverAdress = "", string? resource = null)
         {
-            core = new XmppCore(hostname, username, password, port, tls, validate, serverAdress);
-            SetupEventHandlers();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the XmppIm.
-        /// </summary>
-        /// <param name="hostname">The hostname of the XMPP server to connect to.</param>
-        /// <param name="port">The port number of the XMPP service of the server.</param>
-        /// <param name="tls">If true the session will be TLS/SSL-encrypted if the server
-        /// supports TLS/SSL-encryption.</param>
-        /// <param name="validate">A delegate used for verifying the remote Secure Sockets
-        /// Layer (SSL) certificate which is used for authentication. Can be null if not
-        /// needed.</param>
-        /// <param name="serverAdress">Adress if hostname is diferrent from resolution name</param>
-        /// <exception cref="ArgumentNullException">The hostname parameter is
-        /// null.</exception>
-        /// <exception cref="ArgumentException">The hostname parameter is the empty
-        /// string.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">The value of the port parameter
-        /// is not a valid port number.</exception>
-        public XmppIm(string hostname, int port = 5222, bool tls = true,
-            RemoteCertificateValidationCallback? validate = null,
-            string serverAdress = "")
-        {
-            core = new XmppCore(hostname, port, tls, validate, serverAdress);
-            SetupEventHandlers();
-        }
-
-        /// <summary>
-        /// Establishes a connection to the XMPP server.
-        /// </summary>
-        /// <param name="resource">The resource identifier to bind with. If this is null,
-        /// a resource identifier will be assigned by the server.</param>
-        /// <returns>The user's roster (contact list).</returns>
-        /// <exception cref="AuthenticationException">An authentication error occured while
-        /// trying to establish a secure connection, or the provided credentials were
-        /// rejected by the server, or the server requires TLS/SSL and the Tls property has
-        /// been set to false.</exception>
-        /// <exception cref="IOException">There was a failure while writing to or reading
-        /// from the network. If the InnerException is of type SocketExcption, use the
-        /// ErrorCode property to obtain the specific socket error code.</exception>
-        /// <exception cref="ObjectDisposedException">The XmppIm object has been
-        /// disposed.</exception>
-        /// <exception cref="XmppException">An XMPP error occurred while negotiating the
-        /// XML stream with the server, or resource binding failed, or the initialization
-        /// of an XMPP extension failed.</exception>
-        public Roster? Connect(string? resource = null)
-        {
-            if (disposed)
-                throw new ObjectDisposedException(GetType().FullName);
-
+            core = new XmppCore(hostname, username, password, port, tls, validate, serverAdress, resource);
             try
             {
-                core.Connect(resource);
                 // If no username has been providd, don't establish a session.
                 if (Username == null)
-                    return null;
+                    return;
                 // Establish a session (Refer to RFC 3921, Section 3. Session Establishment).
                 EstablishSession();
-                // Retrieve user's roster as recommended (Refer to RFC 3921, Section 7.3).
-                Roster roster = GetRoster();
                 // Send initial presence.
                 SendPresence(new Presence());
-                return roster;
             }
             catch (SocketException e)
             {
@@ -326,7 +271,7 @@ namespace Net.Xmpp.Im
             // Establish a session (Refer to RFC 3921, Section 3. Session Establishment).
             EstablishSession();
             // Retrieve user's roster as recommended (Refer to RFC 3921, Section 7.3).
-            Roster roster = GetRoster();
+            _ = GetRoster();
             // Send initial presence.
             SendPresence(new Presence());
         }
@@ -378,7 +323,7 @@ namespace Net.Xmpp.Im
             // Establish a session (Refer to RFC 3921, Section 3. Session Establishment).
             EstablishSession();
             // Retrieve user's roster as recommended (Refer to RFC 3921, Section 7.3).
-            Roster roster = GetRoster();
+            _ = GetRoster();
             // Send initial presence.
             SendPresence(new Presence());
         }
@@ -671,8 +616,7 @@ namespace Net.Xmpp.Im
             if (messages != null)
             {
                 foreach (KeyValuePair<string, string> pair in messages)
-                    elems.Add(Xml.Element("status").Attr("xml:lang", pair.Key)
-                        .Text(pair.Value));
+                    elems.Add(Xml.Element("status").Attr("xml:lang", pair.Key).Text(pair.Value));
             }
             Presence p = new(null, null, PresenceType.Available, null,
                 null, elems.ToArray());
@@ -1665,6 +1609,9 @@ namespace Net.Xmpp.Im
         /// <param name="presence">The presence stanza to process.</param>
         private void ProcessSubscriptionResult(Presence presence)
         {
+            if (presence.From is null)
+                return;
+
             bool approved = presence.Type == PresenceType.Subscribed;
             if (approved)
             {
@@ -1803,8 +1750,7 @@ namespace Net.Xmpp.Im
                     // value must be 'none', 'to', 'from' or 'both'.
                     case "subscription":
                         if (!states.ContainsKey(value))
-                            throw new ArgumentException("Invalid value for value attribute: " +
-                                value);
+                            throw new ArgumentException($"Invalid value for value attribute: {value}");
                         return new SubscriptionPrivacyRule(states[value], allow, order, granularity);
 
                     default:

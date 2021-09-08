@@ -14,12 +14,12 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// URL for download the file
         /// </summary>
-        public string Get { get; set; }
+        public string? Get { get; set; }
 
         /// <summary>
         /// URL for file upload
         /// </summary>
-        public string Put { get; set; }
+        public string? Put { get; set; }
 
         /// <summary>
         /// HTTP Headers to use in upload
@@ -43,7 +43,7 @@ namespace Net.Xmpp.Extensions
             if (element["put"] != null)
             {
                 Put = element["put"].Attributes["url"].Value;
-                foreach(XmlNode header in element["put"].ChildNodes)
+                foreach (XmlNode header in element["put"].ChildNodes)
                 {
                     if (header.Name == "header")
                     {

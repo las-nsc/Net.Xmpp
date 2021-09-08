@@ -31,67 +31,67 @@ namespace Net.Xmpp.Client
         /// <summary>
         /// Provides access to the 'Message Archiving' XMPP extension functionality.
         /// </summary>
-        private MessageArchiving messageArchiving;
+        private readonly MessageArchiving messageArchiving;
 
         /// <summary>
         /// Provices access to the 'Message Archive management' XMPP extension functionality.
         /// </summary>
-        private MessageArchiveManagement messageArchiveManagement;
+        private readonly MessageArchiveManagement messageArchiveManagement;
 
         /// <summary>
         /// Provides access to the 'Software Version' XMPP extension functionality.
         /// </summary>
-        private SoftwareVersion version;
+        private readonly SoftwareVersion version;
 
         /// <summary>
         /// Provides access to the 'Service Discovery' XMPP extension functionality.
         /// </summary>
-        private ServiceDiscovery sdisco;
+        private readonly ServiceDiscovery sdisco;
 
         /// <summary>
         /// Provides access to the 'Entity Capabilities' XMPP extension functionality.
         /// </summary>
-        private EntityCapabilities ecapa;
+        private readonly EntityCapabilities ecapa;
 
         /// <summary>
         /// Provides access to the 'Ping' XMPP extension functionality.
         /// </summary>
-        private Ping ping;
+        private readonly Ping ping;
 
         /// <summary>
         /// Provides access to the 'Custom Iq Extension' functionality
         /// </summary>
-        private CustomIqExtension cusiqextension;
+        private readonly CustomIqExtension cusiqextension;
 
         /// <summary>
         /// Provides access to the 'Attention' XMPP extension functionality.
         /// </summary>
-        private Attention attention;
+        private readonly Attention attention;
 
         /// <summary>
         /// Provides access to the 'Entity Time' XMPP extension functionality.
         /// </summary>
-        private EntityTime time;
+        private readonly EntityTime time;
 
         /// <summary>
         /// Provides access to the 'Blocking Command' XMPP extension functionality.
         /// </summary>
-        private BlockingCommand block;
+        private readonly BlockingCommand block;
 
         /// <summary>
         /// Provides access to the 'Personal Eventing Protocol' extension.
         /// </summary>
-        private Pep pep;
+        private readonly Pep pep;
 
         /// <summary>
         /// Provides access to the 'User Tune' XMPP extension functionality.
         /// </summary>
-        private UserTune userTune;
+        private readonly UserTune userTune;
 
         /// <summary>
         /// Provides access to the "Multi-User Chat" XMPP extension functionality.
         /// </summary>
-        private MultiUserChat groupChat;
+        private readonly MultiUserChat groupChat;
 
 #if WINDOWSPLATFORM
         /// <summary>
@@ -103,87 +103,87 @@ namespace Net.Xmpp.Client
         /// <summary>
         /// Provides access to the 'User Mood' XMPP extension functionality.
         /// </summary>
-        private UserMood userMood;
+        private readonly UserMood userMood;
 
         /// <summary>
         /// Provides access to the 'Data Forms' XMPP extension functionality.
         /// </summary>
-        private DataForms dataForms;
+        private readonly DataForms dataForms;
 
         /// <summary>
         /// Provides access to the 'Feature Negotiation' XMPP extension.
         /// </summary>
-        private FeatureNegotiation featureNegotiation;
+        private readonly FeatureNegotiation featureNegotiation;
 
         /// <summary>
         /// Provides access to the 'Stream Initiation' XMPP extension.
         /// </summary>
-        private StreamInitiation streamInitiation;
+        private readonly StreamInitiation streamInitiation;
 
         /// <summary>
         /// Provides access to the 'SI File Transfer' XMPP extension.
         /// </summary>
-        private SIFileTransfer siFileTransfer;
+        private readonly SIFileTransfer siFileTransfer;
 
         /// <summary>
         /// Provides access to the 'In-Band Bytestreams' XMPP extension.
         /// </summary>
-        private InBandBytestreams inBandBytestreams;
+        private readonly InBandBytestreams inBandBytestreams;
 
         /// <summary>
         /// Provides access to the 'User Activity' XMPP extension.
         /// </summary>
-        private UserActivity userActivity;
+        private readonly UserActivity userActivity;
 
         /// <summary>
         /// Provides access to the 'Socks5 Bytestreams' XMPP extension.
         /// </summary>
-        private Socks5Bytestreams socks5Bytestreams;
+        private readonly Socks5Bytestreams socks5Bytestreams;
 
         /// <summary>
         /// Provides access to the 'Server IP Check' XMPP extension.
         /// </summary>
-        private ServerIpCheck serverIpCheck;
+        private readonly ServerIpCheck serverIpCheck;
 
         /// <summary>
         /// Provides access to the 'In-Band Registration' XMPP extension.
         /// </summary>
-        private InBandRegistration inBandRegistration;
+        private readonly InBandRegistration inBandRegistration;
 
         /// <summary>
         /// Provides access to the 'Chat State Nofitications' XMPP extension.
         /// </summary>
-        private ChatStateNotifications chatStateNotifications;
+        private readonly ChatStateNotifications chatStateNotifications;
 
         /// <summary>
         /// Provides access to the 'Bits of Binary' XMPP extension.
         /// </summary>
-        private BitsOfBinary bitsOfBinary;
+        private readonly BitsOfBinary bitsOfBinary;
 
         /// <summary>
         /// Provides vcard Based Avatar functionality
         /// </summary>
-        private VCardAvatars vcardAvatars;
+        private readonly VCardAvatars vcardAvatars;
 
         /// <summary>
         /// Provides vcard functionality
         /// </summary>
-        private VCards vcard;
+        private readonly VCards vcard;
 
         /// <summary>
         /// Provides the Message Carbons extension
         /// </summary>
-        private MessageCarbons messageCarbons;
+        private readonly MessageCarbons messageCarbons;
 
         /// <summary>
         /// Provides the Jabber Search extension
         /// </summary>
-        private JabberSearch search;
+        private readonly JabberSearch search;
 
         /// <summary>
         /// Provides the HTTP File Upload extension
         /// </summary>
-        private HTTPFileUpload httpUpload;
+        private readonly HTTPFileUpload httpUpload;
 
         /// <summary>
         /// The hostname of the XMPP server to connect to.
@@ -538,58 +538,10 @@ namespace Net.Xmpp.Client
         /// is not a valid port number.</exception>
         /// <remarks>Use this constructor if you wish to connect to an XMPP server using
         /// an existing set of user credentials.</remarks>
-        public XmppClient(string hostname, string username, string password,
-            int port = 5222, bool tls = true, RemoteCertificateValidationCallback? validate = null, string serveradress = "")
-            : this(new XmppIm(hostname, username, password, port, tls, validate, serveradress))
+        public XmppClient(string hostname, string username, string password, int port = 5222, bool tls = true,
+            RemoteCertificateValidationCallback? validate = null, string serveradress = "", string? resource = null)
+            : this(new XmppIm(hostname, username, password, port, tls, validate, serveradress, resource))
         {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the XmppClient class.
-        /// </summary>
-        /// <param name="hostname">The hostname of the XMPP server to connect to.</param>
-        /// <param name="port">The port number of the XMPP service of the server.</param>
-        /// <param name="tls">If true the session will be TLS/SSL-encrypted if the server
-        /// supports TLS/SSL-encryption.</param>
-        /// <param name="validate">A delegate used for verifying the remote Secure Sockets
-        /// Layer (SSL) certificate which is used for authentication. Can be null if not
-        /// needed.</param>
-        /// <param name="serverAdress">Adress if hostname is diferrent from resolution name</param>
-        /// <exception cref="ArgumentNullException">The hostname parameter is
-        /// null.</exception>
-        /// <exception cref="ArgumentException">The hostname parameter is the empty
-        /// string.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">The value of the port parameter
-        /// is not a valid port number.</exception>
-        /// <remarks>Use this constructor if you wish to register an XMPP account using
-        /// the in-band account registration process supported by some servers.</remarks>
-        public XmppClient(string hostname, int port = 5222, bool tls = true,
-            RemoteCertificateValidationCallback? validate = null, string serverAdress = "")
-            : this(new XmppIm(hostname, port, tls, validate, serverAdress))
-        {
-        }
-
-        /// <summary>
-        /// Establishes a connection to the XMPP server.
-        /// </summary>
-        /// <param name="resource">The resource identifier to bind with. If this is null,
-        /// a resource identifier will be assigned by the server.</param>
-        /// <returns>The user's roster (contact list).</returns>
-        /// <exception cref="System.Security.Authentication.AuthenticationException">An
-        /// authentication error occured while trying to establish a secure connection, or
-        /// the provided credentials were rejected by the server, or the server requires
-        /// TLS/SSL and the Tls property has been set to false.</exception>
-        /// <exception cref="IOException">There was a failure while writing to or
-        /// reading from the network. If the InnerException is of type SocketExcption, use
-        /// the ErrorCode property to obtain the specific socket error code.</exception>
-        /// <exception cref="ObjectDisposedException">The XmppClient object has been
-        /// disposed.</exception>
-        /// <exception cref="XmppException">An XMPP error occurred while negotiating the
-        /// XML stream with the server, or resource binding failed, or the initialization
-        /// of an XMPP extension failed.</exception>
-        public void Connect(string? resource = null)
-        {
-            Im.Connect(resource);
         }
 
         /// <summary>
@@ -1160,10 +1112,10 @@ namespace Net.Xmpp.Client
         /// </summary>
         /// <param name="to">The JID of the XMPP user to offer the file to.</param>
         /// <param name="path">The path of the file to transfer.</param>
-        /// <param name="cb">a callback method invoked once the other site has
-        /// accepted or rejected the file-transfer request.</param>
         /// <param name="description">A description of the file so the receiver can
         /// better understand what is being sent.</param>
+        /// <param name="cb">a callback method invoked once the other site has
+        /// accepted or rejected the file-transfer request.</param>
         /// <returns>Sid of the file transfer</returns>
         /// <exception cref="ArgumentNullException">The to parameter or the path
         /// parameter is null.</exception>
@@ -1210,10 +1162,10 @@ namespace Net.Xmpp.Client
         /// <param name="name">The name of the file, as offered to the XMPP user
         /// with the specified JID.</param>
         /// <param name="size">The number of bytes to transfer.</param>
-        /// <param name="cb">A callback method invoked once the other site has
-        /// accepted or rejected the file-transfer request.</param>
         /// <param name="description">A description of the file so the receiver can
         /// better understand what is being sent.</param>
+        /// <param name="cb">A callback method invoked once the other site has
+        /// accepted or rejected the file-transfer request.</param>
         /// <returns>The Sid of the file transfer</returns>
         /// <exception cref="ArgumentNullException">The to parameter or the stream
         /// parameter or the name parameter is null.</exception>
@@ -1263,8 +1215,8 @@ namespace Net.Xmpp.Client
         /// <summary>
         /// Cancels the specified file-transfer.
         /// </summary>
-        /// <param name="from">From Jid</param>
         /// <param name="sid">Sid</param>
+        /// <param name="from">From Jid</param>
         /// <param name="to">To Jid</param>
         /// <exception cref="ArgumentNullException">The transfer parameter is
         /// null.</exception>
@@ -1535,8 +1487,7 @@ namespace Net.Xmpp.Client
                         privacyList = list;
                 }
                 // If 'blocklist' doesn't exist, create it and set it as default.
-                if (privacyList == null)
-                    privacyList = new PrivacyList("blocklist");
+                privacyList ??= new PrivacyList("blocklist");
                 privacyList.Add(new JidPrivacyRule(jid, false, 0), true);
                 // Save the privacy list and activate it.
                 Im.EditPrivacyList(privacyList);
@@ -1547,13 +1498,13 @@ namespace Net.Xmpp.Client
 
         /// <summary>
         /// Fetch message history from the server.
-        ///
+        /// <para/>
         /// The 'start' and 'end' attributes MAY be specified to indicate a date range.
-        ///
+        /// <para/>
         /// If the 'with' attribute is omitted then collections with any JID are returned.
-        ///
+        /// <para/>
         /// If only 'start' is specified then all collections on or after that date should be returned.
-        ///
+        /// <para/>
         /// If only 'end' is specified then all collections prior to that date should be returned.
         /// </summary>
         /// <param name="pageRequest">Paging options</param>
@@ -1978,8 +1929,8 @@ namespace Net.Xmpp.Client
         /// Asks the chat service to invite the specified user to the chat room you specify.
         /// </summary>
         /// <param name="to">user you intend to invite to chat room.</param>
-        /// <param name="message">message you want to send to the user.</param>
         /// <param name="chatRoom">Jid of the chat room.</param>
+        /// <param name="message">message you want to send to the user.</param>
         /// <param name="password">Password if any.</param>
         public void SendInvite(Jid to, Jid chatRoom, string message, string? password = null)
         {

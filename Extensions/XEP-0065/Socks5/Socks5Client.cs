@@ -22,7 +22,7 @@ namespace Net.Xmpp.Extensions.Socks5
         /// <summary>
         /// The underlying network-stream instance.
         /// </summary>
-        private NetworkStream stream;
+        private NetworkStream? stream;
 
         /// <summary>
         /// Determines whether the instance has been disposed.
@@ -92,11 +92,12 @@ namespace Net.Xmpp.Extensions.Socks5
         public SocksReply Request(SocksRequest request)
         {
             request.ThrowIfNull(nameof(request));
+            stream.ThrowIfNull(nameof(stream));
             AssertValid();
             try
             {
                 byte[] bytes = request.Serialize();
-                stream.Write(bytes, 0, bytes.Length);
+                stream!.Write(bytes, 0, bytes.Length);
                 ByteBuilder b = new();
                 using (var r = new BinaryReader(stream, Encoding.UTF8, true))
                 {
@@ -134,7 +135,8 @@ namespace Net.Xmpp.Extensions.Socks5
         public NetworkStream GetStream()
         {
             AssertValid();
-            return stream;
+            stream.ThrowIfNull(nameof(stream));
+            return stream!;
         }
 
         /// <summary>
@@ -274,12 +276,13 @@ namespace Net.Xmpp.Extensions.Socks5
         /// unexpected data.</exception>
         private ServerGreeting PerformGreeting()
         {
+            stream.ThrowIfNull(nameof(stream));
             var methods = new HashSet<AuthMethod>() { AuthMethod.None };
             if (Username?.Length > 0)
                 methods.Add(AuthMethod.Username);
             byte[] bytes = new ClientGreeting(methods).Serialize();
 
-            stream.Write(bytes, 0, bytes.Length);
+            stream!.Write(bytes, 0, bytes.Length);
             // Read the server's response.
             bytes = new byte[2];
             stream.Read(bytes, 0, 2);
@@ -293,13 +296,14 @@ namespace Net.Xmpp.Extensions.Socks5
         /// unexpected data, or authentication failed.</exception>
         private void Authenticate()
         {
+            stream.ThrowIfNull(nameof(stream));
             if (Username is null)
                 throw new ArgumentNullException(nameof(Username));
             if (Password is null)
                 throw new ArgumentNullException(nameof(Password));
 
             byte[] bytes = new AuthRequest(Username, Password).Serialize();
-            stream.Write(bytes, 0, bytes.Length);
+            stream!.Write(bytes, 0, bytes.Length);
             // Read the server's response.
             bytes = new byte[2];
             stream.Read(bytes, 0, 2);
