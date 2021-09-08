@@ -53,9 +53,9 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// table header of the result form.</param>
         /// <param name="cells">enumerable list of table cells to add to the
         /// data set.</param>
-        public ResultForm(string title = null, string instructions = null,
-            IEnumerable<DataField> header = null,
-            IList<IEnumerable<DataField>> cells = null)
+        public ResultForm(string? title = null, string? instructions = null,
+            IEnumerable<DataField>? header = null,
+            IList<IEnumerable<DataField>>? cells = null)
             : base(title, instructions, false)
         {
             Type = DataFormType.Result;

@@ -18,7 +18,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// followed by the form-submitting entity.</param>
         /// <param name="fields">One or several data-fields to add to the
         /// form.</param>
-        public RequestForm(string title = null, string instructions = null,
+        public RequestForm(string? title = null, string? instructions = null,
             params DataField[] fields)
             : base(title, instructions, false, fields)
         {

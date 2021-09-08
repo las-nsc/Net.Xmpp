@@ -23,7 +23,7 @@ namespace Net.Xmpp
         /// empty string.</exception>
         /// <exception cref="XmlException">The name or the namespace parameter
         /// is invalid.</exception>
-        public static XmlElement Element(string name, string @namespace = null)
+        public static XmlElement Element(string name, string? @namespace = null)
         {
             name.ThrowIfNullOrEmpty("name");
             return new XmlDocument().CreateElement(name, @namespace);

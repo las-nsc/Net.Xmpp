@@ -113,7 +113,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// which no fields may be added, otherwise false.</param>
         /// <param name="fields">One or several data-fields to add to the
         /// form.</param>
-        internal DataForm(string title = null, string instructions = null,
+        internal DataForm(string? title = null, string? instructions = null,
             bool readOnly = false, params DataField[] fields)
         {
             element = Xml.Element("x", xmlns);

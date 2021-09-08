@@ -264,7 +264,7 @@ namespace Net.Xmpp.Extensions
 
         private CultureInfo ConvertToCultureInfo(string value)
         {
-            CultureInfo tmp = null;
+            CultureInfo? tmp = null;
 
             try
             {

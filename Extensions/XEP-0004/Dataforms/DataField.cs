@@ -165,8 +165,8 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// <param name="label">A human-readable name for the field.</param>
         /// <param name="description">A natural-language description of the field,
         /// intended for presentation in a user-agent.</param>
-        public DataField(DataFieldType type, string name = null, bool required = false,
-            string label = null, string description = null)
+        public DataField(DataFieldType type, string? name = null, bool required = false,
+            string? label = null, string? description = null)
         {
             element = Xml.Element("field", xmlns);
             Type = type;

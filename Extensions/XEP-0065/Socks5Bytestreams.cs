@@ -240,7 +240,7 @@ namespace Net.Xmpp.Extensions
         /// another unspecified XMPP error occurred.</exception>
         public void Transfer(SISession session)
         {
-            IEnumerable<Streamhost> proxies = null;
+            IEnumerable<Streamhost>? proxies = null;
             // Determine if this is going to be a direct or a mediated transfer.
             if (ProxyAllowed)
             {
@@ -610,7 +610,7 @@ namespace Net.Xmpp.Extensions
         /// returned.</param>
         /// <returns>An enumerable collection of IP addresses.</returns>
         /// <remarks>This only accounts for IPv4 addresses.</remarks>
-        public static IEnumerable<IPAddress> GetIpAddresses(IPAddress address = null)
+        public static IEnumerable<IPAddress> GetIpAddresses(IPAddress? address = null)
         {
 #if WINDOWSPLATFORM
             return WindowsGetIpAddresses(address);
@@ -628,7 +628,7 @@ namespace Net.Xmpp.Extensions
         /// returned.</param>
         /// <returns>An enumerable collection of IP addresses.</returns>
         /// <remarks>This only accounts for IPv4 addresses.</remarks>
-        private static IEnumerable<IPAddress> WindowsGetIpAddresses(IPAddress address = null)
+        private static IEnumerable<IPAddress> WindowsGetIpAddresses(IPAddress? address = null)
         {
             ISet<IPAddress> set = new HashSet<IPAddress>();
             var netInterfaces = NetworkInterface.GetAllNetworkInterfaces();
@@ -677,7 +677,7 @@ namespace Net.Xmpp.Extensions
         /// returned.</param>
         /// <returns>An enumerable collection of IP addresses.</returns>
         /// <remarks>This only accounts for IPv4 addresses.</remarks>
-        private static IEnumerable<IPAddress> AndroidGetIpAddresses(IPAddress address = null)
+        private static IEnumerable<IPAddress> AndroidGetIpAddresses(IPAddress? address = null)
         {
             ISet<IPAddress> set = new HashSet<IPAddress>();
             //var connectivityManager = (ConnectivityManager)GetSystemService(ConnectivityService);
@@ -706,7 +706,7 @@ namespace Net.Xmpp.Extensions
         private void DirectTransfer(SISession session)
         {
             // Create the listening SOCKS5 server.
-            Socks5Server socks5Server = null;
+            Socks5Server? socks5Server = null;
             try
             {
                 socks5Server = CreateSocks5Server(serverPortFrom, serverPortTo);
@@ -715,7 +715,7 @@ namespace Net.Xmpp.Extensions
             {
                 throw new Socks5Exception("The SOCKS5 server could not be created.", e);
             }
-            IEnumerable<IPAddress> externalAddresses = null;
+            IEnumerable<IPAddress>? externalAddresses = null;
             try
             {
                 externalAddresses = GetExternalAddresses();

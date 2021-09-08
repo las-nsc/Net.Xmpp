@@ -55,7 +55,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="description">A natural-language description of, or reason
         /// for, the activity.</param>
         public void SetActivity(GeneralActivity activity, SpecificActivity specific =
-            SpecificActivity.Other, string description = null)
+            SpecificActivity.Other, string? description = null)
         {
             var xml = Xml.Element("activity", "http://jabber.org/protocol/activity");
             var e = Xml.Element(GeneralActivityToTagName(activity));
@@ -91,7 +91,7 @@ namespace Net.Xmpp.Extensions
             if (item == null || item["activity"] == null)
                 return;
             var activityElement = item["activity"];
-            XmlElement temp = null;
+            XmlElement? temp = null;
             GeneralActivity? activity = null;
             if (activityElement.IsEmpty)
             {

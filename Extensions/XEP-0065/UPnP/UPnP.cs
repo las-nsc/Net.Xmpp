@@ -81,7 +81,7 @@ namespace Net.Xmpp.Extensions.Upnp
 		/// devices failed, or an error occurred while trying to forward the
 		/// specified port.</exception>
 		public static void ForwardPort(int port,
-			ProtocolType? protocol = null, string description = null) {
+			ProtocolType? protocol = null, string? description = null) {
 			port.ThrowIfOutOfRange("port", 0, 65535);
 			if (protocol.HasValue && protocol != ProtocolType.Tcp &&
 				protocol != ProtocolType.Udp) {
@@ -171,7 +171,7 @@ namespace Net.Xmpp.Extensions.Upnp
 		/// <exception cref="InvalidOperationException">An error occurred while
 		/// trying to forward the specified port.</exception>
 		static void ForwardPort(UPnPDevice wanDevice, IPAddress targetAddress, int port,
-			ProtocolType? protocol = null, string description = null) {
+			ProtocolType? protocol = null, string? description = null) {
 			wanDevice.ThrowIfNull(nameof(wanDevice));
 			targetAddress.ThrowIfNull(nameof(targetAddress));
 			port.ThrowIfOutOfRange("port", 0, 65535);
@@ -260,7 +260,7 @@ namespace Net.Xmpp.Extensions.Upnp
 				foreach (IUPnPService srv in device.Services) {
 					if (srv.ServiceTypeIdentifier != serviceType)
 						continue;
-					object outParams = null, ret = null;
+					object? outParams = null, ret = null;
 					if (args == null)
 						args = new object[] { };
 					ret = srv.InvokeAction(action, args, ref outParams);
@@ -359,7 +359,7 @@ namespace Net.Xmpp.Extensions.Upnp
 		/// For details on all possible values for the searchTarget parameter, refer
 		/// to the 'UPnP Device Architecture 1.1' document, page 33.
 		/// </remarks>
-        static IEnumerable<UPnPDevice> FindDevices(string searchTarget = null,
+        static IEnumerable<UPnPDevice> FindDevices(string? searchTarget = null,
 			TimeSpan? timeout = null) {
 			UPnPDeviceFinder deviceFinder = new UPnPDeviceFinder();
 			DeviceFinderCallback dfCallback = new DeviceFinderCallback();

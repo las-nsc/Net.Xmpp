@@ -44,7 +44,7 @@ namespace Net.Xmpp.Extensions
         /// null.</exception>
         public ActivityChangedEventArgs(Jid jid, GeneralActivity activity,
             SpecificActivity specific = SpecificActivity.Other,
-            string description = null)
+            string? description = null)
         {
             jid.ThrowIfNull(nameof(jid));
             Jid = jid;

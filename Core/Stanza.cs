@@ -124,8 +124,8 @@ namespace Net.Xmpp.Core
         /// <param name="language">The language of the XML character data of
         /// the stanza.</param>
         /// <param name="data">The content of the stanza.</param>
-        public Stanza(string @namespace = null, Jid to = null,
-            Jid from = null, string id = null, CultureInfo language = null,
+        public Stanza(string? @namespace = null, Jid? to = null,
+            Jid? from = null, string? id = null, CultureInfo? language = null,
             params XmlElement[] data)
         {
             element = Xml.Element(RootElementName, @namespace);

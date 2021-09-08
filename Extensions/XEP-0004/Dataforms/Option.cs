@@ -68,7 +68,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// <param name="label">A human-readable name for the option.</param>
         /// <exception cref="ArgumentNullException">The value parameter
         /// is null.</exception>
-        public Option(string value, string label = null)
+        public Option(string value, string? label = null)
         {
             value.ThrowIfNull(nameof(value));
             element = Xml.Element("option");

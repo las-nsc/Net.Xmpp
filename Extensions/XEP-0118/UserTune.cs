@@ -77,8 +77,8 @@ namespace Net.Xmpp.Extensions
         /// unspecified XMPP error occurred.</exception>
         /// <remarks>Publishing no information (i.e. calling Publish without any parameters
         /// is considered a "stop command" to disable publishing).</remarks>
-        public void Publish(string title = null, string artist = null, string track = null,
-            int length = 0, int rating = 0, string source = null, string uri = null)
+        public void Publish(string? title = null, string? artist = null, string? track = null,
+            int length = 0, int rating = 0, string? source = null, string? uri = null)
         {
             length.ThrowIfOutOfRange(0, short.MaxValue);
             rating.ThrowIfOutOfRange(0, 10);

@@ -62,9 +62,9 @@ namespace Net.Xmpp.Extensions
         /// (e.g., a band website that hosts streams or audio files).</param>
         /// <param name="uri">A URI or URL pointing to information about the
         /// song, collection, or artist.</param>
-        public TuneInformation(string title = null, string artist = null,
-            string track = null, int length = 0, int rating = 0,
-            string source = null, string uri = null)
+        public TuneInformation(string? title = null, string? artist = null,
+            string? track = null, int length = 0, int rating = 0,
+            string? source = null, string? uri = null)
         {
             length.ThrowIfOutOfRange(0, short.MaxValue);
             rating.ThrowIfOutOfRange(0, 10);

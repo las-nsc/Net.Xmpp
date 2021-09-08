@@ -49,7 +49,7 @@ namespace Net.Xmpp.Im
         /// <param name="groups">An array of groups or categories this roster item
         /// will be added to.</param>
         /// <exception cref="ArgumentNullException">The jid parameter is null.</exception>
-        public RosterItem(Jid jid, string name = null, params string[] groups)
+        public RosterItem(Jid jid, string? name = null, params string[] groups)
             : this(jid, name, SubscriptionState.None, false, groups)
         {
         }

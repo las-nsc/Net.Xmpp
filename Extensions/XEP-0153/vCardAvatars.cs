@@ -142,7 +142,7 @@ namespace Net.Xmpp.Extensions
                     XNamespace aw = "vcard-temp"; //SOS the correct namespace
                     IEnumerable<string> b64collection = from el in root.Descendants(aw + "BINVAL")
                                                         select (string)el;
-                    string b64 = null;
+                    string? b64 = null;
                     if (b64collection != null)
                     {
                         b64 = b64collection.FirstOrDefault();
@@ -195,7 +195,7 @@ namespace Net.Xmpp.Extensions
                     XElement root = XElement.Parse(iq.Data.OuterXml);
                     XNamespace aw = "vcard-temp"; //SOS the correct namespace
                     IEnumerable<string> b64collection = from el in root.Descendants(aw + "BINVAL") select (string)el;
-                    string b64 = null;
+                    string? b64 = null;
                     if (b64collection != null)
                     {
                         b64 = b64collection.FirstOrDefault();

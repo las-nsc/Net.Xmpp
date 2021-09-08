@@ -96,7 +96,7 @@ namespace Net.Xmpp.Extensions
 
             set
             {
-                string safeValue = null;
+                string? safeValue = null;
 
                 if (value.HasValue)
                     safeValue = value.Value
@@ -123,7 +123,7 @@ namespace Net.Xmpp.Extensions
         /// <returns>null or any number equal to or greater than zero.</returns>
         private string SafeNumber(int? number)
         {
-            string result = null;
+            string? result = null;
 
             if (number != null)
             {

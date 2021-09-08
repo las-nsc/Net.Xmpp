@@ -52,7 +52,7 @@ namespace Net.Xmpp.Extensions
         /// mood to.</param>
         /// <param name="description">A natural-language description of, or reason
         /// for, the mood.</param>
-        public void SetMood(Mood mood, string description = null)
+        public void SetMood(Mood mood, string? description = null)
         {
             var xml = Xml.Element("mood", "http://jabber.org/protocol/mood")
                 .Child(Xml.Element(MoodToTagName(mood)));

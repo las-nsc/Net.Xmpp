@@ -46,7 +46,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="name">The name of the item.</param>
         /// <exception cref="ArgumentNullException">The jid parameter is
         /// null.</exception>
-        public XmppItem(Jid jid, string node = null, string name = null)
+        public XmppItem(Jid jid, string? node = null, string? name = null)
         {
             jid.ThrowIfNull(nameof(jid));
             Jid = jid;
@@ -65,7 +65,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="jid">JID</param>
         /// <param name="nickname">Occupant nickname</param>
         /// <param name="role">Privilege level within a room.</param>
-        public XmppItem(string affiliation, Jid jid, string nickname = null, string role = null)
+        public XmppItem(string affiliation, Jid jid, string? nickname = null, string? role = null)
         {
             affiliation.ThrowIfNull(nameof(affiliation));
             jid.ThrowIfNull(nameof(jid));
@@ -87,7 +87,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="nickname">Occupant nickname</param>
         /// <param name="role">Privilege level within a room.</param>
         /// <param name="affiliation">A long-lived association or connection with a room.</param>
-        public XmppItem(Jid jid, string node = null, string name = null, string nickname = null, string role = null, string affiliation = null)
+        public XmppItem(Jid jid, string? node = null, string? name = null, string? nickname = null, string? role = null, string? affiliation = null)
         {
             jid.ThrowIfNull(nameof(jid));
             Jid = jid;

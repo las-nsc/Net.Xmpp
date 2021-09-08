@@ -141,7 +141,7 @@ namespace Net.Xmpp.Extensions.Socks5
         /// from all interfaces will be accepted.</param>
         /// <exception cref="SocketException">An error occurred when accessing the
         /// socket.</exception>
-        public Socks5Server(int port, IPAddress localaddress = null)
+        public Socks5Server(int port, IPAddress? localaddress = null)
         {
             if (localaddress == null)
                 localaddress = IPAddress.Any;

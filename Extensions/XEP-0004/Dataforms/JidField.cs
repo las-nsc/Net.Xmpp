@@ -51,8 +51,8 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// <param name="jid">The default value of the field.</param>
         /// <exception cref="ArgumentNullException">The name parameter is
         /// null.</exception>
-        public JidField(string name, bool required = false, string label = null,
-            string description = null, Jid jid = null)
+        public JidField(string name, bool required = false, string? label = null,
+            string? description = null, Jid? jid = null)
             : base(DataFieldType.JidSingle, name, required, label, description)
         {
             name.ThrowIfNull(nameof(name));

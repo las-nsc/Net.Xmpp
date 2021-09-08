@@ -32,7 +32,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="os">The operating system of the entity.</param>
         /// <exception cref="ArgumentNullException">The name parameter or the version
         /// parameter is null.</exception>
-        public VersionInformation(string name, string version, string os = null)
+        public VersionInformation(string name, string version, string? os = null)
         {
             name.ThrowIfNull(nameof(name));
             version.ThrowIfNull(nameof(version));

@@ -10,7 +10,7 @@
         /// </summary>
         /// <param name="jid">Room identifier</param>
         /// <param name="name">Room name</param>
-        public RoomInfoBasic(Jid jid, string name = null)
+        public RoomInfoBasic(Jid jid, string? name = null)
         {
             jid.ThrowIfNull(nameof(jid));
             Jid = jid;

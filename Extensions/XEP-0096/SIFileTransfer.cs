@@ -187,7 +187,7 @@ namespace Net.Xmpp.Extensions
         /// <exception cref="XmppException">The server returned invalid data or
         /// another unspecified XMPP error occurred.</exception>
         public string InitiateFileTransfer(Jid to, string path,
-            string description = null, Action<bool, FileTransfer> cb = null)
+            string? description = null, Action<bool, FileTransfer>? cb = null)
         {
             to.ThrowIfNull(nameof(to));
             path.ThrowIfNull(nameof(path));
@@ -225,7 +225,7 @@ namespace Net.Xmpp.Extensions
         /// <exception cref="XmppException">The server returned invalid data or
         /// another unspecified XMPP error occurred.</exception>
         public string InitiateFileTransfer(Jid to, Stream stream, string name, long size,
-            string description = null, Action<bool, FileTransfer> cb = null)
+            string? description = null, Action<bool, FileTransfer>? cb = null)
         {
             to.ThrowIfNull(nameof(to));
             stream.ThrowIfNull(nameof(stream));
@@ -462,7 +462,7 @@ namespace Net.Xmpp.Extensions
         /// <exception cref="XmppException">The server returned invalid data or another
         /// unspecified XMPP error occurred.</exception>
         private string InitiateStream(Jid to, string name, long size,
-            string description = null, Action<InitiationResult, Iq> cb = null)
+            string? description = null, Action<InitiationResult, Iq>? cb = null)
         {
             // Construct the 'file' element which is mandatory for the SI file-transfer
             // profile.

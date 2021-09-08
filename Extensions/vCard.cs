@@ -143,7 +143,7 @@ namespace Net.Xmpp.Extensions
                     vCD.Title = titlecollection.FirstOrDefault();
                     vCD.Role = rolecollection.FirstOrDefault();
 
-                    string b64 = null;
+                    string? b64 = null;
                     if (b64collection != null)
                     {
                         b64 = b64collection.FirstOrDefault();

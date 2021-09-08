@@ -105,7 +105,7 @@ namespace Net.Xmpp
         /// <param name="condition">The condition of the error.</param>
         /// <param name="text">A more-detailed textual description of the error.</param>
         /// <param name="data">The content of the error element.</param>
-        internal XmppError(ErrorType type, ErrorCondition condition, string text = null,
+        internal XmppError(ErrorType type, ErrorCondition condition, string? text = null,
             params XmlElement[] data)
         {
             Data = Xml.Element("error");

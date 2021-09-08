@@ -177,6 +177,11 @@
         MultiUserChat,
 
         /// <summary>
+        /// Service-level tasks that administrators often need to perform in relation to Jabber/XMPP servers and components
+        /// </summary>
+        ServiceAdministration,
+
+        /// <summary>
         /// An extension that enables an entity to initiate a command session where there is no preferred namespace
         /// </summary>
         AdHocCommands,

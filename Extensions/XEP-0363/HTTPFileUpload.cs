@@ -53,7 +53,7 @@ namespace Net.Xmpp.Extensions
         /// </param>
         public void RequestSlot(string fileName, long size, string contentType, Action<Slot> upload, Action<string> error)
         {
-            Jid uploadDomain = null;
+            Jid? uploadDomain = null;
             foreach (var item in sdisco.GetItems(im.Jid.Domain))
             {
                 // Query each item for its identities and look for a 'store' identity.

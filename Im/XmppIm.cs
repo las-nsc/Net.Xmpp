@@ -231,7 +231,7 @@ namespace Net.Xmpp.Im
         /// <exception cref="ArgumentOutOfRangeException">The value of the port parameter
         /// is not a valid port number.</exception>
         public XmppIm(string hostname, string username, string password,
-            int port = 5222, bool tls = true, RemoteCertificateValidationCallback validate = null,
+            int port = 5222, bool tls = true, RemoteCertificateValidationCallback? validate = null,
             string serverAdress = "")
         {
             core = new XmppCore(hostname, username, password, port, tls, validate, serverAdress);
@@ -256,7 +256,7 @@ namespace Net.Xmpp.Im
         /// <exception cref="ArgumentOutOfRangeException">The value of the port parameter
         /// is not a valid port number.</exception>
         public XmppIm(string hostname, int port = 5222, bool tls = true,
-            RemoteCertificateValidationCallback validate = null,
+            RemoteCertificateValidationCallback? validate = null,
             string serverAdress = "")
         {
             core = new XmppCore(hostname, port, tls, validate, serverAdress);
@@ -281,7 +281,7 @@ namespace Net.Xmpp.Im
         /// <exception cref="XmppException">An XMPP error occurred while negotiating the
         /// XML stream with the server, or resource binding failed, or the initialization
         /// of an XMPP extension failed.</exception>
-        public Roster Connect(string resource = null)
+        public Roster Connect(string? resource = null)
         {
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -424,9 +424,9 @@ namespace Net.Xmpp.Im
         /// the XMPP server.</exception>
         /// <exception cref="ObjectDisposedException">The XmppIm object has been
         /// disposed.</exception>
-        public void SendMessage(Jid to, string body, string subject = null,
-            string thread = null, MessageType type = MessageType.Normal,
-            CultureInfo language = null)
+        public void SendMessage(Jid to, string body, string? subject = null,
+            string? thread = null, MessageType type = MessageType.Normal,
+            CultureInfo? language = null)
         {
             AssertValid();
             to.ThrowIfNull(nameof(to));
@@ -460,8 +460,8 @@ namespace Net.Xmpp.Im
         /// <exception cref="ObjectDisposedException">The XmppIm object has been
         /// disposed.</exception>
         public void SendMessage(Jid to, IDictionary<string, string> bodies,
-            IDictionary<string, string> subjects = null, string thread = null,
-            MessageType type = MessageType.Normal, CultureInfo language = null)
+            IDictionary<string, string>? subjects = null, string? thread = null,
+            MessageType type = MessageType.Normal, CultureInfo? language = null)
         {
             AssertValid();
             to.ThrowIfNull(nameof(to));
@@ -623,8 +623,8 @@ namespace Net.Xmpp.Im
         /// the XMPP server.</exception>
         /// <exception cref="ObjectDisposedException">The XmppIm object has been
         /// disposed.</exception>
-        public void SetStatus(Availability availability, string message = null,
-            sbyte priority = 0, CultureInfo language = null)
+        public void SetStatus(Availability availability, string? message = null,
+            sbyte priority = 0, CultureInfo? language = null)
         {
             AssertValid();
             if (availability == Availability.Offline)
@@ -1081,7 +1081,7 @@ namespace Net.Xmpp.Im
         /// error condition.</exception>
         /// <exception cref="XmppException">The server returned invalid data or another
         /// unspecified XMPP error occurred.</exception>
-        public void SetActivePrivacyList(string name = null)
+        public void SetActivePrivacyList(string? name = null)
         {
             AssertValid();
             var query = Xml.Element("query", "jabber:iq:privacy").Child(
@@ -1150,7 +1150,7 @@ namespace Net.Xmpp.Im
         /// error condition.</exception>
         /// <exception cref="XmppException">The server returned invalid data or another
         /// unspecified XMPP error occurred.</exception>
-        public void SetDefaultPrivacyList(string name = null)
+        public void SetDefaultPrivacyList(string? name = null)
         {
             AssertValid();
             var query = Xml.Element("query", "jabber:iq:privacy").Child(
@@ -1346,8 +1346,8 @@ namespace Net.Xmpp.Im
         /// network.</exception>
         /// <exception cref="TimeoutException">A timeout was specified and it
         /// expired.</exception>
-        internal Iq IqRequest(IqType type, Jid to = null, Jid from = null,
-            XmlElement data = null, CultureInfo language = null,
+        internal Iq IqRequest(IqType type, Jid? to = null, Jid? from = null,
+            XmlElement? data = null, CultureInfo? language = null,
             int millisecondsTimeout = -1)
         {
             Iq iq = new(type, null, to, from, data, language);
@@ -1382,9 +1382,9 @@ namespace Net.Xmpp.Im
         /// connected to a remote host.</exception>
         /// <exception cref="IOException">There was a failure while writing to the
         /// network.</exception>
-        internal string IqRequestAsync(IqType type, Jid to = null, Jid from = null,
-            XmlElement data = null, CultureInfo language = null,
-            Action<string, Iq> callback = null)
+        internal string IqRequestAsync(IqType type, Jid? to = null, Jid? from = null,
+            XmlElement? data = null, CultureInfo? language = null,
+            Action<string, Iq>? callback = null)
         {
             Iq iq = new(type, null, to, from, data, language);
             // Invoke IOutput<Iq> Plugins.
@@ -1415,8 +1415,8 @@ namespace Net.Xmpp.Im
         /// connected to a remote host.</exception>
         /// <exception cref="IOException">There was a failure while writing to the
         /// network.</exception>
-        internal void IqResponse(IqType type, string id, Jid to = null, Jid from = null,
-            XmlElement data = null, CultureInfo language = null)
+        internal void IqResponse(IqType type, string id, Jid? to = null, Jid? from = null,
+            XmlElement? data = null, CultureInfo? language = null)
         {
             AssertValid(false);
             Iq iq = new(type, id, to, from, data, language);
@@ -1450,7 +1450,7 @@ namespace Net.Xmpp.Im
         /// <exception cref="IOException">There was a failure while writing to the
         /// network.</exception>
         internal void IqError(Iq iq, ErrorType type, ErrorCondition condition,
-            string text = null, params XmlElement[] data)
+            string? text = null, params XmlElement[] data)
         {
             AssertValid(false);
             iq.ThrowIfNull(nameof(iq));
@@ -1474,7 +1474,7 @@ namespace Net.Xmpp.Im
         /// connected to a remote host.</exception>
         /// <exception cref="IOException">There was a failure while writing to the
         /// network.</exception>
-        internal void IqResult(Iq iq, XmlElement data = null)
+        internal void IqResult(Iq iq, XmlElement? data = null)
         {
             AssertValid(false);
             iq.ThrowIfNull(nameof(iq));

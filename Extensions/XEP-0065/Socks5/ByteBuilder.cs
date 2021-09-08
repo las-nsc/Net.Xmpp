@@ -162,7 +162,7 @@ namespace Net.Xmpp.Extensions.Socks5
         /// into a sequence of bytes. If this is null, ASCII encoding is used as a
         /// default.</param>
         /// <returns>A reference to the calling instance.</returns>
-        public ByteBuilder Append(string value, Encoding encoding = null)
+        public ByteBuilder Append(string value, Encoding? encoding = null)
         {
             if (encoding == null)
                 encoding = Encoding.ASCII;

@@ -31,7 +31,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="name">The name of the XMPP entity.</param>
         /// <exception cref="ArgumentNullException">The category parameter or the
         /// type parameter is null.</exception>
-        public Identity(string category, string type, string name = null)
+        public Identity(string category, string type, string? name = null)
         {
             category.ThrowIfNull(nameof(category));
             type.ThrowIfNull(nameof(type));

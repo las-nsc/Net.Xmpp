@@ -49,8 +49,8 @@ namespace Net.Xmpp.Im
         /// <param name="priority">Provides a hint for stanza routing.</param>
         /// <param name="language">The language of the description of the
         /// availability state.</param>
-        public Status(Availability availability, string message = null,
-            sbyte priority = 0, CultureInfo language = null)
+        public Status(Availability availability, string? message = null,
+            sbyte priority = 0, CultureInfo? language = null)
         {
             Availability = availability;
             Priority = priority;

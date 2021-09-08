@@ -120,7 +120,7 @@ namespace Net.Xmpp.Extensions.Dataforms
         public bool Remove(T item)
         {
             item.ThrowIfNull(nameof(item));
-            XmlElement elem = null;
+            XmlElement? elem = null;
             foreach (var e in GetElements())
             {
                 if (e.InnerText == item.ToString())

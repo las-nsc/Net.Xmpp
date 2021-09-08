@@ -55,7 +55,7 @@ namespace Net.Xmpp.Extensions
         /// <exception cref="NotSupportedException">The XMPP entity with
         /// the specified JID does not support the 'Attention' XMPP
         /// extension.</exception>
-        public void GetAttention(Jid jid, string message = null)
+        public void GetAttention(Jid jid, string? message = null)
         {
             jid.ThrowIfNull(nameof(jid));
             if (!ecapa.Supports(jid, Extension.Attention))

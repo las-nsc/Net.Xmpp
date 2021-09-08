@@ -80,7 +80,7 @@ namespace Net.Xmpp.Extensions
                 BobData bobData = BobData.Parse(data);
                 bob.Add(bobData);
             }
-            RequestForm form = null;
+            RequestForm? form = null;
             bool xdata = query["x"] != null;
             form = xdata ? DataFormFactory.Create(query["x"]) as RequestForm : CreateDataForm(query);
             // Hand the data-form to the caller to have it filled-out.

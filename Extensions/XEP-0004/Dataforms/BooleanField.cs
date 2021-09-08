@@ -49,8 +49,8 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// <param name="value">The default value of the field.</param>
         /// <exception cref="ArgumentNullException">The name parameter is
         /// null.</exception>
-        public BooleanField(string name, bool required = false, string label = null,
-            string description = null, bool? value = null)
+        public BooleanField(string name, bool required = false, string? label = null,
+            string? description = null, bool? value = null)
             : base(DataFieldType.Boolean, name, required, label, description)
         {
             name.ThrowIfNull(nameof(name));

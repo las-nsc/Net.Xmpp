@@ -37,7 +37,7 @@ namespace Net.Xmpp.Extensions
         /// <exception cref="ArgumentNullException">The sessionId parameter or
         /// the method parameter is null.</exception>
         public InitiationResult(string sessionId, string method,
-            XmlElement data = null)
+            XmlElement? data = null)
         {
             sessionId.ThrowIfNull(nameof(sessionId));
             method.ThrowIfNull(nameof(method));

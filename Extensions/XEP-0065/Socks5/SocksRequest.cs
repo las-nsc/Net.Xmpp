@@ -90,8 +90,8 @@ namespace Net.Xmpp.Extensions.Socks5
             // Skip reserved octet.
             r.ReadByte();
             ATyp atyp = (ATyp)r.ReadByte();
-            IPAddress addr = null;
-            string domain = null;
+            IPAddress? addr = null;
+            string? domain = null;
             switch (atyp)
             {
                 case ATyp.IPv4:

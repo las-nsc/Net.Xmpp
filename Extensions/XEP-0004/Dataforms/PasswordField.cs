@@ -55,8 +55,8 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// <param name="value">The default value of the field.</param>
         /// <exception cref="ArgumentNullException">The name parameter is
         /// null.</exception>
-        public PasswordField(string name, bool required = false, string label = null,
-            string description = null, string value = null)
+        public PasswordField(string name, bool required = false, string? label = null,
+            string? description = null, string? value = null)
             : base(DataFieldType.TextPrivate, name, required, label, description)
         {
             name.ThrowIfNull(nameof(name));

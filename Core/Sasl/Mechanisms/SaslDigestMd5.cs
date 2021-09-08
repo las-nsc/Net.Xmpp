@@ -238,7 +238,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// <returns>An MD5 hash as a 32-character hex-string.</returns>
         /// <exception cref="ArgumentException">The input string
         /// is null.</exception>
-        private static string MD5(string s, Encoding encoding = null)
+        private static string MD5(string s, Encoding? encoding = null)
         {
             if (s == null)
                 throw new ArgumentNullException("s");

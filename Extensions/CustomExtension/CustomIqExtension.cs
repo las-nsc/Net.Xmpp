@@ -51,7 +51,7 @@ namespace Net.Xmpp.Extensions
         /// on to the next handler.</returns>
         public bool Input(Iq stanza)
         {
-            string response = null;
+            string? response = null;
             //if (stanza.Type != IqType.Get)
             //	return false;
             //get,set, result are supported

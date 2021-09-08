@@ -34,7 +34,7 @@ namespace Net.Xmpp.Extensions
         /// reason for, the mood.</param>
         /// <exception cref="ArgumentNullException">The jid parameter is
         /// null.</exception>
-        public MoodChangedEventArgs(Jid jid, Mood mood, string description = null)
+        public MoodChangedEventArgs(Jid jid, Mood mood, string? description = null)
         {
             jid.ThrowIfNull(nameof(jid));
             Jid = jid;

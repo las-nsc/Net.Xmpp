@@ -73,7 +73,7 @@ namespace Net.Xmpp
         /// <exception cref="ArgumentNullException">The domain parameter is null.</exception>
         /// <exception cref="ArgumentException">The domain parameter is the
         /// empty string.</exception>
-        public Jid(string domain, string node, string resource = null)
+        public Jid(string domain, string node, string? resource = null)
         {
             domain.ThrowIfNullOrEmpty("domain");
             Domain = domain;

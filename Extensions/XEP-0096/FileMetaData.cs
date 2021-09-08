@@ -27,7 +27,7 @@ namespace Net.Xmpp.Extensions
         /// can better understand what is being sent.</param>
         /// <exception cref="ArgumentNullException">The name parameter is
         /// null.</exception>
-        public FileMetaData(string name, string description = null)
+        public FileMetaData(string name, string? description = null)
         {
             name.ThrowIfNull(nameof(name));
             Name = name;

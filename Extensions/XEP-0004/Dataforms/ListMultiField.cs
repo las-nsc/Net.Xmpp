@@ -49,8 +49,8 @@ namespace Net.Xmpp.Extensions.Dataforms
         /// <param name="values">The default values of the field.</param>
         /// <exception cref="ArgumentNullException">The name parameter is
         /// null.</exception>
-        public ListMultiField(string name, bool required = false, string label = null,
-            string description = null, IEnumerable<Option> options = null, params string[] values)
+        public ListMultiField(string name, bool required = false, string? label = null,
+            string? description = null, IEnumerable<Option>? options = null, params string[] values)
             : base(DataFieldType.ListMulti, name, required, label, description)
         {
             this.values = new XmlCollection<string>(element, "value", elem => elem.InnerText);

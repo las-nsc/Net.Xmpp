@@ -103,7 +103,7 @@ namespace Net.Xmpp.Extensions
         /// error condition.</exception>
         /// <exception cref="XmppException">The server returned invalid data or another
         /// unspecified XMPP error occurred.</exception>
-        public void Publish(string node, string itemId = null, params XmlElement[] data)
+        public void Publish(string node, string? itemId = null, params XmlElement[] data)
         {
             node.ThrowIfNull(nameof(node));
             if (!Supported)

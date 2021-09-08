@@ -287,7 +287,7 @@ namespace Net.Xmpp.Core
         /// <exception cref="ArgumentOutOfRangeException">The value of the port parameter
         /// is not a valid port number.</exception>
         public XmppCore(string hostname, string username, string password,
-            int port = 5222, bool tls = true, RemoteCertificateValidationCallback validate = null,
+            int port = 5222, bool tls = true, RemoteCertificateValidationCallback? validate = null,
             string serverAdress = "")
         {
             if (serverAdress?.Length == 0)
@@ -332,7 +332,7 @@ namespace Net.Xmpp.Core
         /// <exception cref="ArgumentOutOfRangeException">The value of the port parameter
         /// is not a valid port number.</exception>
         public XmppCore(string hostname, int port = 5222, bool tls = true,
-            RemoteCertificateValidationCallback validate = null,
+            RemoteCertificateValidationCallback? validate = null,
             string serverAdress = "")
         {
             if (serverAdress?.Length == 0)
@@ -430,7 +430,7 @@ namespace Net.Xmpp.Core
         /// disposed.</exception>
         /// <remarks>If a username has been supplied, this method automatically performs
         /// authentication.</remarks>
-        public void Connect(string resource = null)
+        public void Connect(string? resource = null)
         {
             if (disposed)
                 throw new ObjectDisposedException(GetType().FullName);
@@ -517,8 +517,8 @@ namespace Net.Xmpp.Core
         /// connected to a remote host.</exception>
         /// <exception cref="IOException">There was a failure while writing to the
         /// network.</exception>
-        public void SendMessage(Jid to = null, Jid from = null, XmlElement data = null,
-            string id = null, CultureInfo language = null)
+        public void SendMessage(Jid? to = null, Jid? from = null, XmlElement? data = null,
+            string? id = null, CultureInfo? language = null)
         {
             AssertValid();
             Send(new Message(to, from, data, id, language));
@@ -558,8 +558,8 @@ namespace Net.Xmpp.Core
         /// connected to a remote host.</exception>
         /// <exception cref="IOException">There was a failure while writing to the
         /// network.</exception>
-        public void SendPresence(Jid to = null, Jid from = null, string id = null,
-            CultureInfo language = null, params XmlElement[] data)
+        public void SendPresence(Jid? to = null, Jid? from = null, string? id = null,
+            CultureInfo? language = null, params XmlElement[] data)
         {
             AssertValid();
             Send(new Presence(to, from, id, language, data));
@@ -610,8 +610,8 @@ namespace Net.Xmpp.Core
         /// network, or there was a failure reading from the network.</exception>
         /// <exception cref="TimeoutException">A timeout was specified and it
         /// expired.</exception>
-        public Iq IqRequest(IqType type, Jid to = null, Jid from = null,
-            XmlElement data = null, CultureInfo language = null,
+        public Iq IqRequest(IqType type, Jid? to = null, Jid? from = null,
+            XmlElement? data = null, CultureInfo? language = null,
             int millisecondsTimeout = -1)
         {
             AssertValid();
@@ -713,9 +713,9 @@ namespace Net.Xmpp.Core
         /// connected to a remote host.</exception>
         /// <exception cref="IOException">There was a failure while writing to the
         /// network.</exception>
-        public string IqRequest(IqType type, Jid to = null, Jid from = null,
-            XmlElement data = null, CultureInfo language = null,
-            Action<string, Iq> callback = null)
+        public string IqRequest(IqType type, Jid? to = null, Jid? from = null,
+            XmlElement? data = null, CultureInfo? language = null,
+            Action<string, Iq>? callback = null)
         {
             AssertValid();
             return IqRequest(new Iq(type, null, to, from, data, language), callback);
@@ -738,7 +738,7 @@ namespace Net.Xmpp.Core
         /// connected to a remote host.</exception>
         /// <exception cref="IOException">There was a failure while writing to the
         /// network.</exception>
-        public string IqRequest(Iq request, Action<string, Iq> callback = null)
+        public string IqRequest(Iq request, Action<string, Iq>? callback = null)
         {
             AssertValid();
             request.ThrowIfNull(nameof(request));
@@ -771,8 +771,8 @@ namespace Net.Xmpp.Core
         /// connected to a remote host.</exception>
         /// <exception cref="IOException">There was a failure while writing to the
         /// network.</exception>
-        public void IqResponse(IqType type, string id, Jid to = null, Jid from = null,
-            XmlElement data = null, CultureInfo language = null)
+        public void IqResponse(IqType type, string id, Jid? to = null, Jid? from = null,
+            XmlElement? data = null, CultureInfo? language = null)
         {
             AssertValid();
             IqResponse(new Iq(type, id, to, from, data, null));
@@ -881,7 +881,7 @@ namespace Net.Xmpp.Core
         /// trying to establish a secure connection, or the provided credentials were
         /// rejected by the server, or the server requires TLS/SSL and TLS has been
         /// turned off.</exception>
-        private void SetupConnection(string resource = null)
+        private void SetupConnection(string? resource = null)
         {
             // Request the initial stream.
             XmlElement feats = InitiateStream(Hostname);
@@ -1080,7 +1080,7 @@ namespace Net.Xmpp.Core
         /// or unexpected XML data.</exception>
         /// <exception cref="IOException">There was a failure while writing to the
         /// network, or there was a failure while reading from the network.</exception>
-        private Jid BindResource(string resourceName = null)
+        private Jid BindResource(string? resourceName = null)
         {
             var xml = Xml.Element("iq")
                 .Attr("type", "set")

@@ -163,8 +163,8 @@ namespace Net.Xmpp.Im
         /// the stanza.</param>
         /// <exception cref="ArgumentNullException">The to parameter is null.</exception>
         /// <exception cref="ArgumentException">The body parameter is the empty string.</exception>
-        public Message(Jid to, string body = null, string subject = null, string thread = null,
-            MessageType type = MessageType.Normal, CultureInfo language = null)
+        public Message(Jid to, string? body = null, string? subject = null, string? thread = null,
+            MessageType type = MessageType.Normal, CultureInfo? language = null)
             : base(to, null, null, null, language)
         {
             to.ThrowIfNull(nameof(to));
@@ -195,8 +195,8 @@ namespace Net.Xmpp.Im
         /// <exception cref="ArgumentNullException">The to parametr or the bodies
         /// parameter is null.</exception>
         public Message(Jid to, IDictionary<string, string> bodies,
-            IDictionary<string, string> subjects = null, string thread = null,
-            MessageType type = MessageType.Normal, CultureInfo language = null)
+            IDictionary<string, string>? subjects = null, string? thread = null,
+            MessageType type = MessageType.Normal, CultureInfo? language = null)
             : base(to, null, null, null, language)
         {
             to.ThrowIfNull(nameof(to));

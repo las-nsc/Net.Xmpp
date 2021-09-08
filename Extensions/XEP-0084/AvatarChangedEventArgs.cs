@@ -48,7 +48,7 @@ namespace Net.Xmpp.Extensions
 		/// the event.</param>
 		/// <exception cref="ArgumentNullException">The jid parameter is
 		/// null.</exception>
-		public AvatarChangedEventArgs(Jid jid, string hash = null, Image avatar = null) {
+		public AvatarChangedEventArgs(Jid jid, string? hash = null, Image? avatar = null) {
 			jid.ThrowIfNull(nameof(jid));
 			Jid = jid;
 			Hash = hash;

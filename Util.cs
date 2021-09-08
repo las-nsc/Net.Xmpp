@@ -24,7 +24,7 @@ namespace Net.Xmpp
         /// <exception cref="ArgumentNullException">The errorIq parameter is null.</exception>
         /// <exception cref="ArgumentException">The errorIq parameter is not
         /// of type IqType.Error.</exception>
-        internal static Exception ExceptionFromError(Iq errorIq, string message = null)
+        internal static Exception ExceptionFromError(Iq errorIq, string? message = null)
         {
             errorIq.ThrowIfNull(nameof(errorIq));
             return errorIq.Type == IqType.Error
@@ -42,7 +42,7 @@ namespace Net.Xmpp
         /// could be created from the specified Iq stanza, or an exception of type
         /// XmppException denoting an unrecoverable error.</returns>
         internal static Exception ExceptionFromError(XmlElement error,
-            string message = null)
+            string? message = null)
         {
             try
             {

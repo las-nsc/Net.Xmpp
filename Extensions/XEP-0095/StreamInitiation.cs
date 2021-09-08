@@ -122,7 +122,7 @@ namespace Net.Xmpp.Extensions
         /// <exception cref="XmppException">The server returned invalid data or another
         /// unspecified XMPP error occurred.</exception>
         public InitiationResult InitiateStream(Jid to, string mimeType, string profile,
-            IEnumerable<string> streamOptions, XmlElement data = null)
+            IEnumerable<string> streamOptions, XmlElement? data = null)
         {
             to.ThrowIfNull(nameof(to));
             mimeType.ThrowIfNull(nameof(mimeType));
@@ -179,8 +179,8 @@ namespace Net.Xmpp.Extensions
         /// the specified JID does not support the 'Stream Initiation' XMPP
         /// extension.</exception>
         public string InitiateStreamAsync(Jid to, string mimeType, string profile,
-            IEnumerable<string> streamOptions, XmlElement data = null,
-            Action<InitiationResult, Iq> cb = null)
+            IEnumerable<string> streamOptions, XmlElement? data = null,
+            Action<InitiationResult, Iq>? cb = null)
         {
             to.ThrowIfNull(nameof(to));
             mimeType.ThrowIfNull(nameof(mimeType));
@@ -204,7 +204,7 @@ namespace Net.Xmpp.Extensions
             {
                 if (cb == null)
                     return;
-                InitiationResult result = null;
+                InitiationResult? result = null;
                 if (iq.Type != IqType.Error)
                 {
                     // Result must contain a 'feature' element.
@@ -282,7 +282,7 @@ namespace Net.Xmpp.Extensions
         /// specified 'Stream Initiation' profile may require.</param>
         /// <returns>The 'si' element to include in the IQ request.</returns>
         private XmlElement CreateSiElement(string sid, string mimeType, string profile,
-            IEnumerable<string> streamOptions, XmlElement data = null)
+            IEnumerable<string> streamOptions, XmlElement? data = null)
         {
             var feat = CreateFeatureElement(streamOptions);
             // Construct the 'si' element.

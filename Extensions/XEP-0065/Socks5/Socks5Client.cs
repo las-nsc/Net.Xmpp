@@ -157,8 +157,8 @@ namespace Net.Xmpp.Extensions.Socks5
         /// socket.</exception>
         /// <exception cref="Socks5Exception">The server returned invalid data, or
         /// authentication with the SOCKS5 server failed.</exception>
-        public Socks5Client(string hostname, int port, string username = null,
-            string password = null)
+        public Socks5Client(string hostname, int port, string? username = null,
+            string? password = null)
         {
             hostname.ThrowIfNull(nameof(hostname));
             port.ThrowIfOutOfRange("port", 0, 65535);
@@ -188,8 +188,8 @@ namespace Net.Xmpp.Extensions.Socks5
         /// socket.</exception>
         /// <exception cref="Socks5Exception">The server returned invalid data, or
         /// authentication with the SOCKS5 server failed.</exception>
-        public Socks5Client(IPAddress address, int port, string username = null,
-            string password = null)
+        public Socks5Client(IPAddress address, int port, string? username = null,
+            string? password = null)
         {
             address.ThrowIfNull(nameof(address));
             port.ThrowIfOutOfRange("port", 0, 65535);

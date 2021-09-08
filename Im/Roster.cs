@@ -46,7 +46,7 @@ namespace Net.Xmpp.Im
         /// </summary>
         /// <param name="items">An enumerable collection of items to add to the
         /// roster.</param>
-        internal Roster(IEnumerable<RosterItem> items = null)
+        internal Roster(IEnumerable<RosterItem>? items = null)
         {
             if (items != null)
             {

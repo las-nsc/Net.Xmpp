@@ -32,7 +32,7 @@ namespace Net.Xmpp.Extensions
         /// the event.</param>
         /// <exception cref="ArgumentNullException">The jid parameter is
         /// null.</exception>
-        public TuneEventArgs(Jid jid, TuneInformation information = null)
+        public TuneEventArgs(Jid jid, TuneInformation? information = null)
         {
             jid.ThrowIfNull(nameof(jid));
             Jid = jid;

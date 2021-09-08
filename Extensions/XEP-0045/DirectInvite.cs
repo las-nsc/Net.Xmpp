@@ -24,7 +24,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="reason">Message included with the invitation.</param>
         /// <param name="room">Jid of the chat room.</param>
         /// <param name="password">(optional) Password.</param>
-        public DirectInvite(Jid to, Jid from, Jid room, string reason, string password = null)
+        public DirectInvite(Jid to, Jid from, Jid room, string reason, string? password = null)
             : base(to, from, Xml.Element("x", "jabber:x:conference"))
         {
             Room = room;

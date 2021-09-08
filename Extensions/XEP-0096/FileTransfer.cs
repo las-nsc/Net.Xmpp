@@ -63,7 +63,7 @@ namespace Net.Xmpp.Extensions
         /// <exception cref="ArgumentOutOfRangeException">The size parameter
         /// is negative.</exception>
         internal FileTransfer(Jid from, Jid to, string name, long size,
-            string sessionId = null, string description = null, long transferred = 0)
+            string? sessionId = null, string? description = null, long transferred = 0)
         {
             from.ThrowIfNull(nameof(from));
             to.ThrowIfNull(nameof(to));

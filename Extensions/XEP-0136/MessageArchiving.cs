@@ -1,9 +1,9 @@
-﻿using Net.Xmpp.Core;
-using Net.Xmpp.Im;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Xml;
+
+using Net.Xmpp.Core;
+using Net.Xmpp.Im;
 
 namespace Net.Xmpp.Extensions
 {
@@ -25,7 +25,7 @@ namespace Net.Xmpp.Extensions
             List<ArchivedChatId> chats = new();
             foreach (XmlNode node in xml.GetElementsByTagName("chat"))
             {
-                string with = null;
+                string? with = null;
                 try
                 {
                     with = node.Attributes["with"].InnerText;
@@ -65,7 +65,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="start">Optional start date range to query</param>
         /// <param name="end">Optional enddate range to query</param>
         /// <param name="with">Optional JID to filter archive results by</param>
-        public XmppPage<ArchivedChatId> GetArchivedChatIds(XmppPageRequest pageRequest, DateTimeOffset? start = null, DateTimeOffset? end = null, Jid with = null)
+        public XmppPage<ArchivedChatId> GetArchivedChatIds(XmppPageRequest pageRequest, DateTimeOffset? start = null, DateTimeOffset? end = null, Jid? with = null)
         {
             pageRequest.ThrowIfNull();
 

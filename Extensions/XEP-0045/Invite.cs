@@ -25,7 +25,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="reason">Message included with the invitation.</param>
         /// <param name="room">Jid of the chat room.</param>
         /// <param name="password">(optional) Password.</param>
-        public Invite(Jid to, Jid from, Jid room, string reason, string password = null)
+        public Invite(Jid to, Jid from, Jid room, string reason, string? password = null)
             : base(room, from, Xml.Element(xTag, MucNs.NsUser))
         {
             XElement.Child(Xml.Element(inviteTag).Child(Xml.Element(reasonTag)));

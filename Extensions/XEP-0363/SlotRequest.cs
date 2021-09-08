@@ -24,7 +24,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// Create a Slot Request
         /// </summary>
-        public SlotRequest(string file, long size, string contentType = null)
+        public SlotRequest(string file, long size, string? contentType = null)
         {
             FileName = file;
             Size = size;

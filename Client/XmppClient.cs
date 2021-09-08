@@ -538,7 +538,7 @@ namespace Net.Xmpp.Client
         /// <remarks>Use this constructor if you wish to connect to an XMPP server using
         /// an existing set of user credentials.</remarks>
         public XmppClient(string hostname, string username, string password,
-            int port = 5222, bool tls = true, RemoteCertificateValidationCallback validate = null, string serveradress = "")
+            int port = 5222, bool tls = true, RemoteCertificateValidationCallback? validate = null, string serveradress = "")
         {
             Im = new XmppIm(hostname, username, password, port, tls, validate, serveradress);
             // Initialize the various extension modules.
@@ -565,7 +565,7 @@ namespace Net.Xmpp.Client
         /// <remarks>Use this constructor if you wish to register an XMPP account using
         /// the in-band account registration process supported by some servers.</remarks>
         public XmppClient(string hostname, int port = 5222, bool tls = true,
-            RemoteCertificateValidationCallback validate = null, string serverAdress = "")
+            RemoteCertificateValidationCallback? validate = null, string serverAdress = "")
         {
             Im = new XmppIm(hostname, port, tls, validate, serverAdress);
             LoadExtensions();
@@ -589,7 +589,7 @@ namespace Net.Xmpp.Client
         /// <exception cref="XmppException">An XMPP error occurred while negotiating the
         /// XML stream with the server, or resource binding failed, or the initialization
         /// of an XMPP extension failed.</exception>
-        public void Connect(string resource = null)
+        public void Connect(string? resource = null)
         {
             Im.Connect(resource);
         }
@@ -688,9 +688,9 @@ namespace Net.Xmpp.Client
         /// <exception cref="ObjectDisposedException">The XmppClient object has been
         /// disposed.</exception>
         /// <include file='Examples.xml' path='S22/Xmpp/Client/XmppClient[@name="SendMessage-1"]/*'/>
-        public void SendMessage(Jid to, string body, string subject = null,
-            string thread = null, MessageType type = MessageType.Normal,
-            CultureInfo language = null)
+        public void SendMessage(Jid to, string body, string? subject = null,
+            string? thread = null, MessageType type = MessageType.Normal,
+            CultureInfo? language = null)
         {
             AssertValid();
             to.ThrowIfNull(nameof(to));
@@ -729,8 +729,8 @@ namespace Net.Xmpp.Client
         /// </remarks>
         /// <include file='Examples.xml' path='S22/Xmpp/Client/XmppClient[@name="SendMessage-2"]/*'/>
         public void SendMessage(Jid to, IDictionary<string, string> bodies,
-            IDictionary<string, string> subjects = null, string thread = null,
-            MessageType type = MessageType.Normal, CultureInfo language = null)
+            IDictionary<string, string>? subjects = null, string? thread = null,
+            MessageType type = MessageType.Normal, CultureInfo? language = null)
         {
             AssertValid();
             to.ThrowIfNull(nameof(to));
@@ -777,8 +777,8 @@ namespace Net.Xmpp.Client
         /// the XMPP server.</exception>
         /// <exception cref="ObjectDisposedException">The XmppClient object has been
         /// disposed.</exception>
-        public void SetStatus(Availability availability, string message = null,
-            sbyte priority = 0, CultureInfo language = null)
+        public void SetStatus(Availability availability, string? message = null,
+            sbyte priority = 0, CultureInfo? language = null)
         {
             AssertValid();
             Im.SetStatus(availability, message, 0, language);
@@ -879,7 +879,7 @@ namespace Net.Xmpp.Client
         /// error condition.</exception>
         /// <exception cref="XmppException">The server returned invalid data or another
         /// unspecified XMPP error occurred.</exception>
-        public void AddContact(Jid jid, string name = null, params string[] groups)
+        public void AddContact(Jid jid, string? name = null, params string[] groups)
         {
             AssertValid();
             jid.ThrowIfNull(nameof(jid));
@@ -1025,7 +1025,7 @@ namespace Net.Xmpp.Client
         /// <param name="str">The payload string to provide to the Request</param>
         /// <param name="callback">The callback method to call after the Request Result has being received. Included the serialised dat
         /// of the answer to the request</param>
-        public void RequestCustomIq(Jid jid, string str, Action callback = null)
+        public void RequestCustomIq(Jid jid, string str, Action? callback = null)
         {
             AssertValid();
             if (callback == null) cusiqextension.RequestCustomIq(jid, str);
@@ -1045,7 +1045,7 @@ namespace Net.Xmpp.Client
         /// the XMPP server.</exception>
         /// <exception cref="ObjectDisposedException">The XmppClient object has been
         /// disposed.</exception>
-        public void SetMood(Mood mood, string description = null)
+        public void SetMood(Mood mood, string? description = null)
         {
             AssertValid();
             userMood.SetMood(mood, description);
@@ -1067,7 +1067,7 @@ namespace Net.Xmpp.Client
         /// disposed.</exception>
         /// <include file='Examples.xml' path='S22/Xmpp/Client/XmppClient[@name="SetActivity"]/*'/>
         public void SetActivity(GeneralActivity activity, SpecificActivity specific =
-            SpecificActivity.Other, string description = null)
+            SpecificActivity.Other, string? description = null)
         {
             AssertValid();
             userActivity.SetActivity(activity, specific, description);
@@ -1103,8 +1103,8 @@ namespace Net.Xmpp.Client
         /// disposed.</exception>
         /// <remarks>Publishing no information (i.e. calling Publish without any parameters
         /// is considered a "stop command" to disable publishing).</remarks>
-        public void SetTune(string title = null, string artist = null, string track = null,
-            int length = 0, int rating = 0, string source = null, string uri = null)
+        public void SetTune(string? title = null, string? artist = null, string? track = null,
+            int length = 0, int rating = 0, string? source = null, string? uri = null)
         {
             AssertValid();
             userTune.Publish(title, artist, track, length, rating, source, uri);
@@ -1198,7 +1198,7 @@ namespace Net.Xmpp.Client
         /// <exception cref="ObjectDisposedException">The XmppClient object has been
         /// disposed.</exception>
         public string InitiateFileTransfer(Jid to, string path,
-            string description = null, Action<bool, FileTransfer> cb = null)
+            string? description = null, Action<bool, FileTransfer>? cb = null)
         {
             AssertValid();
             return siFileTransfer.InitiateFileTransfer(to, path, description, cb);
@@ -1238,7 +1238,7 @@ namespace Net.Xmpp.Client
         /// <exception cref="ObjectDisposedException">The XmppClient object has been
         /// disposed.</exception>
         public string InitiateFileTransfer(Jid to, Stream stream, string name, long size,
-            string description = null, Action<bool, FileTransfer> cb = null)
+            string? description = null, Action<bool, FileTransfer>? cb = null)
         {
             AssertValid();
             return siFileTransfer.InitiateFileTransfer(to, stream, name, size, description, cb);
@@ -1462,7 +1462,7 @@ namespace Net.Xmpp.Client
         /// condition.</exception>
         /// <exception cref="XmppException">The server returned invalid data or another
         /// unspecified XMPP error occurred.</exception>
-        public void Buzz(Jid jid, string message = null)
+        public void Buzz(Jid jid, string? message = null)
         {
             AssertValid();
             attention.GetAttention(jid, message);
@@ -1528,7 +1528,7 @@ namespace Net.Xmpp.Client
             {
                 // Privacy list blocking. If our server doesn't support privacy lists, we're
                 // out of luck.
-                PrivacyList privacyList = null;
+                PrivacyList? privacyList = null;
                 string name = Im.GetDefaultPrivacyList();
                 if (name != null)
                     privacyList = Im.GetPrivacyList(name);
@@ -1564,7 +1564,7 @@ namespace Net.Xmpp.Client
         /// <param name="start">Optional start date range to query</param>
         /// <param name="end">Optional enddate range to query</param>
         /// <param name="with">Optional JID to filter archive results by</param>
-        public XmppPage<ArchivedChatId> GetArchivedChatIds(XmppPageRequest pageRequest, DateTimeOffset? start = null, DateTimeOffset? end = null, Jid with = null)
+        public XmppPage<ArchivedChatId> GetArchivedChatIds(XmppPageRequest pageRequest, DateTimeOffset? start = null, DateTimeOffset? end = null, Jid? with = null)
         {
             return messageArchiving.GetArchivedChatIds(pageRequest, start, end, with);
         }
@@ -1587,7 +1587,7 @@ namespace Net.Xmpp.Client
         /// <param name="with">Optional filter to only return messages if they match the supplied JID</param>
         /// <param name="start">Optional filter to only return messages whose timestamp is equal to or later than the given timestamp.</param>
         /// <param name="end">Optional filter to only return messages whose timestamp is equal to or earlier than the timestamp given in the 'end' field.</param>
-        public Task<XmppPage<Message>> GetArchivedMessages(XmppPageRequest pageRequest, Jid with = null, DateTimeOffset? start = null, DateTimeOffset? end = null)
+        public Task<XmppPage<Message>> GetArchivedMessages(XmppPageRequest pageRequest, Jid? with = null, DateTimeOffset? start = null, DateTimeOffset? end = null)
         {
             return messageArchiveManagement.GetArchivedMessages(pageRequest, with, null, start, end);
         }
@@ -1649,7 +1649,7 @@ namespace Net.Xmpp.Client
             {
                 // Privacy list blocking. If our server doesn't support privacy lists, we're
                 // out of luck.
-                PrivacyList privacyList = null;
+                PrivacyList? privacyList = null;
                 string name = Im.GetDefaultPrivacyList();
                 if (name != null)
                     privacyList = Im.GetPrivacyList(name);
@@ -1706,7 +1706,7 @@ namespace Net.Xmpp.Client
             AssertValid();
             if (block.Supported)
                 return block.GetBlocklist();
-            PrivacyList privacyList = null;
+            PrivacyList? privacyList = null;
             string name = Im.GetDefaultPrivacyList();
             if (name != null)
                 privacyList = Im.GetPrivacyList(name);
@@ -1755,7 +1755,7 @@ namespace Net.Xmpp.Client
         /// <param name="chatRoom">Chat room</param>
         /// <param name="nickname">Desired nickname</param>
         /// <param name="password">(Optional) Password</param>
-        public void JoinRoom(Jid chatRoom, string nickname, string password = null)
+        public void JoinRoom(Jid chatRoom, string nickname, string? password = null)
         {
             AssertValid();
             groupChat.JoinRoom(chatRoom, nickname, password);
@@ -1808,7 +1808,7 @@ namespace Net.Xmpp.Client
         /// </summary>
         /// <param name="room">Chat room</param>
         /// <param name="reason">(Optional) Reason to destroy room.</param>
-        public bool DestroyRoom(Jid room, string reason = null)
+        public bool DestroyRoom(Jid room, string? reason = null)
         {
             AssertValid();
             return groupChat.DestroyRoom(room, reason);
@@ -1820,7 +1820,7 @@ namespace Net.Xmpp.Client
         /// <param name="room">Chat room</param>
         /// <param name="user">User to be banned</param>
         /// <param name="reason">(Optional) Reason for the ban.</param>
-        public bool BanUser(Jid room, Jid user, string reason = null)
+        public bool BanUser(Jid room, Jid user, string? reason = null)
         {
             AssertValid();
             return groupChat.SetPrivilege(room, user, Affiliation.Outcast, reason);
@@ -1833,7 +1833,7 @@ namespace Net.Xmpp.Client
         /// <param name="user">User with admin permission</param>
         /// <param name="nick">(Optional) Desired nickname</param>
         /// <param name="reason">(Optional) Reason</param>
-        public bool AddAdminToRoom(Jid room, Jid user, string nick = null, string reason = null)
+        public bool AddAdminToRoom(Jid room, Jid user, string? nick = null, string? reason = null)
         {
             AssertValid();
             return groupChat.SetPrivilege(room, user, Affiliation.Admin, reason, nick);
@@ -1845,7 +1845,7 @@ namespace Net.Xmpp.Client
         /// <param name="room">Chat room</param>
         /// <param name="user">User with admin permission</param>
         /// <param name="reason">(Optional) Reason</param>
-        public bool RemoveUser(Jid room, Jid user, string reason = null)
+        public bool RemoveUser(Jid room, Jid user, string? reason = null)
         {
             AssertValid();
             return groupChat.SetPrivilege(room, user, Affiliation.None, reason);
@@ -1858,7 +1858,7 @@ namespace Net.Xmpp.Client
         /// <param name="user">User with admin permission</param>
         /// <param name="nick">(Optional) Desired nickname</param>
         /// <param name="reason">(Optional) Reason</param>
-        public bool AddMemberToRoom(Jid room, Jid user, string nick = null, string reason = null)
+        public bool AddMemberToRoom(Jid room, Jid user, string? nick = null, string? reason = null)
         {
             AssertValid();
             groupChat.SetPrivilege(room, user, Affiliation.Member, reason, nick);
@@ -1962,7 +1962,7 @@ namespace Net.Xmpp.Client
         /// <param name="chatRoom">chat room</param>
         /// <param name="nickname">user to kick</param>
         /// <param name="reason">reason for kick</param>
-        public void KickGroupOccupant(Jid chatRoom, string nickname, string reason = null)
+        public void KickGroupOccupant(Jid chatRoom, string nickname, string? reason = null)
         {
             groupChat.KickOccupant(chatRoom, nickname, reason);
         }
@@ -1985,7 +1985,7 @@ namespace Net.Xmpp.Client
         /// <param name="message">message you want to send to the user.</param>
         /// <param name="chatRoom">Jid of the chat room.</param>
         /// <param name="password">Password if any.</param>
-        public void SendInvite(Jid to, Jid chatRoom, string message, string password = null)
+        public void SendInvite(Jid to, Jid chatRoom, string message, string? password = null)
         {
             groupChat.SendInvite(to, chatRoom, message, password);
         }

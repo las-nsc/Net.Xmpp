@@ -141,7 +141,7 @@ namespace Net.Xmpp.Extensions
             {
                 if (xElement?.NamespaceURI == MucNs.NsUser)
                 {
-                    Occupant person = null;
+                    Occupant? person = null;
                     foreach (XmlElement item in xElement.GetElementsByTagName("item"))
                     {
                         // There is only ever one item in a message here but, 
@@ -210,7 +210,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="jid">Chat room</param>
         /// <param name="nickname">Desired nickname</param>
         /// <param name="password">(Optional) Password</param>
-        public void JoinRoom(Jid jid, string nickname, string password = null)
+        public void JoinRoom(Jid jid, string nickname, string? password = null)
         {
             XmlElement elem = Xml.Element("x", MucNs.NsMain);
 
@@ -342,7 +342,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// Allows owners and admins to grant privileges to an occupant.
         /// </summary>
-        public bool SetPrivilege(Jid room, string nickname, Role privilege, string reason = null)
+        public bool SetPrivilege(Jid room, string nickname, Role privilege, string? reason = null)
         {
             return PostPrivilegeChange(room, nickname, privilege, reason);
         }
@@ -350,7 +350,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// Allows owners and admins to grant privileges to an occupant.
         /// </summary>
-        public bool SetPrivilege(Jid room, Jid user, Affiliation privilege, string reason = null, string nickname = null)
+        public bool SetPrivilege(Jid room, Jid user, Affiliation privilege, string? reason = null, string? nickname = null)
         {
             return PostPrivilegeChange(room, user, privilege, reason, nickname);
         }
@@ -392,7 +392,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="message">message you want to send to the user.</param>
         /// <param name="room">Jid of the chat room.</param>
         /// <param name="password">Password if any.</param>
-        public void SendInvite(Jid to, Jid room, string message, string password = null)
+        public void SendInvite(Jid to, Jid room, string message, string? password = null)
         {
             SendMessage(new DirectInvite(new Jid(to.Domain, to.Node), im.Jid, room, message, password));
         }
@@ -420,7 +420,7 @@ namespace Net.Xmpp.Extensions
         /// <summary>
         /// Allows owners to destroy the room.
         /// </summary>
-        public bool DestroyRoom(Jid room, string reason = null)
+        public bool DestroyRoom(Jid room, string? reason = null)
         {
             room.ThrowIfNull(nameof(room));
 
@@ -656,7 +656,7 @@ namespace Net.Xmpp.Extensions
         /// <returns>The first Identity returned.</returns>
         private Identity ParseIdentity(XmlElement query)
         {
-            Identity result = null;
+            Identity? result = null;
 
             foreach (XmlElement e in query.GetElementsByTagName("identity"))
             {
