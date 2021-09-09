@@ -25,7 +25,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="from"></param>
         /// <param name="maxChars"></param>
         public History(Jid to, Jid from, int maxChars = 0)
-            : base(to, from, null, null, Xml.Element(xTag, MucNs.NsMain))
+            : base(to, from, data: Xml.Element(xTag, MucNs.NsMain))
         {
             XElement.Child(Xml.Element(historyTag));
             MaxChars = maxChars;
@@ -38,7 +38,7 @@ namespace Net.Xmpp.Extensions
         /// <param name="from"></param>
         /// <param name="since"></param>
         public History(Jid to, Jid from, DateTime since)
-            : base(to, from, null, null, Xml.Element(xTag, MucNs.NsMain))
+            : base(to, from, data: Xml.Element(xTag, MucNs.NsMain))
         {
             XElement.Child(Xml.Element(historyTag));
             Since = since;

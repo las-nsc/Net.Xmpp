@@ -235,7 +235,7 @@ namespace Net.Xmpp.Im
                 // Establish a session (Refer to RFC 3921, Section 3. Session Establishment).
                 EstablishSession();
                 // Send initial presence.
-                SendPresence(new Presence());
+                SendPresence(new());
             }
             catch (SocketException e)
             {
@@ -273,7 +273,7 @@ namespace Net.Xmpp.Im
             // Retrieve user's roster as recommended (Refer to RFC 3921, Section 7.3).
             _ = GetRoster();
             // Send initial presence.
-            SendPresence(new Presence());
+            SendPresence(new());
         }
 
         /// <summary>
@@ -311,7 +311,7 @@ namespace Net.Xmpp.Im
         public void SetPresence()
         {
             // Send initial presence.
-            SendPresence(new Presence());
+            SendPresence(new());
         }
 
         /// <summary>
@@ -325,7 +325,7 @@ namespace Net.Xmpp.Im
             // Retrieve user's roster as recommended (Refer to RFC 3921, Section 7.3).
             _ = GetRoster();
             // Send initial presence.
-            SendPresence(new Presence());
+            SendPresence(new());
         }
 
         /// <summary>
@@ -569,8 +569,7 @@ namespace Net.Xmpp.Im
                 elems.Add(Xml.Element("priority").Text(priority.ToString()));
             if (message != null)
                 elems.Add(Xml.Element("status").Text(message));
-            Presence p = new(null, null, PresenceType.Available, null,
-                language, elems.ToArray());
+            Presence p = new(type: PresenceType.Available, language: language, data: elems.ToArray());
             SendPresence(p);
         }
 
@@ -618,8 +617,7 @@ namespace Net.Xmpp.Im
                 foreach (KeyValuePair<string, string> pair in messages)
                     elems.Add(Xml.Element("status").Attr("xml:lang", pair.Key).Text(pair.Value));
             }
-            Presence p = new(null, null, PresenceType.Available, null,
-                null, elems.ToArray());
+            Presence p = new(type: PresenceType.Available, data: elems.ToArray());
             SendPresence(p);
         }
 
@@ -1355,8 +1353,7 @@ namespace Net.Xmpp.Im
         {
             AssertValid(false);
             iq.ThrowIfNull(nameof(iq));
-            Iq response = new(IqType.Error, iq.Id, iq.From, Jid,
-                new XmppError(type, condition, text, data).Data);
+            Iq response = new(IqType.Error, iq.Id, iq.From, Jid, new XmppError(type, condition, text, data).Data);
             core.IqResponse(response);
         }
 

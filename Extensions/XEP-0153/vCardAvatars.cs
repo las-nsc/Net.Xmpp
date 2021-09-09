@@ -79,7 +79,8 @@ namespace Net.Xmpp.Extensions
                 if (iq.Type == IqType.Result)
                 {
                     // Result must contain a 'feature' element.
-                    im.SendPresence(new Im.Presence(null, null, PresenceType.Available, null, null, Xml.Element("x", "vcard-temp:x:update").Child(Xml.Element("photo").Text(hash))));
+                    XmlElement data = Xml.Element("x", "vcard-temp:x:update").Child(Xml.Element("photo").Text(hash));
+                    im.SendPresence(new(type: PresenceType.Available, data: data));
                 }
             });
         }

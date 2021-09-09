@@ -211,8 +211,7 @@ namespace Net.Xmpp.Extensions
                 elem.Child(Xml.Element("password").Text(password));
 
             Jid joinRequest = new(jid.Domain, jid.Node, nickname);
-            var msg = new Im.Presence(joinRequest, im.Jid, PresenceType.Available, null, null, elem);
-            im.SendPresence(msg);
+            im.SendPresence(new(joinRequest, im.Jid, PresenceType.Available, data: elem));
         }
 
         /// <summary>
@@ -221,8 +220,7 @@ namespace Net.Xmpp.Extensions
         public void LeaveRoom(Jid jid, string nickname)
         {
             Jid groupSpecificJid = new(jid.Domain, jid.Node, nickname);
-            var msg = new Im.Presence(jid, groupSpecificJid, PresenceType.Unavailable);
-            im.SendPresence(msg);
+            im.SendPresence(new(jid, groupSpecificJid, PresenceType.Unavailable));
         }
 
         /// <summary>
@@ -230,7 +228,7 @@ namespace Net.Xmpp.Extensions
         /// </summary>
         public void GetMessageLog(History options)
         {
-            im.SendPresence(new Im.Presence(options));
+            im.SendPresence(new(options));
         }
 
         /// <summary>
@@ -266,9 +264,8 @@ namespace Net.Xmpp.Extensions
             nickname.ThrowIfNullOrEmpty("nickname");
 
             Jid request = new(room.Domain, room.Node, nickname);
-            var msg = new Core.Presence(request, im.Jid, null, null, null);
 
-            im.SendPresence(new Im.Presence(msg));
+            im.SendPresence(new(new(request, im.Jid)));
         }
 
         /// <summary>
