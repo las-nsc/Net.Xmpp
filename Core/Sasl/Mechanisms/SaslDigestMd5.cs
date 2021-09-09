@@ -43,23 +43,25 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// <summary>
         /// The username to authenticate with.
         /// </summary>
-        private string? Username
+        private string Username
         {
-            get => Properties.ContainsKey("Username") ?
-                    Properties["Username"] as string : null;
+            get => Properties.ContainsKey(nameof(Username))
+                ? (string)Properties[nameof(Username)]
+                : throw new ArgumentNullException(nameof(Username));
 
-            set => Properties["Username"] = value;
+            set => Properties[nameof(Username)] = value;
         }
 
         /// <summary>
         /// The password to authenticate with.
         /// </summary>
-        private string? Password
+        private string Password
         {
-            get => Properties.ContainsKey("Password") ?
-                    Properties["Password"] as string : null;
+            get => Properties.ContainsKey(nameof(Password))
+                ? (string)Properties[nameof(Password)]
+                : throw new ArgumentNullException(nameof(Password));
 
-            set => Properties["Password"] = value;
+            set => Properties[nameof(Password)] = value;
         }
 
         /// <summary>
@@ -101,7 +103,7 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         public SaslDigestMd5(string username, string password)
         {
             username.ThrowIfNull(nameof(username));
-            if (username?.Length == 0)
+            if (username.Length == 0)
                 throw new ArgumentException("The username must not be empty.");
             password.ThrowIfNull(nameof(password));
 

@@ -58,11 +58,11 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// </summary>
         private string Username
         {
-            get => Properties.ContainsKey("Username")
-                ? (string)Properties["Username"]
+            get => Properties.ContainsKey(nameof(Username))
+                ? (string)Properties[nameof(Username)]
                 : throw new ArgumentNullException(nameof(Username));
 
-            set => Properties["Username"] = value;
+            set => Properties[nameof(Username)] = value;
         }
 
         /// <summary>
@@ -70,11 +70,11 @@ namespace Net.Xmpp.Core.Sasl.Mechanisms
         /// </summary>
         private string Password
         {
-            get => Properties.ContainsKey("Password")
-                ? (string)Properties["Password"]
+            get => Properties.ContainsKey(nameof(Password))
+                ? (string)Properties[nameof(Password)]
                 : throw new ArgumentNullException(nameof(Password));
 
-            set => Properties["Password"] = value;
+            set => Properties[nameof(Password)] = value;
         }
 
         /// <summary>

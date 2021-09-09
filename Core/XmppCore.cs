@@ -967,8 +967,8 @@ namespace Net.Xmpp.Core
         {
             string name = SelectMechanism(mechanisms);
             SaslMechanism m = SaslFactory.Create(name);
-            m.Properties.Add("Username", username);
-            m.Properties.Add("Password", password);
+            m.Properties.Add(nameof(Username), username);
+            m.Properties.Add(nameof(Password), password);
             var xml = Xml.Element("auth", "urn:ietf:params:xml:ns:xmpp-sasl")
                 .Attr("mechanism", name)
                 .Text(m.HasInitial ? m.GetResponse(string.Empty) : string.Empty);
