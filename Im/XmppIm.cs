@@ -226,21 +226,27 @@ namespace Net.Xmpp.Im
             int port = 5222, bool tls = true, RemoteCertificateValidationCallback? validate = null,
             string serverAdress = "", string? resource = null)
         {
+            username.ThrowIfNull(nameof(username));
+            password.ThrowIfNull(nameof(password));
             core = new XmppCore(hostname, username, password, port, tls, validate, serverAdress, resource);
             try
             {
-                // If no username has been providd, don't establish a session.
-                if (Username == null)
-                    return;
-                // Establish a session (Refer to RFC 3921, Section 3. Session Establishment).
-                EstablishSession();
-                // Send initial presence.
-                SendPresence(new());
+                Connect();
             }
             catch (SocketException e)
             {
                 throw new IOException("Could not connect to the server", e);
             }
+        }
+
+        private void Connect()
+        {
+            // Establish a session (Refer to RFC 3921, Section 3. Session Establishment).
+            EstablishSession();
+            // Retrieve user's roster as recommended (Refer to RFC 3921, Section 7.3).
+            _ = GetRoster();
+            // Send initial presence.
+            SendPresence(new());
         }
 
         /// <summary>
@@ -268,12 +274,7 @@ namespace Net.Xmpp.Im
             username.ThrowIfNull(nameof(username));
             password.ThrowIfNull(nameof(password));
             core.Authenticate(username, password);
-            // Establish a session (Refer to RFC 3921, Section 3. Session Establishment).
-            EstablishSession();
-            // Retrieve user's roster as recommended (Refer to RFC 3921, Section 7.3).
-            _ = GetRoster();
-            // Send initial presence.
-            SendPresence(new());
+            Connect();
         }
 
         /// <summary>
@@ -320,12 +321,7 @@ namespace Net.Xmpp.Im
         public void Reconnect()
         {
             core.Reconnect();
-            // Establish a session (Refer to RFC 3921, Section 3. Session Establishment).
-            EstablishSession();
-            // Retrieve user's roster as recommended (Refer to RFC 3921, Section 7.3).
-            _ = GetRoster();
-            // Send initial presence.
-            SendPresence(new());
+            Connect();
         }
 
         /// <summary>
