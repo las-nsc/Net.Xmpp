@@ -210,7 +210,10 @@ namespace Net.Xmpp.Core
         /// <summary>
         /// Print XML stanzas for debugging purposes
         /// </summary>
-        public bool DebugStanzas { get; set; } = true;
+        public bool DebugStanzas { get; set; }
+#if DEBUG
+            = true;
+#endif
 
         /// <summary>
         /// If true the session will be TLS/SSL-encrypted if the server supports it.
@@ -292,7 +295,7 @@ namespace Net.Xmpp.Core
         /// is not a valid port number.</exception>
         public XmppCore(string hostname, string username, string password,
             int port = 5222, bool tls = true, RemoteCertificateValidationCallback? validate = null,
-            string serverAdress = "", string? resource = null)
+            string serverAdress = "", string? resource = null, int defaultTimeoutMs = -1, Action<XmppCore>? setupEventHandlers = null)
         {
             if (serverAdress.Length == 0)
                 serverAdress = hostname;
@@ -316,6 +319,8 @@ namespace Net.Xmpp.Core
             Tls = tls;
             Validate = validate;
             this.resource = resource;
+            MillisecondsDefaultTimeout = defaultTimeoutMs;
+            setupEventHandlers?.Invoke(this);
             Jid = Connect(out client, out stream);
         }
 

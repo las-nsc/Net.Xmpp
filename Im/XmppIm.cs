@@ -224,11 +224,11 @@ namespace Net.Xmpp.Im
         /// is not a valid port number.</exception>
         public XmppIm(string hostname, string username, string password,
             int port = 5222, bool tls = true, RemoteCertificateValidationCallback? validate = null,
-            string serverAdress = "", string? resource = null)
+            string serverAdress = "", string? resource = null, int defaultTimeoutMs = -1)
         {
             username.ThrowIfNull(nameof(username));
             password.ThrowIfNull(nameof(password));
-            core = new XmppCore(hostname, username, password, port, tls, validate, serverAdress, resource);
+            core = new XmppCore(hostname, username, password, port, tls, validate, serverAdress, resource, defaultTimeoutMs, SetupEventHandlers);
             try
             {
                 Connect();
@@ -1393,7 +1393,7 @@ namespace Net.Xmpp.Im
         /// <summary>
         /// Sets up the event handlers for the events exposed by the XmppCore instance.
         /// </summary>
-        private void SetupEventHandlers()
+        private void SetupEventHandlers(XmppCore core)
         {
             core.Iq += (sender, e) => OnIq(e.Stanza);
             core.Presence += (sender, e) =>
