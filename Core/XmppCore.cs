@@ -208,6 +208,11 @@ namespace Net.Xmpp.Core
         public int MillisecondsDefaultTimeout { get; set; } = -1;
 
         /// <summary>
+        /// The Default retry limit for IQ requests
+        /// </summary>
+        public int DefaultRetryLimit { get; set; } = -1;
+
+        /// <summary>
         /// Print XML stanzas for debugging purposes
         /// </summary>
         public bool DebugStanzas { get; set; }
@@ -295,7 +300,7 @@ namespace Net.Xmpp.Core
         /// is not a valid port number.</exception>
         public XmppCore(string hostname, string username, string password,
             int port = 5222, bool tls = true, RemoteCertificateValidationCallback? validate = null,
-            string serverAdress = "", string? resource = null, int defaultTimeoutMs = -1, Action<XmppCore>? setupEventHandlers = null)
+            string serverAdress = "", string? resource = null, int defaultTimeoutMs = -1, int defaultMaxRetries = -1, Action<XmppCore>? setupEventHandlers = null)
         {
             if (serverAdress.Length == 0)
                 serverAdress = hostname;
@@ -320,6 +325,7 @@ namespace Net.Xmpp.Core
             Validate = validate;
             this.resource = resource;
             MillisecondsDefaultTimeout = defaultTimeoutMs;
+            DefaultRetryLimit = defaultMaxRetries;
             setupEventHandlers?.Invoke(this);
             Jid = Connect(out client, out stream);
         }
@@ -583,10 +589,10 @@ namespace Net.Xmpp.Core
         /// expired.</exception>
         public Iq IqRequest(IqType type, Jid? to = null, Jid? from = null,
             XmlElement? data = null, CultureInfo? language = null,
-            int millisecondsTimeout = -1)
+            int millisecondsTimeout = -1, int maxRetries = -1)
         {
             AssertValid();
-            return IqRequest(new Iq(type, null, to, from, data, language), millisecondsTimeout);
+            return IqRequest(new Iq(type, null, to, from, data, language), millisecondsTimeout, maxRetries);
         }
 
         /// <summary>
@@ -610,53 +616,63 @@ namespace Net.Xmpp.Core
         /// network, or there was a failure reading from the network.</exception>
         /// <exception cref="TimeoutException">A timeout was specified and it
         /// expired.</exception>
-        public Iq IqRequest(Iq request, int millisecondsTimeout = -1)
+        public Iq IqRequest(Iq request, int millisecondsTimeout = -1, int maxRetries = -1)
         {
             AssertValid();
             request.ThrowIfNull(nameof(request));
             if (request.Type is not IqType.Set and not IqType.Get)
                 throw new ArgumentException("The IQ type must be either 'set' or 'get'.");
             int timeOut = millisecondsTimeout == -1 ? MillisecondsDefaultTimeout : millisecondsTimeout;
+            int remainingRetries = maxRetries == -1 ? DefaultRetryLimit : maxRetries;
             // Generate a unique ID for the IQ request.
             request.Id = GetId();
             AutoResetEvent ev = new(false);
-            Send(request);
-            // Wait for event to be signaled by task that processes the incoming
-            // XML stream.
-            waitHandles[request.Id] = ev;
-            int index = WaitHandle.WaitAny(new[] { ev, cancelIq.Token.WaitHandle }, timeOut);
-            if (index == WaitHandle.WaitTimeout)
+            while (true)
             {
-                //An entity that receives an IQ request of type "get" or "set" MUST reply with an IQ response of type
-                //"result" or "error" (the response MUST preserve the 'id' attribute of the request).
-                //http://xmpp.org/rfcs/rfc3920.html#stanzas
-                //if (request.Type == IqType.Set || request.Type == IqType.Get)
-
-                //Make sure that its a request towards the server and not towards any client
-                var ping = request.Data["ping"];
-
-                if (request.To is not null && request.To.Domain == Jid?.Domain && request.To.Node?.Length > 0 && (ping?.NamespaceURI == "urn:xmpp:ping"))
+                Send(request);
+                // Wait for event to be signaled by task that processes the incoming
+                // XML stream.
+                waitHandles[request.Id] = ev;
+                int index = WaitHandle.WaitAny(new[] { ev, cancelIq.Token.WaitHandle }, timeOut);
+                if (index == WaitHandle.WaitTimeout)
                 {
-                    if (Connected)
-                    {
-                        Connected = false;
-                        OnConnect?.Invoke(this, new(ConnectionState.Lost));
-                    }
-                    if (!disposed)
-                        Error?.Invoke(this, new(new XmppDisconnectionException("Timeout Disconnection happened at IqRequest")));
-                }
+                    //An entity that receives an IQ request of type "get" or "set" MUST reply with an IQ response of type
+                    //"result" or "error" (the response MUST preserve the 'id' attribute of the request).
+                    //http://xmpp.org/rfcs/rfc3920.html#stanzas
+                    //if (request.Type == IqType.Set || request.Type == IqType.Get)
 
-                //This check is somehow not really needed doue to the IQ must be either set or get
+                    //Make sure that its a request towards the server and not towards any client
+                    var ping = request.Data["ping"];
+
+                    if (request.To is not null && request.To.Domain == Jid?.Domain && request.To.Node?.Length > 0 && (ping?.NamespaceURI == "urn:xmpp:ping"))
+                    {
+                        if (Connected)
+                        {
+                            Connected = false;
+                            OnConnect?.Invoke(this, new(ConnectionState.Lost));
+                        }
+                        if (!disposed)
+                            Error?.Invoke(this, new(new XmppDisconnectionException("Timeout Disconnection happened at IqRequest")));
+                    }
+
+                    if (remainingRetries-- != -1)
+                        continue;
+
+                    throw new TimeoutException();
+                }
+                // Reader task errored out.
+                if (index == 1)
+                    throw new IOException("The incoming XML stream could not read.");
+
+                break;
             }
-            // Reader task errored out.
-            if (index == 1)
-                throw new IOException("The incoming XML stream could not read.");
+
             // Fetch response stanza.
             if (iqResponses.TryRemove(request.Id, out Iq response))
                 return response;
-            // Shouldn't happen.
 
-            throw new TimeoutException();
+            // Shouldn't happen.
+            throw new InvalidOperationException();
         }
 
         /// <summary>

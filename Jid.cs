@@ -125,10 +125,7 @@ namespace Net.Xmpp
         /// Jid instance; Otherwise false.</returns>
         public override bool Equals(object obj)
         {
-            return obj is Jid other
-                && Node == other.Node
-                && Domain == other.Domain
-                && Resource == other.Resource;
+            return obj is Jid other && this == other;
         }
 
         /// <summary>
@@ -139,10 +136,10 @@ namespace Net.Xmpp
         {
             int hash = 13;
             if (Node != null)
-                hash = (hash * 7) + Node.GetHashCode();
-            hash = (hash * 7) + Domain.GetHashCode();
+                hash = (hash * 7) + StringComparer.OrdinalIgnoreCase.GetHashCode(Node);
+            hash = (hash * 7) + StringComparer.OrdinalIgnoreCase.GetHashCode(Domain);
             if (Resource != null)
-                hash = (hash * 7) + Resource.GetHashCode();
+                hash = (hash * 7) + StringComparer.OrdinalIgnoreCase.GetHashCode(Resource);
             return hash;
         }
 
@@ -158,9 +155,9 @@ namespace Net.Xmpp
             return ReferenceEquals(a, b)
                 || (a is object
                 && b is object
-                && a.Node == b.Node
-                && a.Domain == b.Domain
-                && a.Resource == b.Resource);
+                && string.Equals(a.Node, b.Node, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(a.Domain, b.Domain, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(a.Resource, b.Resource, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>

@@ -224,11 +224,11 @@ namespace Net.Xmpp.Im
         /// is not a valid port number.</exception>
         public XmppIm(string hostname, string username, string password,
             int port = 5222, bool tls = true, RemoteCertificateValidationCallback? validate = null,
-            string serverAdress = "", string? resource = null, int defaultTimeoutMs = -1)
+            string serverAdress = "", string? resource = null, int defaultTimeoutMs = -1, int defaultMaxRetries = -1)
         {
             username.ThrowIfNull(nameof(username));
             password.ThrowIfNull(nameof(password));
-            core = new XmppCore(hostname, username, password, port, tls, validate, serverAdress, resource, defaultTimeoutMs, SetupEventHandlers);
+            core = new XmppCore(hostname, username, password, port, tls, validate, serverAdress, resource, defaultTimeoutMs, defaultMaxRetries, SetupEventHandlers);
             try
             {
                 Connect();
@@ -1246,7 +1246,7 @@ namespace Net.Xmpp.Im
         /// expired.</exception>
         internal Iq IqRequest(IqType type, Jid? to = null, Jid? from = null,
             XmlElement? data = null, CultureInfo? language = null,
-            int millisecondsTimeout = -1)
+            int millisecondsTimeout = -1, int maxRetries = -1)
         {
             Iq iq = new(type, null, to, from, data, language);
             // Invoke IOutput<Iq> Plugins.
@@ -1254,7 +1254,7 @@ namespace Net.Xmpp.Im
             {
                 filter.Output(iq);
             }
-            return core.IqRequest(iq, millisecondsTimeout);
+            return core.IqRequest(iq, millisecondsTimeout, maxRetries);
         }
 
         /// <summary>

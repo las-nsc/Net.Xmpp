@@ -539,8 +539,8 @@ namespace Net.Xmpp.Client
         /// <remarks>Use this constructor if you wish to connect to an XMPP server using
         /// an existing set of user credentials.</remarks>
         public XmppClient(string hostname, string username, string password, int port = 5222, bool tls = true,
-            RemoteCertificateValidationCallback? validate = null, string serveradress = "", string? resource = null, int defaultTimeoutMs = -1)
-            : this(new XmppIm(hostname, username, password, port, tls, validate, serveradress, resource, defaultTimeoutMs))
+            RemoteCertificateValidationCallback? validate = null, string serveradress = "", string? resource = null, int defaultTimeoutMs = -1, int defaultMaxRetries = -1)
+            : this(new XmppIm(hostname, username, password, port, tls, validate, serveradress, resource, defaultTimeoutMs, defaultMaxRetries))
         {
         }
 
